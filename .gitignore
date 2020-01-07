@@ -31,8 +31,8 @@
 *.app
 
 # Visual studio specifics
-Atropos/Debug/*.obj
-Debug/*.obj
+Atropos/Debug/
+*/Debug/*.obj
 *.tlog
 *.idb
 *.log
