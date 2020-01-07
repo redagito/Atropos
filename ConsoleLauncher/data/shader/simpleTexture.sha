@@ -1,0 +1,4 @@
+# Fragment color based only on texture. 
+# No lighting model.
+vertexshader=simpleTexture.vs
+fragmentshader=simpleTexture.fs

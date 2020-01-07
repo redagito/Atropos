@@ -1,0 +1,4 @@
+# Color material for shot
+class=color
+shader=color
+color=0.0 0.2 0.9

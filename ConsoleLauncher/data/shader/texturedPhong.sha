@@ -1,0 +1,3 @@
+# Phong lighting with single texture unit.
+vertexshader=texturedPhong.vs
+fragmentshader=texturedPhong.fs

@@ -1,0 +1,6 @@
+# Default material with single texture phong shader with one light source (sun)
+class=basic
+shader=texturedPhong
+texture0=water1
+ambient=0.1
+specular=0.2

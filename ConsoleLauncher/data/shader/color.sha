@@ -1,0 +1,3 @@
+# Simple color shader
+vertexshader=color.vs
+fragmentshader=color.fs
