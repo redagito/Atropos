@@ -89,10 +89,6 @@
     <ClCompile Include="source\collision\CAABBox.cpp" />
     <ClCompile Include="source\collision\CCollidable.cpp" />
     <ClCompile Include="source\collision\CCollisionSystem.cpp" />
-    <ClCompile Include="source\core\job\CJobSystem.cpp" />
-    <ClCompile Include="source\core\module\CModuleManager.cpp" />
-    <ClCompile Include="source\core\module\IModule.cpp" />
-    <ClCompile Include="source\core\module\IModuleManager.cpp" />
     <ClCompile Include="source\debug\CLogger.cpp" />
     <ClCompile Include="source\debug\CProfiler.cpp" />
     <ClCompile Include="source\engine\CEngine.cpp" />
@@ -125,11 +121,9 @@
     <ClCompile Include="source\io\tinyobj\tiny_obj_loader.cc" />
     <ClCompile Include="source\io\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="source\renderer\CRenderable.cpp" />
-    <ClCompile Include="source\renderer\CRenderableProxy.cpp" />
     <ClCompile Include="source\renderer\CRenderSystem.cpp" />
     <ClCompile Include="source\renderer\debug\CGLException.cpp" />
     <ClCompile Include="source\renderer\flext\flextGL.c" />
-    <ClCompile Include="source\renderer\IRenderable.cpp" />
     <ClCompile Include="source\renderer\render\CBasicShader.cpp" />
     <ClCompile Include="source\renderer\render\CFramebuffer.cpp" />
     <ClCompile Include="source\renderer\render\CRenderbuffer.cpp" />
@@ -150,7 +144,6 @@
     <ClCompile Include="source\renderer\resource\shader\CVertexShader.cpp" />
     <ClCompile Include="source\renderer\scene\CCamera.cpp" />
     <ClCompile Include="source\renderer\scene\CScene.cpp" />
-    <ClCompile Include="source\resource\CDynamicLibrary.cpp" />
     <ClCompile Include="source\resource\CImage.cpp" />
     <ClCompile Include="source\resource\IResource.cpp" />
     <ClCompile Include="source\sound\CSoundSystem.cpp" />
@@ -365,15 +358,10 @@
     <ClInclude Include="source\collision\CAABBox.h" />
     <ClInclude Include="source\collision\CCollidable.h" />
     <ClInclude Include="source\collision\CCollisionSystem.h" />
-    <ClInclude Include="source\core\job\CJobSystem.h" />
-    <ClInclude Include="source\core\module\CModuleManager.h" />
-    <ClInclude Include="source\core\module\IModule.h" />
-    <ClInclude Include="source\core\module\IModuleManager.h" />
     <ClInclude Include="source\core\TCreatorMixin.h" />
     <ClInclude Include="source\core\TFactory.h" />
     <ClInclude Include="source\core\TSingleton.h" />
     <ClInclude Include="source\core\TCreator.h" />
-    <ClInclude Include="source\core\TSingletonHolder.h" />
     <ClInclude Include="source\core\TSingletonMixin.h" />
     <ClInclude Include="source\debug\CGLDebug.h" />
     <ClInclude Include="source\debug\CGLException.h" />
@@ -411,13 +399,11 @@
     <ClInclude Include="source\io\tinyobj\tiny_obj_loader.h" />
     <ClInclude Include="source\io\tinyxml2\tinyxml2.h" />
     <ClInclude Include="source\renderer\CRenderable.h" />
-    <ClInclude Include="source\renderer\CRenderableProxy.h" />
     <ClInclude Include="source\renderer\CRenderSystem.h" />
     <ClInclude Include="source\renderer\debug\CGLDebug.h" />
     <ClInclude Include="source\renderer\debug\CGLException.h" />
     <ClInclude Include="source\renderer\debug\GLDebug.h" />
     <ClInclude Include="source\renderer\flext\flextGL.h" />
-    <ClInclude Include="source\renderer\IRenderable.h" />
     <ClInclude Include="source\renderer\render\CBasicShader.h" />
     <ClInclude Include="source\renderer\render\CFramebuffer.h" />
     <ClInclude Include="source\renderer\render\CRenderbuffer.h" />
@@ -444,13 +430,11 @@
     <ClInclude Include="source\renderer\scene\CScene.h" />
     <ClInclude Include="source\renderer\scene\CSkyBox.h" />
     <ClInclude Include="source\renderer\scene\ILight.h" />
-    <ClInclude Include="source\resource\CDynamicLibrary.h" />
     <ClInclude Include="source\resource\CImage.h" />
     <ClInclude Include="source\resource\IResource.h" />
     <ClInclude Include="source\sound\CSoundSystem.h" />
     <ClInclude Include="source\util\CTimeStamp.h" />
     <ClInclude Include="source\util\Global.h" />
-    <ClInclude Include="source\util\TThreadSafeQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ext\include\assimp\color4.inl" />

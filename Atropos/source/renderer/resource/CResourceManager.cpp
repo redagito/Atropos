@@ -216,7 +216,7 @@ bool CResourceManager::loadShader(const std::string& name)
 	{
 		// Shader definition files are located in the shader sub directory of the resource path
 		std::string shaderFile = d_resourcePath + "shader/" + name + ".sha";
-		LOG_DEBUG("Loading shader %s from file &s.", name.c_str(), shaderFile.c_str());
+		LOG_DEBUG("Loading shader %s from file %s.", name.c_str(), shaderFile.c_str());
 
 		// Load shader config file with names of shader sources
 		CConfigFile shaderConfig;
@@ -261,7 +261,7 @@ CShader* CResourceManager::getShader(const std::string& name)
 	const auto& shader = d_shaderMap.find(name);
 	if (shader == d_shaderMap.end())
 	{
-		LOG_WARNING("The requested shader %s was not loaded.", name.c_str());
+		LOG_INFO("The requested shader %s is currently not loaded.", name.c_str());
 		if (loadShader(name))
 		{
 			return d_shaderMap.at(name).get();
@@ -277,7 +277,7 @@ CTexture* CResourceManager::getTexture(const std::string& name)
 	const auto& texture = d_textureMap.find(name);
 	if (texture == d_textureMap.end())
 	{
-		LOG_WARNING("The requested texture %s was not loaded.", name.c_str());
+		LOG_WARNING("The requested texture %s is currently not loaded.", name.c_str());
 		if (loadTexture(name))
 		{
 			return d_textureMap.at(name).get();
@@ -293,7 +293,7 @@ CMesh* CResourceManager::getMesh(const std::string& meshName)
 	const auto& mesh = d_meshMap.find(meshName);
 	if (mesh == d_meshMap.end())
 	{
-		LOG_WARNING("The requested mesh %s was not loaded.", meshName.c_str());
+		LOG_WARNING("The requested mesh %s is currently not loaded.", meshName.c_str());
 		if (loadMesh(meshName))
 		{
 			return d_meshMap.at(meshName).get();
@@ -309,7 +309,7 @@ AMaterial* CResourceManager::getMaterial(const std::string& name)
 	const auto& material = d_materialMap.find(name);
 	if (material == d_materialMap.end())
 	{
-		LOG_WARNING("The requested material %s was not loaded.", name.c_str());
+		LOG_WARNING("The requested material %s is currently not loaded.", name.c_str());
 		if (loadMaterial(name))
 		{
 			return d_materialMap.at(name).get();
@@ -325,7 +325,7 @@ CModel* CResourceManager::getModel(const std::string& name)
 	const auto& model = d_modelMap.find(name);
 	if (model == d_modelMap.end())
 	{
-		LOG_WARNING("The requested model %s was not loaded.", name.c_str());
+		LOG_WARNING("The requested model %s is currently not loaded.", name.c_str());
 		if (loadModel(name))
 		{
 			return d_modelMap.at(name).get();

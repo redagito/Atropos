@@ -5,12 +5,8 @@
 #include "glm/glm.hpp"
 
 /**
-* \brief A basic material class.
-*
-* The basic material holds a single texture unit and a phong shader
-* with the required uniform parameters.
+* \brief Single color material.
 */
-
 class CColorMaterial : public AMaterial
 {
 public:

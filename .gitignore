@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -30,3 +29,13 @@
 *.exe
 *.out
 *.app
+
+# Visual studio specifics
+Atropos/Debug/*.obj
+Debug/*.obj
+*.tlog
+*.idb
+*.log
+*.pdb
+*.ilk
+.vs/

@@ -186,9 +186,9 @@ void CEngine::run()
 		{
 			accumTime -= 1.f;
 			// Print frame count
-			LOG_DEBUG("FPS: %u", frameCount);
+			//LOG_DEBUG("FPS: %u", frameCount);
 			// Print rendering statistics
-			LOG_DEBUG("%s", d_renderSystem->statisticsToString().c_str());
+			//LOG_DEBUG("%s", d_renderSystem->statisticsToString().c_str());
 			frameCount = 0;
 		}
 		++frameCount;

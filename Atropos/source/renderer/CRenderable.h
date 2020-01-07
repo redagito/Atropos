@@ -4,7 +4,6 @@ class CModel; /**< Model forward declare. */
 class CRenderer; /**< Renderer forward declare. */
 class CCamera; /**< Camera forward declare. */
 
-#include "IRenderable.h"
 #include "collision/CAABBox.h"
 
 #include "glm/glm.hpp"
@@ -23,7 +22,7 @@ class CCamera; /**< Camera forward declare. */
 * The model matrix needs to be calculated separately for hierarchical
 * animation.
 */
-class CRenderable : public IRenderable
+class CRenderable
 {
 public:
 	/**

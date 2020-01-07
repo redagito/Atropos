@@ -9,7 +9,6 @@ class CConfigFile; /**< Config file forward declare. */
 
 #include "IEngine.h"
 #include "core/TCreatorMixin.h"
-#include "core/job/CJobSystem.h"
 
 #include <memory>
 
@@ -19,8 +18,8 @@ class CConfigFile; /**< Config file forward declare. */
 */
 class CEngine
 	:
-	public IEngine, // Engine interface
-	public TCreatorMixin<CEngine, IEngine> // Creator mixin
+	public IEngine,
+	public TCreatorMixin<CEngine, IEngine>
 {
 public:
 	/**
@@ -86,5 +85,4 @@ private:
 	std::shared_ptr<CRenderSystem> d_renderSystem; /**< Rendering system. */
 	std::shared_ptr<CCollisionSystem> d_collisionSystem; /**< Collision system. */
 	std::shared_ptr<CGameSystem> d_gameSystem; /**< Game system. */
-	CJobSystem d_jobSystem; /**< Job system singleton. */
 };

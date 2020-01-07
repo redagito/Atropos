@@ -100,7 +100,7 @@ bool CPlayState::init()
 	d_player->addController(std::shared_ptr<IController>(new CCameraController(&d_renderSystem->getCamera()))); // Camera controller
 	d_player->addController(std::shared_ptr<IController>(new CLinearMovementController(glm::vec3(0.f, 0.f, 40.f)))); // Linear forward movement
 	d_player->addController(std::shared_ptr<IController>(new CPlayerMovementController(20.f))); // User controlled side movement
-	d_player->addController(std::shared_ptr<IController>(new CHealthController(5000.f))); // Player health
+	d_player->addController(std::shared_ptr<IController>(new CHealthController(100.f))); // Player health
 	d_player->addController(std::shared_ptr<IController>(new CWeaponController(d_renderSystem, d_soundSystem, d_collisionSystem, &d_world, "laser", 0.2f, "shot", d_playerGroup, 0.2f, 40.f)));
 
 	// Set player transformation matrices
