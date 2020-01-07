@@ -6,8 +6,8 @@ It includes a simple forward renderer written in OpenGL 3.3 core and some gamepl
 
 ## Screenshots
 
-![atropos screen1.png]()
-![atropos screen2.png]()
+![atropos screen1.png](https://github.com/redagito/Atropos/blob/master/Screenshot/screen1.png)
+![atropos screen2.png](https://github.com/redagito/Atropos/blob/master/Screenshot/screen2.png)
 
 ## Features
 
