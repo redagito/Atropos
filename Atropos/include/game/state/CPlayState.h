@@ -1,3 +1,4 @@
+#pragma once
 // TODO: The sub systems should be accessible by a global communication port,
 // the play state class just hands them over to the game objects.
 class CRenderSystem;

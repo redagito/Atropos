@@ -1,3 +1,4 @@
+#pragma once
 class CRenderSystem;
 class CCollisionSystem;
 class CSoundSystem;
