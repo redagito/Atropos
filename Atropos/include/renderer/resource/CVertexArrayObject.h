@@ -29,11 +29,6 @@ public:
 	*/
 	void setInactive() const;
 
-	/**
-	* \brief Returns GL object id.
-	*/
-	GLuint getId() const;
-
 private:
 	GLuint d_id; /**< GL VAO id. */
 };

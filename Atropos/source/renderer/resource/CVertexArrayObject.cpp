@@ -24,8 +24,3 @@ void CVertexArrayObject::setInactive() const
 	glBindVertexArray(0);
 	return;
 }
-
-GLuint CVertexArrayObject::getId() const
-{
-	return d_id;
-}
