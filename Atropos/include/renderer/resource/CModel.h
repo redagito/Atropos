@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CMesh.h"
-#include "AMaterial.h"
-#include "CVertexArrayObject.h"
+#include "renderer/resource/CMesh.h"
+#include "renderer/resource/AMaterial.h"
+#include "renderer/resource/CVertexArrayObject.h"
 
 
 /**

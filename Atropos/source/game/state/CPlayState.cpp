@@ -1,4 +1,4 @@
-#include "CPlayState.h"
+#include "game/state/CPlayState.h"
 
 // Sub systems
 #include "renderer/CRenderSystem.h"

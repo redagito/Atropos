@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CShader.h"
-#include "CMesh.h"
-#include "CTexture.h"
-#include "CModel.h"
-#include "AMaterial.h"
+#include "renderer/resource/CShader.h"
+#include "renderer/resource/CMesh.h"
+#include "renderer/resource/CTexture.h"
+#include "renderer/resource/CModel.h"
+#include "renderer/resource/AMaterial.h"
 
 #include "core/TFactory.h"
 

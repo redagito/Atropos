@@ -1,4 +1,4 @@
-#include "CShiftController.h"
+#include "game/control/CShiftController.h"
 
 #include "game/CGameObject.h"
 #include "renderer/scene/CCamera.h"

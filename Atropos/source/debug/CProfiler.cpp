@@ -1,4 +1,4 @@
-#include "CProfiler.h"
+#include "debug/CProfiler.h"
 
 #include <glfw/glfw3.h>
 

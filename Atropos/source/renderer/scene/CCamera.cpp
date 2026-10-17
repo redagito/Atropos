@@ -1,4 +1,4 @@
-#include "CCamera.h"
+#include "renderer/scene/CCamera.h"
 
 #include <glm\ext.hpp>
 

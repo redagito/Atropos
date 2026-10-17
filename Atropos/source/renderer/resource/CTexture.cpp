@@ -1,4 +1,4 @@
-#include "CTexture.h"
+#include "renderer/resource/CTexture.h"
 
 #include "debug/Log.h"
 

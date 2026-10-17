@@ -1,4 +1,4 @@
-#include "CVertexArrayObject.h"
+#include "renderer/resource/CVertexArrayObject.h"
 
 #include "debug/Log.h"
 

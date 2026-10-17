@@ -1,4 +1,4 @@
-#include "CAABBox.h"
+#include "collision/CAABBox.h"
 
 #include <sstream>
 #include <cmath>

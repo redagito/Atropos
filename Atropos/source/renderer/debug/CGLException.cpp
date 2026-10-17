@@ -1,4 +1,4 @@
-#include "CGLException.h"
+#include "renderer/debug/CGLException.h"
 
 CGLException::CGLException(const char* message) throw()
 	: d_message(message)

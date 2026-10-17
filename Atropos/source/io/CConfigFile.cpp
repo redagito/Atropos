@@ -1,4 +1,4 @@
-#include "CConfigFile.h"
+#include "io/CConfigFile.h"
 
 #include <stdexcept>
 #include <fstream>

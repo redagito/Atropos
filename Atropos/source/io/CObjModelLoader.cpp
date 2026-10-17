@@ -1,4 +1,4 @@
-#include "CObjModelLoader.h"
+#include "io/CObjModelLoader.h"
 #include "io/CFileLoader.h"
 
 #include "debug/Log.h"

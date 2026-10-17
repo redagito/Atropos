@@ -1,4 +1,4 @@
-#include "CRemoveOnDeathController.h"
+#include "game/control/CRemoveOnDeathController.h"
 
 #include "game/CGameObject.h"
 

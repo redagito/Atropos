@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CAABBox.h"
+#include "collision/CAABBox.h"
 
 #include <vector>
 #include <list>

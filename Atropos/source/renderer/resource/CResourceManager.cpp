@@ -1,10 +1,10 @@
-#include "CResourceManager.h"
+#include "renderer/resource/CResourceManager.h"
 
 #include "io/CObjModelLoader.h"
 #include "io/CConfigFile.h"
 
-#include "CBasicMaterial.h"
-#include "CColorMaterial.h"
+#include "renderer/resource/CBasicMaterial.h"
+#include "renderer/resource/CColorMaterial.h"
 
 #include "resource/CImage.h"
 #include "debug/Log.h"

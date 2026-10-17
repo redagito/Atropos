@@ -5,7 +5,7 @@
  */
 #ifdef _DEBUG
 	#include <cstring>
-	#include "CLogger.h"
+	#include "debug/CLogger.h"
 
 	#define STRIPPED_FILE_NAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 

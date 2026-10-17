@@ -1,7 +1,7 @@
-#include "CFramebuffer.h"
+#include "renderer/render/CFramebuffer.h"
 
 #include "renderer/resource/CTexture.h"
-#include "CRenderbuffer.h"
+#include "renderer/render/CRenderbuffer.h"
 
 CFramebuffer::CFramebuffer()
 {

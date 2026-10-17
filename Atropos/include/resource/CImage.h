@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IResource.h"
+#include "resource/IResource.h"
 
 #include "glm/glm.hpp"
 

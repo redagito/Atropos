@@ -1,4 +1,4 @@
-#include "IGameState.h"
+#include "game/IGameState.h"
 
 IGameState::~IGameState()
 {

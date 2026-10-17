@@ -1,4 +1,4 @@
-#include "CCameraController.h"
+#include "game/control/CCameraController.h"
 
 #include "game/CGameObject.h"
 #include "renderer/scene/CCamera.h"

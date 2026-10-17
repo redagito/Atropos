@@ -12,6 +12,8 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
+find_package(OpenAL REQUIRED)
+find_package(minimp3 CONFIG REQUIRED)
 
 enable_testing()
 

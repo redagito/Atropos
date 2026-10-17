@@ -1,4 +1,4 @@
-#include "CPauseState.h"
+#include "game/state/CPauseState.h"
 
 #include "renderer/CRenderSystem.h"
 #include "renderer/CRenderable.h"

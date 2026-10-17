@@ -1,4 +1,4 @@
-#include "IResource.h"
+#include "resource/IResource.h"
 
 IResource::~IResource()
 {

@@ -1,18 +1,18 @@
-#include "CRenderSystem.h"
+#include "renderer/CRenderSystem.h"
 
-#include "CRenderable.h"
+#include "renderer/CRenderable.h"
 #include "io/CConfigFile.h"
 
-#include "resource/CResourceManager.h"
-#include "scene/CScene.h"
-#include "scene/CCamera.h"
-#include "render/CRenderer.h"
+#include "renderer/resource/CResourceManager.h"
+#include "renderer/scene/CScene.h"
+#include "renderer/scene/CCamera.h"
+#include "renderer/render/CRenderer.h"
 
 #include "debug/Log.h"
 #include "debug/CProfiler.h"
 #include "util/Global.h"
 
-#include "flext/flextGL.h"
+#include "renderer/flext/flextGL.h"
 
 #include <glfw/glfw3.h>
 

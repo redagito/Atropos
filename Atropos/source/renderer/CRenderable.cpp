@@ -1,6 +1,6 @@
-#include "CRenderable.h"
-#include "resource/CModel.h"
-#include "render/CRenderer.h"
+#include "renderer/CRenderable.h"
+#include "renderer/resource/CModel.h"
+#include "renderer/render/CRenderer.h"
 
 // Sets name to unnamed
 CRenderable::CRenderable(CModel* model)

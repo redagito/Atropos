@@ -1,6 +1,6 @@
-#include "CCollisionSystem.h"
+#include "collision/CCollisionSystem.h"
 
-#include "CCollidable.h"
+#include "collision/CCollidable.h"
 #include "debug/Log.h"
 
 #include <stdexcept>

@@ -7,7 +7,7 @@ class CShader;
 class CMesh;
 
 #include "renderer/resource/CVertexArrayObject.h"
-#include "CShadowBuffer.h"
+#include "renderer/render/CShadowBuffer.h"
 
 #include "renderer/flext/flextGL.h"
 #include "glm/glm.hpp"

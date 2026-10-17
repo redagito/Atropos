@@ -1,4 +1,4 @@
-#include "CLoseState.h"
+#include "game/state/CLoseState.h"
 
 #include "renderer/CRenderSystem.h"
 #include "renderer/CRenderable.h"

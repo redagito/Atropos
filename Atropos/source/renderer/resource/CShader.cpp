@@ -1,8 +1,8 @@
-#include "CShader.h"
+#include "renderer/resource/CShader.h"
 
-#include "shader/CFragmentShader.h"
-#include "shader/CVertexShader.h"
-#include "shader/CShaderCode.h"
+#include "renderer/resource/shader/CFragmentShader.h"
+#include "renderer/resource/shader/CVertexShader.h"
+#include "renderer/resource/shader/CShaderCode.h"
 
 #include "io/CFileLoader.h"
 #include "debug/Log.h"

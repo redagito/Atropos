@@ -2,6 +2,8 @@
 glfw/3.4
 glm/0.9.5.4
 catch2/3.7.1
+openal-soft/1.24.3
+minimp3/cci.20211201
 
 [generators]
 CMakeDeps

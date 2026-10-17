@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CVertexBufferObject.h"
+#include "renderer/resource/CVertexBufferObject.h"
 #include "collision/CAABBox.h"
 
 #include <memory>

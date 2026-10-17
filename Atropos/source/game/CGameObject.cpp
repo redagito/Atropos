@@ -1,6 +1,6 @@
-#include "CGameObject.h"
+#include "game/CGameObject.h"
 
-#include "IController.h"
+#include "game/IController.h"
 
 #include "renderer/CRenderable.h"
 #include "collision/CCollidable.h"

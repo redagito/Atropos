@@ -1,4 +1,4 @@
-#include "CVertexBufferObject.h"
+#include "renderer/resource/CVertexBufferObject.h"
 
 #include "debug/Log.h"
 

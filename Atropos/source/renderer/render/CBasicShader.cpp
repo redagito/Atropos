@@ -1,4 +1,4 @@
-#include "CBasicShader.h"
+#include "renderer/render/CBasicShader.h"
 
 CBasicShader::CBasicShader(CShader* shader)
 	:

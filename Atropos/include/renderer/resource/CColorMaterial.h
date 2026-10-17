@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AMaterial.h"
+#include "renderer/resource/AMaterial.h"
 
 #include "glm/glm.hpp"
 

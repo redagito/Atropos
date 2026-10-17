@@ -1,7 +1,7 @@
 #pragma once
 
 // The bounding volume
-#include "CAABBox.h"
+#include "collision/CAABBox.h"
 
 #include "glm/glm.hpp"
 

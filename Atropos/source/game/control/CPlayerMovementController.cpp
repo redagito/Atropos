@@ -1,4 +1,4 @@
-#include "CPlayerMovementController.h"
+#include "game/control/CPlayerMovementController.h"
 
 #include "game/CGameObject.h"
 #include "collision/CCollidable.h"

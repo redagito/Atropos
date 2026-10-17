@@ -1,7 +1,7 @@
 /* WARNING: This file was automatically generated */
 /* Do not edit. */
 
-#include "flextGL.h"
+#include "renderer/flext/flextGL.h"
 
 #include <stdio.h>
 #include <string.h>

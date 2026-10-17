@@ -1,6 +1,6 @@
-#include "CLogger.h"
+#include "debug/CLogger.h"
 
-#include "Log.h"
+#include "debug/Log.h"
 
 #include <cstring>
 #include <ctime>

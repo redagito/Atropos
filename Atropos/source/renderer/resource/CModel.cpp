@@ -1,8 +1,8 @@
-#include "CModel.h"
+#include "renderer/resource/CModel.h"
 
-#include "AMaterial.h"
-#include "CShader.h"
-#include "CMesh.h"
+#include "renderer/resource/AMaterial.h"
+#include "renderer/resource/CShader.h"
+#include "renderer/resource/CMesh.h"
 
 #include "debug/Log.h"
 

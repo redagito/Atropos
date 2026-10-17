@@ -1,4 +1,4 @@
-#include "CHealthController.h"
+#include "game/control/CHealthController.h"
 
 #include "game/CGameObject.h"
 #include "collision/CCollidable.h"

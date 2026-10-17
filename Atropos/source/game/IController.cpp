@@ -1,4 +1,4 @@
-#include "IController.h"
+#include "game/IController.h"
 
 IController::~IController()
 {

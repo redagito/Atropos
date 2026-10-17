@@ -1,4 +1,4 @@
-#include "CLoadState.h"
+#include "game/state/CLoadState.h"
 
 #include "renderer/CRenderSystem.h"
 #include "renderer/CRenderable.h"

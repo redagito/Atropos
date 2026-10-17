@@ -1,4 +1,4 @@
-#include "CGameSystem.h"
+#include "game/CGameSystem.h"
 
 #include "io/CConfigFile.h"
 #include "debug/Log.h"

@@ -1,4 +1,4 @@
-#include "CImage.h"
+#include "resource/CImage.h"
 
 #include "io/lodepng/lodepng.h"
 #include "io/TgaLoader.h"

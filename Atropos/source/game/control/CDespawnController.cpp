@@ -1,4 +1,4 @@
-#include "CDespawnController.h"
+#include "game/control/CDespawnController.h"
 
 #include "game/CGameObject.h"
 

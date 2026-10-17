@@ -1,4 +1,4 @@
-#include "CRenderer.h"
+#include "renderer/render/CRenderer.h"
 
 #include "renderer/resource/CShader.h"
 #include "renderer/resource/AMaterial.h"

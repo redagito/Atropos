@@ -1,7 +1,7 @@
-#include "CBasicMaterial.h"
+#include "renderer/resource/CBasicMaterial.h"
 
-#include "CShader.h"
-#include "CTexture.h"
+#include "renderer/resource/CShader.h"
+#include "renderer/resource/CTexture.h"
 
 CBasicMaterial::CBasicMaterial(CShader* shader, float ambient, float specular, CTexture* texture)
 	:

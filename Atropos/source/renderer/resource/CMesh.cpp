@@ -1,4 +1,4 @@
-#include "CMesh.h"
+#include "renderer/resource/CMesh.h"
 #include "debug/Log.h"
 
 #include "io/CObjModelLoader.h"

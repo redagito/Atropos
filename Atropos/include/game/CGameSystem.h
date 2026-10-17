@@ -2,7 +2,7 @@
 
 class CConfigFile; /**< Config file forward declare. */
 
-#include "IGameState.h"
+#include "game/IGameState.h"
 
 #include "core/TCreatorMixin.h"
 

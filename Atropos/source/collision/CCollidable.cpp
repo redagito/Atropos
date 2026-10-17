@@ -1,4 +1,4 @@
-#include "CCollidable.h"
+#include "collision/CCollidable.h"
 
 // Custom memory manager
 

@@ -27,7 +27,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "tiny_obj_loader.h"
+#include "io/tinyobj/tiny_obj_loader.h"
 
 namespace tinyobj {
 

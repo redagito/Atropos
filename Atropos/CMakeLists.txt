@@ -60,21 +60,27 @@ add_library(atropos STATIC
     source/renderer/scene/CScene.cpp
     source/resource/CImage.cpp
     source/resource/IResource.cpp
+    source/sound/CAudioDecoder.cpp
     source/sound/CSoundSystem.cpp
     source/util/CTimeStamp.cpp
     source/util/Global.cpp
 )
 
-target_include_directories(atropos PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/source
+target_include_directories(atropos
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
 
 target_compile_definitions(atropos PRIVATE
     _CRT_SECURE_NO_WARNINGS
 )
 
-target_link_libraries(atropos PUBLIC
-    OpenGL::GL
-    glfw
-    glm::glm
+target_link_libraries(atropos
+    PUBLIC
+        OpenGL::GL
+        glfw
+        glm::glm
+    PRIVATE
+        OpenAL::OpenAL
+        minimp3::minimp3
 )

@@ -1,7 +1,7 @@
-#include "CColorMaterial.h"
+#include "renderer/resource/CColorMaterial.h"
 
-#include "CShader.h"
-#include "CTexture.h"
+#include "renderer/resource/CShader.h"
+#include "renderer/resource/CTexture.h"
 
 CColorMaterial::CColorMaterial(CShader* shader, const glm::vec3& color)
 	:

@@ -6,8 +6,8 @@ class CRenderer; /**< Renderer forward declare. */
 class CConfigFile; /**< Config file forward declare. */
 struct GLFWwindow; /**< GLFW window forwrad declare. */
 
-#include "scene/CScene.h"
-#include "scene/CCamera.h"
+#include "renderer/scene/CScene.h"
+#include "renderer/scene/CCamera.h"
 
 #include "core/TSingletonMixin.h"
 

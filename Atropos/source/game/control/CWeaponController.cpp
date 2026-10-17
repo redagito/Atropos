@@ -1,4 +1,4 @@
-#include "CWeaponController.h"
+#include "game/control/CWeaponController.h"
 
 #include "game/CGameObject.h"
 #include "game/CGameWorld.h"
@@ -8,10 +8,10 @@
 #include "collision/CCollidable.h"
 
 // Controller
-#include "CLinearMovementController.h"
-#include "CHealthController.h"
-#include "CRemoveOnDeathController.h"
-#include "CDespawnController.h"
+#include "game/control/CLinearMovementController.h"
+#include "game/control/CHealthController.h"
+#include "game/control/CRemoveOnDeathController.h"
+#include "game/control/CDespawnController.h"
 
 #include "util/Global.h"
 

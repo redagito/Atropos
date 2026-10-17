@@ -1,4 +1,4 @@
-#include "AMaterial.h"
+#include "renderer/resource/AMaterial.h"
 
 AMaterial::AMaterial(CShader* shader)
 	: d_shader(shader)

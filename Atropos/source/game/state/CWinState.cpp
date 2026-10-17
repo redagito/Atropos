@@ -1,4 +1,4 @@
-#include "CWinState.h"
+#include "game/state/CWinState.h"
 
 #include "renderer/CRenderSystem.h"
 #include "renderer/CRenderable.h"

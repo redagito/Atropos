@@ -14,7 +14,7 @@ It includes a simple forward renderer written in OpenGL 3.3 core and some gamepl
 * Simple OpenGL forward renderer
 * Shadow Mapping with Poisson filtering
 * State based gameplay system
-* Uses [Irrklang](http://www.ambiera.com/irrklang/) for sound replay
+* Uses [OpenAL Soft](https://github.com/kcat/openal-soft) and [minimp3](https://github.com/lieff/minimp3) for sound replay
 
 ## Gameplay
 
@@ -34,10 +34,16 @@ If you are the copyright holder of an asset, contact me and I will remove/replac
 
 ## Building
 
-Open the solution file with Visual Studio 2019 (Community Edition) and build, it should work out of the box.
+The project builds with CMake (3.20+) and Conan 2.x. On Windows it uses the Visual Studio generator:
+
+```
+conan install . -s build_type=Debug -s compiler.cppstd=14 --output-folder=build --build=missing
+cmake --preset conan-default
+cmake --build --preset conan-debug
+```
+
+Run the demo with `build/ConsoleLauncher/Debug/consolelauncher.exe`. Run the unit tests with `ctest --test-dir build -C Debug`.
 
 ## TODO List
 
-- Change build system to CMake / Conan
-- Replace irrklang with OpenAL (or other cross-platform sound library)
-- Replace external dependencies with Conan packages
+- Replace the remaining vendored dependencies (lodepng, tinyobjloader, tinyxml2, flextGL) with Conan packages

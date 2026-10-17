@@ -7,7 +7,7 @@ class CSoundSystem; /**< Sound system forward declare. */
 
 class CConfigFile; /**< Config file forward declare. */
 
-#include "IEngine.h"
+#include "engine/IEngine.h"
 #include "core/TCreatorMixin.h"
 
 #include <memory>

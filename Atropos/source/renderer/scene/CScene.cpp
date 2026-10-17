@@ -1,8 +1,8 @@
-#include "CScene.h"
+#include "renderer/scene/CScene.h"
 
 #include "renderer/render/CRenderer.h"
 #include "renderer/resource/CModel.h"
-#include "CCamera.h"
+#include "renderer/scene/CCamera.h"
 #include "debug/CProfiler.h"
 #include "debug/Log.h"
 
