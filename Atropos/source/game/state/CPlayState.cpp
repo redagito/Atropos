@@ -38,7 +38,6 @@ CPlayState::CPlayState(CRenderSystem* renderSys, CCollisionSystem* collSys, CSou
 	d_player(nullptr),
 	d_playerGroup(0),
 	d_enemyGroup(0),
-	d_staticGroup(0),
 	d_enemySpawn(2.f)
 {
 	return;
@@ -81,9 +80,8 @@ bool CPlayState::init()
 		return false;
 	}
 
-	// Collision group ids for static entities, enemy objects and the player model
+	// Collision group ids for enemy objects and the player model
 	d_playerGroup = d_collisionSystem->getNewGroupId();
-	d_staticGroup = d_collisionSystem->getNewGroupId();
 	d_enemyGroup = d_collisionSystem->getNewGroupId();
 
 	// Player object controls camera

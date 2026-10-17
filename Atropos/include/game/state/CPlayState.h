@@ -58,7 +58,6 @@ private:
 
 	unsigned int d_playerGroup; /**< Player collision group. */
 	unsigned int d_enemyGroup; /**< Enemy collision group. */
-	unsigned int d_staticGroup; /**< Static environment collision group. */
 	float d_enemySpawn; /**< Enemy spawn timer. */
 
 	std::string d_nextState; /**< Next state. */
