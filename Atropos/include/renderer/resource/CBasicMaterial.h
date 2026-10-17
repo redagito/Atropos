@@ -17,26 +17,6 @@ public:
 	* \brief Creates material from shader, shader parameters and texture.
 	*/
 	CBasicMaterial(CShader* shader, float ambient, float specular, CTexture* texture);
-	
-	/**
-	* \brief Returns ambient term.
-	*/
-	float getAmbient() const;
-
-	/**
-	* \brief Returns specular term.
-	*/
-	float getSpecular() const;
-	
-	/**
-	* \brief Sets ambient term.
-	*/
-	void setAmbient(float);
-
-	/**
-	* \brief Sets specular term.
-	*/
-	void setSpecular(float);
 
 	/**
 	* \brief Sets uniform values and binds shader.
