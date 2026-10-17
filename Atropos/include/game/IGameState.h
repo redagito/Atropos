@@ -3,6 +3,12 @@
 #include <string>
 
 /**
+* \brief Next-state name that requests the engine to stop.
+* A state returns false from update() with this as its next state to quit.
+*/
+inline const std::string QUIT_STATE_NAME = "quit";
+
+/**
 * \brief Game state interface class.
 * A game state represents a high level state in a game.
 * Several states can be chained together to form the high level game flow. 

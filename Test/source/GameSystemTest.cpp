@@ -84,6 +84,59 @@ TEST_CASE("GameSystem init throws for an unregistered initial state", "[gamesyst
 	CHECK_THROWS(system.init(config));
 }
 
+TEST_CASE("GameSystem transitions to a registered next state", "[gamesystem]")
+{
+	GameSystem system;
+	StateLog playLog;
+	StateLog pauseLog;
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&playLog)));
+	REQUIRE_NOTHROW(system.addState("pause", new FakeState(&pauseLog)));
+
+	ConfigFile config;
+	config.set("game_initialstate", "play");
+	REQUIRE_NOTHROW(system.init(config));
+
+	playLog.updateResult = false;
+	playLog.nextState = "pause";
+
+	CHECK(system.update(0.f));
+	CHECK(playLog.exits == 1);
+	CHECK(pauseLog.enters == 1);
+}
+
+TEST_CASE("GameSystem stops when a state requests the quit state", "[gamesystem]")
+{
+	GameSystem system;
+	StateLog log;
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&log)));
+
+	ConfigFile config;
+	config.set("game_initialstate", "play");
+	REQUIRE_NOTHROW(system.init(config));
+
+	log.updateResult = false;
+	log.nextState = QUIT_STATE_NAME;
+
+	CHECK_FALSE(system.update(0.f));
+	CHECK(log.exits == 1);
+}
+
+TEST_CASE("GameSystem throws on a transition to an unregistered state", "[gamesystem]")
+{
+	GameSystem system;
+	StateLog log;
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&log)));
+
+	ConfigFile config;
+	config.set("game_initialstate", "play");
+	REQUIRE_NOTHROW(system.init(config));
+
+	log.updateResult = false;
+	log.nextState = "missing";
+
+	CHECK_THROWS(system.update(0.f));
+}
+
 TEST_CASE("GameSystem removing the active state leaves no active state", "[gamesystem]")
 {
 	GameSystem system;

@@ -34,14 +34,24 @@ bool GameSystem::update(float dtime)
 	{
 		// State ended
 		d_activeState->onExit();
-		// Check state exists
-		if (d_gameStates.count(d_activeState->getNextState()) == 0)
+
+		// State requested the engine to stop.
+		const std::string& nextState = d_activeState->getNextState();
+		if (nextState == QUIT_STATE_NAME)
 		{
-			// State transition error
+			d_activeState = nullptr;
 			return false;
 		}
+
+		// The transition target must be registered.
+		const auto it = d_gameStates.find(nextState);
+		if (it == d_gameStates.end())
+		{
+			throw std::runtime_error("Game state transition to an unregistered state: " + nextState);
+		}
+
 		// Set next state
-		d_activeState = d_gameStates.at(d_activeState->getNextState()).get();
+		d_activeState = it->second.get();
 		d_activeState->onEnter();
 	}
 	// Update success

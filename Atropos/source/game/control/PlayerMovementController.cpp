@@ -7,7 +7,7 @@
 
 #include <glm/ext.hpp>
 
-
+#include <cmath>
 
 PlayerMovementController::PlayerMovementController(float speedSide)
 	:

@@ -3,7 +3,7 @@
 #include "game/GameObject.h"
 #include "renderer/scene/Camera.h"
 
-
+#include <cmath>
 
 CameraController::CameraController(Camera* camera)
 	:

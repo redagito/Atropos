@@ -39,7 +39,7 @@ bool WinState::update(float dtime)
 	// End game on escape
 	if (glfwGetKey(Global::window, GLFW_KEY_ESCAPE))
 	{
-		d_nextState = "end";
+		d_nextState = QUIT_STATE_NAME;
 		return false;
 	}
 

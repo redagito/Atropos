@@ -1,6 +1,6 @@
 #include "renderer/scene/Camera.h"
 
-#include <glm\ext.hpp>
+#include <glm/ext.hpp>
 
 // Create from view matrix
 Camera::Camera()
