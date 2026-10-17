@@ -97,8 +97,6 @@ CRenderer::CRenderer(int width, int height, CShader* shadow)
 	glFrontFace(GL_CCW);
 
 	// Enable blending
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Initial viewport
 	glViewport(0, 0, width, height);
@@ -137,10 +135,8 @@ void CRenderer::endFrame()
 	geometryPass();
 
 	// Screen effects etc get applied here
-	// postProcess();
 	
 	// TODO User interface 2D drawing
-	// drawUI();
 }
 
 // Stores draw calls as render requests
