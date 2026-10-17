@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Atropos LANGUAGES C CXX)
 
-# The code base predates C++17 (it still uses dynamic exception specifications),
-# so the initial build stays on C++14. See the README TODO on modernizing.
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

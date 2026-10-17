@@ -40,7 +40,7 @@ If you are the copyright holder of an asset, contact me and I will remove/replac
 The project builds with CMake (3.20+) and Conan 2.x. On Windows it uses the Visual Studio generator:
 
 ```
-conan install . -s build_type=Debug -s compiler.cppstd=14 --output-folder=build --build=missing
+conan install . -s build_type=Debug -s compiler.cppstd=23 --output-folder=build --build=missing
 cmake --preset conan-default
 cmake --build --preset conan-debug
 ```

@@ -1,7 +1,7 @@
 [requires]
 glfw/3.4
-glm/0.9.5.4
-catch2/3.7.1
+glm/1.0.3
+catch2/3.16.0
 openal-soft/1.24.3
 minimp3/cci.20211201
 
