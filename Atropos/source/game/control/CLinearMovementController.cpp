@@ -1,7 +1,6 @@
 #include "game/control/CLinearMovementController.h"
 
 #include "game/CGameObject.h"
-#include "collision/CCollidable.h"
 
 #include <glm/ext.hpp>
 

@@ -1,7 +1,6 @@
 #include "game/control/CExplodeOnDeathController.h"
 
 #include "game/CGameObject.h"
-#include "collision/CCollidable.h"
 #include "sound/CSoundSystem.h"
 
 

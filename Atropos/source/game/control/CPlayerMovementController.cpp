@@ -1,7 +1,6 @@
 #include "game/control/CPlayerMovementController.h"
 
 #include "game/CGameObject.h"
-#include "collision/CCollidable.h"
 #include "util/Global.h"
 
 #include "glfw/glfw3.h"
