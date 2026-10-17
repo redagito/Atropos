@@ -26,12 +26,6 @@ public:
 	void setActive() const;
 
 	/**
-	 * \brief Access to internal buffer id.
-	 * TODO Should/can this be hidden?
-	 */
-	GLuint getId() const;
-
-	/**
 	 * \brief Returns buffer size.
 	 * TODO Why not unsigned?
 	 */

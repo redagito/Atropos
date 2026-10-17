@@ -30,11 +30,6 @@ void CVertexBufferObject::setActive() const
 	return;
 }
 
-GLuint CVertexBufferObject::getId() const
-{
-	return d_id;
-}
-
 int CVertexBufferObject::getSize() const
 {
 	return d_size;
