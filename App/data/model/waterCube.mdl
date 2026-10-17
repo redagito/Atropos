@@ -1,3 +1,0 @@
-# Default model is a cube with a checker pattern and phong shader
-mesh=cube1
-material=water1
