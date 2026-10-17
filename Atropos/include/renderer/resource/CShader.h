@@ -48,7 +48,7 @@ public:
 	/**
 	* \brief Sets uniform 4x4 matrix value by id.
 	*/
-	void setShaderValueMat4(GLuint id, const glm::mat4& mat) const;
+	void setShaderValueMat4(GLint id, const glm::mat4& mat) const;
 	
 	/**
 	* \brief Sets uniform 3D vector value by name.
@@ -58,7 +58,7 @@ public:
 	/**
 	* \brief Sets uniform 3D vector value by id.
 	*/
-	void setShaderValueVec3(GLuint id, const glm::vec3& value) const;
+	void setShaderValueVec3(GLint id, const glm::vec3& value) const;
 	
 	/**
 	* \brief Sets uniform float value by name.
@@ -68,7 +68,7 @@ public:
 	/**
 	* \brief Sets uniform float value by id.
 	*/
-	void setShaderValueFloat(GLuint id, float value) const;
+	void setShaderValueFloat(GLint id, float value) const;
 	
 	/**
 	* \brief Sets texture unit by name.
@@ -78,20 +78,20 @@ public:
 	/**
 	* \brief Sets texture unit by id.
 	*/
-	void setShaderTexture(GLuint id, GLint texture) const;
+	void setShaderTexture(GLint id, GLint texture) const;
 
 	/**
 	* \brief Returns location of attribute in shader
 	*/
-	GLuint getAttributeLocation(const std::string& attrib) const;
+	GLint getAttributeLocation(const std::string& attrib) const;
 
 	/**
 	* \brief Returns location of uniform data in shader.
 	*/
-	GLuint getUniformLocation(const std::string& uniform) const;
+	GLint getUniformLocation(const std::string& uniform) const;
 	
 private:
 	GLuint d_programId; /**< Shader program id. */
-	mutable std::unordered_map<std::string, GLuint> d_uniforms; /**< Caches uniform ids. */
+	mutable std::unordered_map<std::string, GLint> d_uniforms; /**< Caches uniform ids. */
 	static GLuint s_activeId; /**< Currently bound shader id. */
 };

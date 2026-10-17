@@ -106,12 +106,12 @@ void CShader::setActive() const
 // Set 4x4 matrix uniform
 void CShader::setShaderValueMat4(const std::string& name, const glm::mat4& mat) const
 {
-	GLuint loc = getUniformLocation(name);
+	GLint loc = getUniformLocation(name);
 	setShaderValueMat4(loc, mat);
 }
 
 // Set 4x4 matrix uniform
-void CShader::setShaderValueMat4(GLuint loc, const glm::mat4& mat) const
+void CShader::setShaderValueMat4(GLint loc, const glm::mat4& mat) const
 {
 	if (loc != -1)
 	{
@@ -122,12 +122,12 @@ void CShader::setShaderValueMat4(GLuint loc, const glm::mat4& mat) const
 // Set 3D vector uniform
 void CShader::setShaderValueVec3(const std::string& name, const glm::vec3& value) const
 {
-	GLuint loc = getUniformLocation(name);
+	GLint loc = getUniformLocation(name);
 	setShaderValueVec3(loc, value);
 }
 
 // Set 3D vector uniform
-void CShader::setShaderValueVec3(GLuint loc, const glm::vec3& value) const
+void CShader::setShaderValueVec3(GLint loc, const glm::vec3& value) const
 {
 	if (loc != -1)
 	{
@@ -138,12 +138,12 @@ void CShader::setShaderValueVec3(GLuint loc, const glm::vec3& value) const
 // Set float uniform
 void CShader::setShaderValueFloat(const std::string& name, float value) const
 {
-	GLuint loc = getUniformLocation(name);
+	GLint loc = getUniformLocation(name);
 	setShaderValueFloat(loc, value);
 }
 
 // Set float uniform
-void CShader::setShaderValueFloat(GLuint loc, float value) const
+void CShader::setShaderValueFloat(GLint loc, float value) const
 {
 	if (loc != -1)
 	{
@@ -154,7 +154,7 @@ void CShader::setShaderValueFloat(GLuint loc, float value) const
 // Set shader texture, needs reworking
 void CShader::setShaderTexture(const std::string& name, GLint textureUnit) const
 {
-	GLuint loc = getUniformLocation(name);
+	GLint loc = getUniformLocation(name);
 	if (loc != -1)
 	{
 		glUniform1i(loc, textureUnit);
@@ -162,7 +162,7 @@ void CShader::setShaderTexture(const std::string& name, GLint textureUnit) const
 }
 
 // Set shader texture, needs reworking
-void CShader::setShaderTexture(GLuint loc, GLint textureUnit) const
+void CShader::setShaderTexture(GLint loc, GLint textureUnit) const
 {
 	if (loc != -1)
 	{
@@ -171,18 +171,18 @@ void CShader::setShaderTexture(GLuint loc, GLint textureUnit) const
 }
 
 // Returns attribute location
-GLuint CShader::getAttributeLocation(const std::string& attrib) const
+GLint CShader::getAttributeLocation(const std::string& attrib) const
 {
 	return glGetAttribLocation(d_programId, attrib.c_str());
 }
 
 // Returns attribute location
-GLuint CShader::getUniformLocation(const std::string& uniform) const
+GLint CShader::getUniformLocation(const std::string& uniform) const
 {
 	auto iter = d_uniforms.find(uniform);
 	if (iter == d_uniforms.end())
 	{
-		GLuint id = glGetUniformLocation(d_programId, uniform.c_str());
+		GLint id = glGetUniformLocation(d_programId, uniform.c_str());
 		d_uniforms[uniform] = id;
 		return id;
 	}

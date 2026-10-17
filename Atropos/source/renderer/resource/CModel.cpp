@@ -18,9 +18,9 @@ CModel::CModel(CMesh* mesh, AMaterial* material)
 	d_vao.setActive();
 	
 	// Get locations for vertex, normal and uv buffer
-	GLuint vLoc = d_material->getShader()->getAttributeLocation("vertex");
-	GLuint nLoc = d_material->getShader()->getAttributeLocation("normal");
-	GLuint uLoc = d_material->getShader()->getAttributeLocation("uv");
+	GLint vLoc = d_material->getShader()->getAttributeLocation("vertex");
+	GLint nLoc = d_material->getShader()->getAttributeLocation("normal");
+	GLint uLoc = d_material->getShader()->getAttributeLocation("uv");
 	
 	// Enable all attributes and bind the VBOs to the locations
 	if (vLoc != -1)
