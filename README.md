@@ -14,13 +14,13 @@ It includes a simple forward renderer written in OpenGL 3.3 core and some gamepl
 * Simple OpenGL forward renderer
 * Shadow Mapping with Poisson filtering
 * State based gameplay system
-* Asynchronous resource loading on a worker pool, with all OpenGL and OpenAL uploads performed on the main thread
+* Asynchronous resource loading
 
 ## Gameplay
 
-The game starts with an empty scene (white screen as no scene objects are defined) and with start sound playing. Game assets are preloaded asynchronously in the background.
+The game starts with an empty scene (white screen as no scene objects are defined) and with start sound playing.
 
-To start the game, press ENTER once loading has finished, which will perform a state transition into the game state.
+To start the game, press ENTER which will perform a state transition into the game state.
 
 On death (getting hit too much) or win (survive a certain distance) the game transitions into either WIN or LOSE state.
 
