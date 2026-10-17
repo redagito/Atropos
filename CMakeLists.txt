@@ -17,5 +17,5 @@ find_package(glad CONFIG REQUIRED)
 enable_testing()
 
 add_subdirectory(Atropos)
-add_subdirectory(ConsoleLauncher)
+add_subdirectory(App)
 add_subdirectory(Test)

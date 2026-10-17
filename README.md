@@ -45,4 +45,4 @@ cmake --preset conan-default
 cmake --build --preset conan-debug
 ```
 
-Run the demo with `build/ConsoleLauncher/Debug/consolelauncher.exe`. Run the unit tests with `ctest --test-dir build -C Debug`.
+Run the demo with `build/App/Debug/app.exe`. Run the unit tests with `ctest --test-dir build -C Debug`.
