@@ -32,16 +32,6 @@ void CScene::add(CRenderable* obj)
 	d_objects.push_back(std::shared_ptr<CRenderable>(obj));
 }
 
-void CScene::clear()
-{
-	d_objects.clear();
-}
-
-void CScene::setBackgroundColor(const glm::vec3& color)
-{
-	d_backgroundColor = color;
-}
-
 // Checks culling state of the object
 bool CScene::isCulled(const CRenderable* entity, const CCamera& camera) const
 {

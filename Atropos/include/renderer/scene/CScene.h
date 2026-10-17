@@ -41,16 +41,6 @@ public:
 	*/
 	void add(CRenderable* node);
 
-	/**
-	* \brief Removes all objects from the scene.
-	*/
-	void clear();
-
-	/**
-	 * \brief Scene background color.
-	 */
-	void setBackgroundColor(const glm::vec3& color);
-	
 	/** 
 	* \brief Renders the scene
 	*
