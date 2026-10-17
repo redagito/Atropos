@@ -121,7 +121,6 @@ void CRenderer::startFrame()
 	// Reset statistics
 	d_frameStats.drawCalls = 0;
 	d_frameStats.vertexCount = 0;
-	d_frameStats.drawRequests = 0;
 
 	d_stage = CRenderer::Start;
 }
@@ -148,7 +147,6 @@ void CRenderer::endFrame()
 void CRenderer::draw(const CVertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool hasShadow)
 {
 	// Fills draw request array
-	++d_frameStats.drawRequests;
 	if (d_stage == CRenderer::Start || d_stage == CRenderer::Draw)
 	{
 		d_stage = CRenderer::Draw;

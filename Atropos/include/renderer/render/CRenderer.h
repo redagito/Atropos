@@ -85,7 +85,6 @@ struct SFrameStats
 {
 	unsigned int drawCalls = 0;
 	unsigned int vertexCount = 0;
-	unsigned int drawRequests = 0;
 };
 
 /**
