@@ -3,8 +3,6 @@
 #include "io/CConfigFile.h"
 #include "debug/Log.h"
 
-#include <cassert>
-
 // Custom memory manager
 
 
@@ -57,8 +55,13 @@ bool CGameSystem::init(const CConfigFile& config)
 	LOG_DEBUG("Game system initial state set to %s.", initialState.c_str());
 
 	// Set initial state active
-	assert(d_gameStates.count(initialState) != 0);
-	d_activeState = d_gameStates.at(initialState).get();
+	const auto it = d_gameStates.find(initialState);
+	if (it == d_gameStates.end())
+	{
+		LOG_ERROR("Initial game state %s is not registered.", initialState.c_str());
+		return false;
+	}
+	d_activeState = it->second.get();
 
 	// On enter state trigger
 	d_activeState->onEnter();
