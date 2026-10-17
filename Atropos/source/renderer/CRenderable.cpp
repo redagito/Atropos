@@ -2,6 +2,8 @@
 #include "renderer/resource/CModel.h"
 #include "renderer/render/CRenderer.h"
 
+#include "debug/Log.h"
+
 // Sets name to unnamed
 CRenderable::CRenderable(CModel* model)
 	:
@@ -15,7 +17,14 @@ CRenderable::CRenderable(CModel* model)
 	d_isCulled(true),
 	d_visible(true)
 {
-	d_box = model->getMesh()->getAABBox();
+	if (model != nullptr && model->getMesh() != nullptr)
+	{
+		d_box = model->getMesh()->getAABBox();
+	}
+	else
+	{
+		LOG_ERROR("Failed to create renderable %s: missing model or mesh.", d_name.c_str());
+	}
 }
 
 // Sets name
@@ -31,7 +40,14 @@ CRenderable::CRenderable(CModel* model, const char* name)
 	d_isCulled(true),
 	d_visible(true)
 {
-	d_box = model->getMesh()->getAABBox();
+	if (model != nullptr && model->getMesh() != nullptr)
+	{
+		d_box = model->getMesh()->getAABBox();
+	}
+	else
+	{
+		LOG_ERROR("Failed to create renderable %s: missing model or mesh.", d_name.c_str());
+	}
 }
 
 // Set model matrix
