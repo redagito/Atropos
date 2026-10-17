@@ -53,4 +53,6 @@ private:
 	GameSystem* d_gameSystem; /**< Game system. */
 	GameWorld d_world; /**< Game objects. */
 	std::string d_nextState; /**< Next state. */
+	bool d_bgmStarted; /**< True once the loading music started. */
+	bool d_ready; /**< True once all resources are loaded. */
 };
