@@ -18,7 +18,10 @@ public:
 	* \brief Cleanup.
 	*/
 	~CFileLoader();
-	
+
+	CFileLoader(const CFileLoader&) = delete;
+	CFileLoader& operator=(const CFileLoader&) = delete;
+
 	/**
 	* \brief Loads the file content to memory.
 	*
