@@ -99,15 +99,33 @@ bool CAudioDecoder::decodeWav(const std::vector<char>& data, SWaveData& out)
 		pos = body + chunkSize + (chunkSize & 1);
 	}
 
-	if (!haveFormat || dataChunk == nullptr || audioFormat != 1 || bitsPerSample != 16
-		|| channels <= 0 || sampleRate <= 0 || dataSize < sizeof(short))
+	if (!haveFormat || dataChunk == nullptr || audioFormat != 1
+		|| (bitsPerSample != 8 && bitsPerSample != 16)
+		|| channels <= 0 || sampleRate <= 0)
 	{
 		return false;
 	}
 
-	std::size_t sampleCount = dataSize / sizeof(short);
+	std::size_t bytesPerSample = static_cast<std::size_t>(bitsPerSample / 8);
+	if (dataSize < bytesPerSample)
+	{
+		return false;
+	}
+
+	std::size_t sampleCount = dataSize / bytesPerSample;
 	out.samples.resize(sampleCount);
-	std::memcpy(out.samples.data(), dataChunk, sampleCount * sizeof(short));
+	if (bitsPerSample == 8)
+	{
+		const unsigned char* source = reinterpret_cast<const unsigned char*>(dataChunk);
+		for (std::size_t i = 0; i < sampleCount; ++i)
+		{
+			out.samples[i] = static_cast<short>((static_cast<int>(source[i]) - 128) * 256);
+		}
+	}
+	else
+	{
+		std::memcpy(out.samples.data(), dataChunk, sampleCount * sizeof(short));
+	}
 	out.channels = channels;
 	out.sampleRate = sampleRate;
 	return true;
