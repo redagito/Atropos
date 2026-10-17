@@ -18,7 +18,6 @@ public:
 	const char** getCode() const;
 	// Returns number of code lines
 	int getLineCount() const;
-	const char* getLine(unsigned int) const;
 private:
 	char** d_code;
 	unsigned int d_lines;

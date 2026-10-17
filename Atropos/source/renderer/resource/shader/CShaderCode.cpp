@@ -61,9 +61,3 @@ int CShaderCode::getLineCount() const
 {
 	return d_lines;
 }
-
-const char* CShaderCode::getLine(unsigned int line) const
-{
-	// Figure out how to get rid of the cast without using -fpermissive
-	return (const char*) d_code[line];
-}
