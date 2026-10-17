@@ -1,12 +1,12 @@
 #include "renderer/debug/CGLException.h"
 
-CGLException::CGLException(const char* message) throw()
+CGLException::CGLException(const char* message) noexcept
 	: d_message(message)
 { 
 	// Empty
 }
 
-CGLException::~CGLException() throw()
+CGLException::~CGLException() noexcept
 { 
 	// Empty
 }

@@ -45,7 +45,7 @@ void CShiftController::update(float dtime)
 		glm::vec3 pos = glm::vec3(temp.x / temp.w, temp.y / temp.w, temp.z / temp.w);
 		if (pos.z + d_shiftDistance / 2.f < d_camera->getPosition().z)
 		{
-			d_object->setTranslation(glm::translate(glm::vec3(pos.x, pos.y, pos.z + d_shiftDistance)));
+			d_object->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(pos.x, pos.y, pos.z + d_shiftDistance)));
 		}
 	}
 }

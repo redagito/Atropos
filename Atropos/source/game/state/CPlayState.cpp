@@ -104,9 +104,9 @@ bool CPlayState::init()
 	d_player->addController(std::shared_ptr<IController>(new CWeaponController(d_renderSystem, d_soundSystem, d_collisionSystem, &d_world, "laser", 0.2f, "shot", d_playerGroup, 0.2f, 40.f)));
 
 	// Set player transformation matrices
-	d_player->setTranslation(glm::translate(glm::vec3(0.f, 5.f, 0.f)));
-	d_player->setRotation(glm::rotate(0.f, glm::vec3(1.f, 1.f, 1.f)));
-	d_player->setScale(glm::scale(glm::vec3(1.f, 1.f, 1.f)));
+	d_player->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 5.f, 0.f)));
+	d_player->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
+	d_player->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
 
 	// Add player
 	d_world.addObject(d_player);
@@ -124,9 +124,9 @@ bool CPlayState::init()
 			tile->addController(std::shared_ptr<IController>(new CShiftController(&d_renderSystem->getCamera(), 300.f)));
 
 			// Set transformation
-			tile->setTranslation(glm::translate(glm::vec3(100.f * j - 300.f, 0.f, 100.f * i)));
-			tile->setRotation(glm::rotate(0.f, glm::vec3(1.f, 1.f, 1.f)));
-			tile->setScale(glm::scale(glm::vec3(100.f, 1.f, 100.f)));
+			tile->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(100.f * j - 300.f, 0.f, 100.f * i)));
+			tile->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
+			tile->setScale(glm::scale(glm::mat4(1.f), glm::vec3(100.f, 1.f, 100.f)));
 
 			// Add to world
 			d_world.addObject(tile);
@@ -179,8 +179,8 @@ bool CPlayState::update(float dtime)
 
 		// Transformation
 		enemy->setTranslation(glm::translate(d_player->getTranslation(), glm::vec3(0.f, 0.f, 100.f)));
-		enemy->setRotation(glm::rotate(glm::mat4(1.f), 180.f, glm::vec3(0.f, 1.f, 0.f)));
-		enemy->setScale(glm::scale(glm::vec3(1.f, 1.f, 1.f)));
+		enemy->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f)));
+		enemy->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
 		d_world.addObject(enemy);
 	}
 

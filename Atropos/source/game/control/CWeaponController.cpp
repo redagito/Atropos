@@ -84,8 +84,8 @@ void CWeaponController::update(float dtime)
 
 				// Transformation
 				projectile->setTranslation(glm::translate(d_object->getTranslation(), glm::vec3(0.f, 0.f, 2.f)));
-				projectile->setRotation(glm::rotate(0.f, glm::vec3(1.f, 1.f, 1.f)));
-				projectile->setScale(glm::scale(glm::vec3(3.f, 3.f, 3.f)));
+				projectile->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
+				projectile->setScale(glm::scale(glm::mat4(1.f), glm::vec3(3.f, 3.f, 3.f)));
 
 				// Add to world
 				d_world->addObject(projectile);

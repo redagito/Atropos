@@ -36,7 +36,7 @@ void CCamera::setProjectionMatrix(float fieldOfView, float aspectRatio, float zN
 	d_aspectRatio = aspectRatio;
 	d_zNear = zNear;
 	d_zFar = zFar;
-	d_proj = glm::perspective(fieldOfView, aspectRatio, zNear, zFar);
+	d_proj = glm::perspective(glm::radians(fieldOfView), aspectRatio, zNear, zFar);
 }
 
 // Returns projection matrix

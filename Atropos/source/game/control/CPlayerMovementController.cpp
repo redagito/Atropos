@@ -145,7 +145,7 @@ void CPlayerMovementController::update(float dtime)
 		}
 
 		// Update rotation
-		d_object->setRotation(glm::rotate(d_rotationDegree, glm::vec3(0.f, 0.f, 1.f)));
+		d_object->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(d_rotationDegree), glm::vec3(0.f, 0.f, 1.f)));
 
 		// Update translation
 		d_object->setTranslation(glm::translate(d_object->getTranslation(), dPos));
