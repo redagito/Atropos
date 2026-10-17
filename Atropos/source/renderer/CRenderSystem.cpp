@@ -112,15 +112,6 @@ void CRenderSystem::createScene(const std::string& name)
 	d_scenes[name] = CScene();
 }
 
-void CRenderSystem::destroyScene(const std::string& name)
-{
-	if (d_activeScene == &(d_scenes.at(name)))
-	{
-		d_activeScene = nullptr;
-	}
-	d_scenes.erase(name);
-}
-
 void CRenderSystem::setActiveScene(const std::string& name)
 {
 	assert(hasScene(name));
@@ -182,13 +173,4 @@ void CRenderSystem::onResize(int width, int height)
 								(float) width / (float) height, 
 								d_camera.getZNear(),
 								d_camera.getZFar());
-}
-
-std::string CRenderSystem::statisticsToString() const
-{
-	std::stringstream ss;
-	ss << "[Frame Statistics]" << std::endl;
-	ss << "Draw calls: " << d_renderer->getFrameStats().drawCalls << std::endl;
-	ss << "Vertex count: " << d_renderer->getFrameStats().vertexCount << std::endl;
-	return ss.str();
 }

@@ -54,11 +54,6 @@ public:
 	void createScene(const std::string& name);
 
 	/**
-	* \brief Deletes specified scene.
-	*/
-	void destroyScene(const std::string& name);
-
-	/**
 	* \brief Sets the active scene by name.
 	*/
 	void setActiveScene(const std::string& name);
@@ -101,21 +96,6 @@ public:
 	* \brief Waits for drawing to finish and swaps buffers.
 	*/
 	void swapBuffer();
-
-	/**
-	* \brief Request removal of the provided entity
-	*/
-	void remove(CRenderable* entity);
-
-	/**
-	* \brief Removes all renderable objects from the scene.
-	*/
-	void removeAll();
-
-	/**
-	* \brief Prints render stats for debug and profiling.
-	*/
-	std::string statisticsToString() const;
 
 private:
 	/**
