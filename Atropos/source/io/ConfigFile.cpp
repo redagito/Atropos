@@ -89,7 +89,7 @@ glm::vec3 ConfigFile::get(const std::string& key, const glm::vec3& defaultValue)
 	if (has(key))
 	{
 		std::stringstream ss(d_values.at(key));
-		glm::vec3 res;
+		glm::vec3 res(0.f);
 		ss >> res.x;
 		ss >> res.y;
 		ss >> res.z;

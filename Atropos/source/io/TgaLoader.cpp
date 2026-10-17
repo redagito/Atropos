@@ -1,7 +1,10 @@
 #include "io/TgaLoader.h"
 
+#include "debug/Log.h"
+
 #include <cstddef>
 #include <cstdio>
+#include <new>
 
 /**
 * \brief TGA loader function from http://stackoverflow.com/questions/7046270/loading-a-tga-file-and-using-it-with-opengl.
@@ -98,7 +101,16 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         * colorMode;
 
     // Allocate memory for the image data.
-    tgaFile->imageData = new unsigned char[imageSize]();
+    try
+    {
+        tgaFile->imageData = new unsigned char[imageSize]();
+    }
+    catch (const std::bad_alloc&)
+    {
+        LOG_ERROR("Not enough memory to load TGA image %s.", filename.c_str());
+        fclose(filePtr);
+        return false;
+    }
 
     // Read the image data.
     if (fread(tgaFile->imageData, sizeof(unsigned char), imageSize, filePtr) != imageSize)

@@ -35,6 +35,14 @@ TEST_CASE("ConfigFile converts typed values", "[config]")
 	REQUIRE(config.get("origin", glm::vec3(0.f)) == glm::vec3(1.f, 2.f, 3.f));
 }
 
+TEST_CASE("ConfigFile zero-fills missing vec3 components", "[config]")
+{
+	ConfigFile config;
+	config.set("origin", "0.5");
+
+	CHECK(config.get("origin", glm::vec3(9.f)) == glm::vec3(0.5f, 0.f, 0.f));
+}
+
 TEST_CASE("ConfigFile falls back to defaults for malformed values", "[config]")
 {
 	ConfigFile config;

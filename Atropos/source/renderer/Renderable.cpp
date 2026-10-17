@@ -12,9 +12,7 @@ Renderable::Renderable(Model* model)
 	d_translation(glm::mat4(1.f)),
 	d_scale(glm::mat4(1.f)),
 	d_hasShadow(true),
-	d_deleteMe(false),
-	d_isCulled(true),
-	d_visible(true)
+	d_deleteMe(false)
 {
 	if (model != nullptr && model->getMesh() != nullptr)
 	{
@@ -47,12 +45,20 @@ void Renderable::setTranslationMatrix(const glm::mat4& matrix)
 
 void Renderable::updateAABBoxPosition()
 {
+	if (d_modelPtr == nullptr || d_modelPtr->getMesh() == nullptr)
+	{
+		return;
+	}
 	// Translate box centre
 	d_box.setMid(glm::vec3(d_translation * glm::vec4(d_modelPtr->getMesh()->getAABBox().getMid(), 1.f)));
 }
 
 void Renderable::updateAABBoxSize()
 {
+	if (d_modelPtr == nullptr || d_modelPtr->getMesh() == nullptr)
+	{
+		return;
+	}
 	// Scale box halfwidths
 	d_box.setHalfWidths(glm::vec3(d_scale * glm::vec4(d_modelPtr->getMesh()->getAABBox().getHalfWidths(), 1.f)));
 }
@@ -67,6 +73,10 @@ void Renderable::setScaleMatrix(const glm::mat4& matrix)
 // Draw with renderer
 void Renderable::draw(const std::shared_ptr<Renderer>& renderer, const Camera&) const
 {
+	if (d_modelPtr == nullptr || d_modelPtr->getMesh() == nullptr)
+	{
+		return;
+	}
 	renderer->draw(	getModel()->getVertexArrayObject(), 
 					static_cast<int>(getModel()->getMesh()->getVertexBuffer()->getSize() / 3), 
 					getModel()->getMaterial(), 
@@ -87,17 +97,6 @@ Model* Renderable::getModel() const
 const AABBox& Renderable::getAABBox() const
 {
 	return d_box;
-}
-
-// Set to true if culled -> not visible, or false -> visible
-void Renderable::setCullingState(bool state)
-{
-	d_isCulled = state;
-}
-
-bool Renderable::getVisibility() const
-{
-	return d_visible;
 }
 
 bool Renderable::deleteRequested() const

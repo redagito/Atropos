@@ -20,7 +20,10 @@ public:
 	* \brief Default constructor.
 	*/
 	Shader();
-	
+
+	Shader(const Shader&) = delete;
+	Shader& operator=(const Shader&) = delete;
+
 	/**
 	* \brief Deletes shader from VRAM
 	*/

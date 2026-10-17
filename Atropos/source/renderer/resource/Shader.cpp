@@ -27,6 +27,10 @@ Shader::~Shader()
 {
 	LOG_DEBUG("Deleting shader.");
 	glDeleteProgram(d_programId);
+	if (s_activeId == d_programId)
+	{
+		s_activeId = 0;
+	}
 	return;
 }
 

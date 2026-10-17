@@ -3,6 +3,8 @@
 #include "debug/Log.h"
 
 VertexArrayObject::VertexArrayObject()
+	:
+	d_id(0)
 {
 	glGenVertexArrays(1, &d_id);
 }

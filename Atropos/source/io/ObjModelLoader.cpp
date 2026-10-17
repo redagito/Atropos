@@ -180,9 +180,11 @@ void ObjModelLoader::parseVertex(const std::string& line, std::vector<float>& ve
 	float x, y, z;
 	std::stringstream ss;
 	ss << line;
-	ss >> x;
-	ss >> y;
-	ss >> z;
+	if (!(ss >> x >> y >> z))
+	{
+		LOG_WARNING("Ignoring vertex line with missing coordinates.");
+		return;
+	}
 	vert.push_back(x);
 	vert.push_back(y);
 	vert.push_back(z);
@@ -194,9 +196,11 @@ void ObjModelLoader::parseNormal(const std::string& line, std::vector<float>& no
 	float x, y, z;
 	std::stringstream ss;
 	ss << line;
-	ss >> x;
-	ss >> y;
-	ss >> z;
+	if (!(ss >> x >> y >> z))
+	{
+		LOG_WARNING("Ignoring normal line with missing coordinates.");
+		return;
+	}
 	norm.push_back(x);
 	norm.push_back(y);
 	norm.push_back(z);
@@ -208,8 +212,11 @@ void ObjModelLoader::parseUV(const std::string& line, std::vector<float>& uv)
 	float u, v;
 	std::stringstream ss;
 	ss << line;
-	ss >> u;
-	ss >> v;
+	if (!(ss >> u >> v))
+	{
+		LOG_WARNING("Ignoring texture coordinate line with missing coordinates.");
+		return;
+	}
 	uv.push_back(u);
 	uv.push_back(v);
 	return;

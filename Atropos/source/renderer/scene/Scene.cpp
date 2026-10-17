@@ -82,15 +82,7 @@ void Scene::draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera
 			const bool culled = culling && isCulled((*iter).get(), camera);
 			if (!culled)
 			{
-				(*iter)->setCullingState(false);
-				if ((*iter)->getVisibility())
-				{
-					(*iter)->draw(renderer, camera);
-				}
-			}
-			else
-			{
-				(*iter)->setCullingState(true);
+				(*iter)->draw(renderer, camera);
 			}
 			++iter;
 		}

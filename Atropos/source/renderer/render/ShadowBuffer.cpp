@@ -3,6 +3,9 @@
 #include "debug/Log.h"
 
 ShadowBuffer::ShadowBuffer()
+	:
+	d_shadowFramebuffer(0),
+	d_depthTexture(0)
 {
 	glGenFramebuffers(1, &d_shadowFramebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, d_shadowFramebuffer);

@@ -8,6 +8,9 @@ public:
 	ShadowBuffer();
 	~ShadowBuffer();
 
+	ShadowBuffer(const ShadowBuffer&) = delete;
+	ShadowBuffer& operator=(const ShadowBuffer&) = delete;
+
 	void setActive();
 	GLuint getDepthTexture() const;
 	

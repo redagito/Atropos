@@ -177,8 +177,6 @@ private:
 	Shader* d_shadowShader; /**< Shadow mapping shader. */
 	ShadowBuffer d_shadowBuffer; /**< FBO for shadow mapping. */
 
-	bool d_useWireframe; /**< Wireframe mode flag. */
-
 	Stage d_stage; /**< Current rendering stage. */
 
 	int d_width; /**< Current draw area width. */

@@ -4,6 +4,7 @@
 
 VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 	:
+	d_id(0),
 	d_size(size)
 {
 	// Create GL buffer resource

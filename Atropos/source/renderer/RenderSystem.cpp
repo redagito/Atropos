@@ -52,7 +52,6 @@ bool RenderSystem::init(const ConfigFile& config)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_REFRESH_RATE, 30);
-	glfwSwapInterval(1);
 
 	// Global window access, remove later
 	Global::window = glfwCreateWindow(width, height, config.get("render_windowtitle", "Atropos").c_str(), NULL, NULL);
@@ -62,6 +61,9 @@ bool RenderSystem::init(const ConfigFile& config)
 		return false;
 	}
 	glfwMakeContextCurrent(Global::window);
+
+	// Vsync needs a current context.
+	glfwSwapInterval(1);
 
 	// Load OpenGL function pointers
 	if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0)
@@ -106,6 +108,7 @@ RenderSystem::~RenderSystem()
 	if (Global::window != nullptr)
 	{
 		glfwDestroyWindow(Global::window);
+		Global::window = nullptr;
 	}
 	glfwTerminate();
 }
@@ -183,6 +186,13 @@ Camera& RenderSystem::getCamera()
 void RenderSystem::onResize(int width, int height)
 {
 	d_renderer->onResize(width, height);
+
+	// A minimized window reports a zero height, which would produce an
+	// infinite aspect ratio and an invalid projection matrix.
+	if (height <= 0)
+	{
+		return;
+	}
 	d_camera.setProjectionMatrix(d_camera.getFieldOfView(),
 								(float) width / (float) height, 
 								d_camera.getZNear(),

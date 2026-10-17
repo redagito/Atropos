@@ -16,6 +16,9 @@ public:
 	 */
 	VertexBufferObject(const float* data, std::size_t size);
 
+	VertexBufferObject(const VertexBufferObject&) = delete;
+	VertexBufferObject& operator=(const VertexBufferObject&) = delete;
+
 	/**
 	 * \brief Frees all GPU resources.
 	 */

@@ -69,7 +69,6 @@ bool RenderRequest::hasShadow() const
 Renderer::Renderer(int width, int height, Shader* shadow)
 	:	
 	d_shadowShader(shadow), // Shadow shader
-	d_useWireframe(false), // Wireframe mode
 	d_stage(Renderer::End), // Initial stage
 	d_width(width), // Screen width
 	d_height(height), // Screen height
@@ -243,7 +242,7 @@ void Renderer::geometryPass()
 		
 		// Inverse light direction
 		// TODO: The direction should be stiored in a directional light object and not inside the renderer.
-		material->getShader()->setShaderValueVec3("invLightDir", d_lightPosition);
+		material->getShader()->setShaderValueVec3("lightInvDir", d_lightPosition);
 		
 		// Set texture unit 1 active for depth texture for shadow mapping
 		// TODO: Rework this for multitexturing

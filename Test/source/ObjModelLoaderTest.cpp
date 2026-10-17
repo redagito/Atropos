@@ -206,6 +206,37 @@ TEST_CASE("ObjModelLoader ignores malformed declaration lines", "[obj]")
 	CHECK(loader.getVertices().size() == 9);
 }
 
+TEST_CASE("ObjModelLoader ignores lines with missing float values", "[obj]")
+{
+	const std::string contents =
+		"v 1 2\n"
+		"v 0 0 0\n"
+		"v 1 0 0\n"
+		"v 0 1 0\n"
+		"vt 0.5\n"
+		"vt 1.5 2.5\n"
+		"vn 1 2\n"
+		"vn 0 0 1\n"
+		"f 1/1/1 2/1/1 3/1/1\n";
+
+	ObjModelLoader loader;
+	REQUIRE(loadFromString(contents, loader));
+
+	// The malformed "v 1 2" must not shift the vertex indices.
+	REQUIRE(loader.getVertices().size() == 9);
+	CHECK(loader.getVertices()[0] == 0.f);
+	CHECK(loader.getVertices()[1] == 0.f);
+	CHECK(loader.getVertices()[2] == 0.f);
+	CHECK(loader.getVertices()[3] == 1.f);
+
+	REQUIRE(loader.getUV().size() == 6);
+	CHECK(loader.getUV()[0] == 1.5f);
+	CHECK(loader.getUV()[1] == 2.5f);
+
+	REQUIRE(loader.getNormals().size() == 9);
+	CHECK(loader.getNormals()[2] == 1.f);
+}
+
 TEST_CASE("ObjModelLoader handles a vertex-less model", "[obj]")
 {
 	const std::string contents = "# empty model\n";

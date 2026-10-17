@@ -9,6 +9,7 @@ add_executable(atropos_tests
     source/CollisionSystemTest.cpp
     source/HealthControllerTest.cpp
     source/GameSystemTest.cpp
+    source/RenderableTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE

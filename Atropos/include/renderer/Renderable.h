@@ -64,16 +64,6 @@ public:
 	Model* getModel() const;
 
 	/**
-	* \brief Sets whether the object was culled during the last drawing call or not
-	*/
-	void setCullingState(bool state);
-
-	/**
-	* \brief Returns visibility setting of the object.
-	*/
-	bool getVisibility() const;
-
-	/**
 	* \brief Requests deletion of the object
 	*/
 	void markDeleted();
@@ -117,6 +107,4 @@ protected:
 
 	bool d_hasShadow; /**< Object creates shadow. */
 	bool d_deleteMe; /**< Delete request flag. */
-	bool d_isCulled; /**< Culling state. */
-	bool d_visible; /**< Visibility state. */
 };
