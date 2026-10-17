@@ -58,13 +58,3 @@ void CTexture::setActive(unsigned int unit) const
 	glBindTexture(GL_TEXTURE_2D, d_texId);
 	return;
 }
-
-GLuint CTexture::getId() const
-{
-	return d_texId;
-}
-
-GLint CTexture::getMipMapLevel() const
-{
-	return d_mipMapLevel;
-}

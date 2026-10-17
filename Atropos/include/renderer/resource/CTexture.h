@@ -31,16 +31,6 @@ public:
 	 */
 	void setActive(unsigned int unit) const;
 
-	/**
-	 * \brief Returns GL texture id.
-	 */
-	GLuint getId() const;
-
-	/**
-	* \brief Read access to the mip map level of the texture.
-	*/
-	GLint getMipMapLevel() const;
-
 private:
 	GLuint d_texId; /**< GL texture id. */
 	GLint d_mipMapLevel; /**< Mip map level. */
