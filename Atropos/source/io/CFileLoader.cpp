@@ -74,18 +74,3 @@ const char* CFileLoader::getContent() const
 {
 	return d_content.c_str();
 }
-
-const char* CFileLoader::getPath() const
-{
-	return d_path.c_str();
-}
-
-const char* CFileLoader::getLine(int i) const
-{
-	return d_lines[i].c_str();
-}
-
-int CFileLoader::getLineCount() const
-{
-	return d_lines.size();
-}

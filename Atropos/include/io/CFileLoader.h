@@ -31,26 +31,6 @@ public:
 	*/
 	const char* getContent() const;
 
-	/** 
-	* \brief Returns specific line, starting by 0
-	*/
-	const char* getLine(int index) const;
-
-	/**
-	* \brief Returns file content as 2d array
-	*/
-	const char** getContentArray() const;
-
-	/**
-	* \brief Returns number of lines.
-	*/
-	int getLineCount() const;
-
-	/**
-	* Returns path.
-	*/
-	const char* getPath() const;
-
 private:
 	/**
 	* \brief Stores comtent as 2d array, for shader source loading.
