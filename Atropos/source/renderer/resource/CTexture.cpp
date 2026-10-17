@@ -2,12 +2,6 @@
 
 #include "debug/Log.h"
 
-#include "io/TgaLoader.h"
-
-#include <stdexcept>
-#include <fstream>
-#include <vector>
-
 CTexture::CTexture()
 	:
 	d_mipMapLevel(0),
