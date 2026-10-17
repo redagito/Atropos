@@ -8,7 +8,6 @@ class CCamera; /**< Camera forward declare. */
 
 #include "glm/glm.hpp"
 
-#include <string>
 #include <memory>
 #include <mutex>
 
@@ -17,7 +16,6 @@ class CCamera; /**< Camera forward declare. */
 *
 * A renderable is a graphical object in the scene.
 * It has a model (mesh and material) and transformation matrices.
-* The object can be named for debugging.
 * The transformation matrices are updated with a proxy object.
 * The model matrix needs to be calculated separately for hierarchical
 * animation.
@@ -26,14 +24,9 @@ class CRenderable
 {
 public:
 	/**
-	* \brief Standard constructor, sets name to "unnamed"
+	* \brief Standard constructor
 	*/
 	CRenderable(CModel* model);
-
-	/**
-	* \brief Constructor sets name.
-	*/
-	CRenderable(CModel* model, const char* name);
 	
 	/**
 	* \brief Returns the transformed axis aligned bounding box for the entity.
@@ -113,7 +106,6 @@ protected:
 	*/
 	void updateAABBoxSize();
 
-	std::string d_name; /**< Name for debugging. */
 	CAABBox d_box; /**< Transformed axis-aligned bounding box. */
 
 	CModel* d_modelPtr; /**< Pointer to shared model resource. */

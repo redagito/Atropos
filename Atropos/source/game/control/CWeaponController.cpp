@@ -72,7 +72,7 @@ void CWeaponController::update(float dtime)
 
 				// Create new projectile
 				CGameObject* projectile = new CGameObject;
-				CRenderable* projectileDrawable = d_renderSys->add(d_modelName.c_str(), "shot");
+				CRenderable* projectileDrawable = d_renderSys->add(d_modelName.c_str());
 				if (projectileDrawable == nullptr)
 				{
 					LOG_ERROR("Failed to add projectile entity: model %s could not be loaded.", d_modelName.c_str());

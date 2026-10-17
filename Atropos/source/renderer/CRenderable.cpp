@@ -4,10 +4,8 @@
 
 #include "debug/Log.h"
 
-// Sets name to unnamed
 CRenderable::CRenderable(CModel* model)
 	:
-	d_name("unnamed"),
 	d_modelPtr(model),
 	d_deleteMe(false),
 	d_model(glm::mat4(1.f)),
@@ -24,31 +22,7 @@ CRenderable::CRenderable(CModel* model)
 	}
 	else
 	{
-		LOG_ERROR("Failed to create renderable %s: missing model or mesh.", d_name.c_str());
-	}
-}
-
-// Sets name
-CRenderable::CRenderable(CModel* model, const char* name)
-	:
-	d_name(name),
-	d_modelPtr(model),
-	d_deleteMe(false),
-	d_model(glm::mat4(1.f)),
-	d_rotation(glm::mat4(1.f)),
-	d_translation(glm::mat4(1.f)),
-	d_scale(glm::mat4(1.f)),
-	d_hasShadow(true),
-	d_isCulled(true),
-	d_visible(true)
-{
-	if (model != nullptr && model->getMesh() != nullptr)
-	{
-		d_box = model->getMesh()->getAABBox();
-	}
-	else
-	{
-		LOG_ERROR("Failed to create renderable %s: missing model or mesh.", d_name.c_str());
+		LOG_ERROR("Failed to create renderable: missing model or mesh.");
 	}
 }
 

@@ -88,7 +88,7 @@ bool CPlayState::init()
 	// TODO: Player object should be deserialized from data source (xml stream?).
 	d_player = new CGameObject;
 	// Add player
-	CRenderable* playerDrawable = d_renderSystem->add("player", "Spieler");
+	CRenderable* playerDrawable = d_renderSystem->add("player");
 	if (playerDrawable == nullptr)
 	{
 		LOG_ERROR("Failed to add player entity: model could not be loaded.");
@@ -124,7 +124,7 @@ bool CPlayState::init()
 			// TODO: Replace moving ground tiles with terrain system.
 			// TODO: Or at least clean up the initialization, right now its huge.
 			CGameObject* tile = new CGameObject;
-			CRenderable* tileDrawable = d_renderSystem->add("watertile", "water");
+			CRenderable* tileDrawable = d_renderSystem->add("watertile");
 			if (tileDrawable == nullptr)
 			{
 				LOG_ERROR("Failed to add water tile entity: model could not be loaded.");
@@ -177,7 +177,7 @@ bool CPlayState::update(float dtime)
 		d_enemySpawn = 0.6f;
 		// Create new enemy
 		CGameObject* enemy = new CGameObject;
-		CRenderable* enemyDrawable = d_renderSystem->add("enemy", "enemy");
+		CRenderable* enemyDrawable = d_renderSystem->add("enemy");
 		if (enemyDrawable == nullptr)
 		{
 			LOG_ERROR("Failed to add enemy entity: model could not be loaded.");

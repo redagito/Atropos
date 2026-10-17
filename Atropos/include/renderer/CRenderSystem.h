@@ -77,11 +77,6 @@ public:
 	CRenderable* add(const char* modelName);
 
 	/**
-	* \brief Adds named entity to scene for debugging.
-	*/
-	CRenderable* add(const char* modelName, const char* name);
-
-	/**
 	* \brief Returns modifiable camera.
 	*/
 	CCamera& getCamera();

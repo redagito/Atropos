@@ -149,20 +149,14 @@ bool CRenderSystem::loadModel(const std::string& modelName)
 // Add entity
 CRenderable* CRenderSystem::add(const char* model)
 {
-	return add(model, "unnamed");
-}
-
-// Add named entity
-CRenderable* CRenderSystem::add(const char* model, const char* name)
-{
 	assert(d_activeScene != nullptr);
 	CModel* modelPtr = d_manager->getModel(model);
 	if (modelPtr == nullptr)
 	{
-		LOG_ERROR("Failed to add entity %s: model %s could not be loaded.", name, model);
+		LOG_ERROR("Failed to add entity: model %s could not be loaded.", model);
 		return nullptr;
 	}
-	CRenderable* entity = new CRenderable(modelPtr, name);
+	CRenderable* entity = new CRenderable(modelPtr);
 	d_activeScene->add(entity);
 	return entity;
 }
