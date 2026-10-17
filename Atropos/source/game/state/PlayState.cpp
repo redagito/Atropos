@@ -21,15 +21,12 @@
 #include "game/control/DespawnController.h"
 #include "game/control/RemoveOnDeathController.h"
 
-#include "util/Global.h"
 
 #include "util/Input.h"
 
 // GLFW
 #include <glfw/glfw3.h>
 #include <glm/ext.hpp>
-
-
 
 PlayState::PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
 	:

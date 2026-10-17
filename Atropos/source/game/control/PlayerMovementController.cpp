@@ -1,8 +1,8 @@
 #include "game/control/PlayerMovementController.h"
 
 #include "game/GameObject.h"
-#include "util/Global.h"
 
+#include "util/Input.h"
 #include "glfw/glfw3.h"
 
 #include <glm/ext.hpp>
@@ -63,7 +63,7 @@ void PlayerMovementController::update(float dtime)
 		glm::vec3 dPos(0.f);
 
 		// Move up
-		if (glfwGetKey(Global::window, GLFW_KEY_UP))
+		if (Input::held(GLFW_KEY_UP))
 		{
 			// Y new position
 			dPos.y = dtime * d_speedSide;
@@ -75,7 +75,7 @@ void PlayerMovementController::update(float dtime)
 		}
 
 		// Move down
-		if (glfwGetKey(Global::window, GLFW_KEY_DOWN))
+		if (Input::held(GLFW_KEY_DOWN))
 		{
 			// Y new position
 			dPos.y = -dtime * d_speedSide;
@@ -87,7 +87,7 @@ void PlayerMovementController::update(float dtime)
 		}
 
 		// Rotate right
-		if (glfwGetKey(Global::window, GLFW_KEY_RIGHT))
+		if (Input::held(GLFW_KEY_RIGHT))
 		{
 			d_rotationDegree += dtime * rateOfRotation;
 			if (d_rotationDegree > 90.f)
@@ -105,7 +105,7 @@ void PlayerMovementController::update(float dtime)
 		}
 
 		// Rotate left
-		if (glfwGetKey(Global::window, GLFW_KEY_LEFT))
+		if (Input::held(GLFW_KEY_LEFT))
 		{
 			d_rotationDegree -= dtime * rateOfRotation;
 			if (d_rotationDegree < -90.f)

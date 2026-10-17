@@ -6,15 +6,12 @@
 #include "sound/SoundSystem.h"
 #include "game/MenuShip.h"
 
-#include "util/Global.h"
 
 #include "util/Input.h"
 
 #include <glfw/glfw3.h>
 
 #include <glm/glm.hpp>
-
-
 
 LoseState::LoseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
 	:

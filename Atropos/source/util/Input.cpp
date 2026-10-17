@@ -1,7 +1,5 @@
 #include "util/Input.h"
 
-#include "util/Global.h"
-
 #include <glfw/glfw3.h>
 
 #include <unordered_map>
@@ -13,18 +11,18 @@ namespace
 	std::unordered_set<int> d_pressed; /**< Keys that went down this frame. */
 }
 
-void Input::poll()
+void Input::poll(GLFWwindow* window)
 {
 	d_pressed.clear();
 
-	if (Global::window == nullptr)
+	if (window == nullptr)
 	{
 		return;
 	}
 
 	for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; ++key)
 	{
-		const bool down = glfwGetKey(Global::window, key) == GLFW_PRESS;
+		const bool down = glfwGetKey(window, key) == GLFW_PRESS;
 		if (down && !d_held[key])
 		{
 			d_pressed.insert(key);

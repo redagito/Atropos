@@ -87,6 +87,21 @@ public:
 		return d_culling;
 	}
 
+	GLFWwindow* window() const override
+	{
+		return nullptr;
+	}
+
+	bool shouldClose() const override
+	{
+		return d_shouldClose;
+	}
+
+	void requestClose() override
+	{
+		d_shouldClose = true;
+	}
+
 	std::vector<std::string> d_createdScenes; /**< Names of scenes created, in order. */
 	std::vector<std::string> d_requestedModels; /**< Names of models requested, in order. */
 	std::vector<std::string> d_addedModels; /**< Names of models added to a scene, in order. */
@@ -94,6 +109,7 @@ public:
 	std::string d_lastBackgroundScene; /**< Scene whose background color was set last. */
 	int d_backgroundColorCount = 0; /**< How often a background color was set. */
 	bool d_culling = false; /**< Culling state. */
+	bool d_shouldClose = false; /**< Whether a close was requested. */
 
 private:
 	Camera d_camera; /**< Real camera, so states can still reset and read the view. */

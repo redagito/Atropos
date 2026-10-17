@@ -1,6 +1,8 @@
 #include "game/control/WeaponController.h"
 
 #include "game/GameObject.h"
+
+#include "util/Input.h"
 #include "game/GameWorld.h"
 #include "sound/SoundSystem.h"
 #include "renderer/RenderSystem.h"
@@ -12,8 +14,6 @@
 #include "game/control/HealthController.h"
 #include "game/control/RemoveOnDeathController.h"
 #include "game/control/DespawnController.h"
-
-#include "util/Global.h"
 
 #include <glfw/glfw3.h>
 #include <glm/ext.hpp>
@@ -61,7 +61,7 @@ void WeaponController::update(float dtime)
 		// Update timer
 		d_currentCooldown -= dtime;
 		// TODO: Input management should be done in separate system.
-		if (glfwGetKey(Global::window, GLFW_KEY_SPACE))
+		if (Input::held(GLFW_KEY_SPACE))
 		{
 			// Check cooldown
 			if (d_currentCooldown <= 0.f)

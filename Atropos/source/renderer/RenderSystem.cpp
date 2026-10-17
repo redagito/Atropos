@@ -9,7 +9,8 @@
 #include "renderer/render/Renderer.h"
 
 #include "debug/Profiler.h"
-#include "util/Global.h"
+
+#include <spdlog/spdlog.h>
 
 #include <glad/glad.h>
 
@@ -20,9 +21,12 @@
 
 void RenderSystem::resizeCallback(GLFWwindow* window, int width, int height)
 {
-	if (window == Global::window)
+	RenderSystem& system = RenderSystem::getInstance();
+	// The callback can still fire while the window is being torn down, so only
+	// the window this system owns is acted on.
+	if (system.d_window != nullptr && window == system.d_window)
 	{
-		RenderSystem::getInstance().onResize(width, height);
+		system.onResize(width, height);
 	}
 }
 
@@ -30,6 +34,7 @@ RenderSystem::RenderSystem()
 	:
 	d_manager(nullptr),
 	d_renderer(nullptr),
+	d_window(nullptr),
 	d_culling(false),
 	d_activeScene(nullptr)
 {
@@ -46,21 +51,23 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	{
 		throw std::runtime_error("Failed to initialize GLFW.");
 	}
-	// GL core context creation
+	// GL core context creation. The renderer targets 4.6 core and does not fall
+// back, so a driver that cannot provide it has to be reported rather than
+// silently running an older context than the code was written against.
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_REFRESH_RATE, 30);
 
-	// Global window access, remove later
-	Global::window = glfwCreateWindow(width, height, config.get("render_windowtitle", "Atropos").c_str(), NULL, NULL);
-	if (Global::window == nullptr)
+	d_window = glfwCreateWindow(width, height, config.get("render_windowtitle", "Atropos").c_str(), NULL, NULL);
+	if (d_window == nullptr)
 	{
 		glfwTerminate();
-		throw std::runtime_error("Failed to create the render window.");
+		throw std::runtime_error("Failed to create an OpenGL 4.6 core render window. "
+			"The graphics driver does not provide it.");
 	}
-	glfwMakeContextCurrent(Global::window);
+	glfwMakeContextCurrent(d_window);
 
 	// Vsync needs a current context.
 	glfwSwapInterval(1);
@@ -68,14 +75,16 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	// Load OpenGL function pointers
 	if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0)
 	{
-		glfwDestroyWindow(Global::window);
-		Global::window = nullptr;
+		glfwDestroyWindow(d_window);
+		d_window = nullptr;
 		glfwTerminate();
 		throw std::runtime_error("Failed to load the OpenGL function pointers.");
 	}
 
+	SPDLOG_INFO("OpenGL context version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
 	// Resize callback
-	glfwSetFramebufferSizeCallback(Global::window, RenderSystem::resizeCallback);
+	glfwSetFramebufferSizeCallback(d_window, RenderSystem::resizeCallback);
 
 	// Create resource manager width resource path
 	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/"), pool));
@@ -86,14 +95,14 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, shadowShader));
 
 	// Show window
-	glfwShowWindow(Global::window);
+	glfwShowWindow(d_window);
 
 	// GLFW does not raise a resize event when the window is created, so the
 	// camera projection would otherwise keep its default aspect ratio until the
 	// user resizes the window for the first time.
 	int framebufferWidth = 0;
 	int framebufferHeight = 0;
-	glfwGetFramebufferSize(Global::window, &framebufferWidth, &framebufferHeight);
+	glfwGetFramebufferSize(d_window, &framebufferWidth, &framebufferHeight);
 	if (framebufferWidth > 0 && framebufferHeight > 0)
 	{
 		onResize(framebufferWidth, framebufferHeight);
@@ -105,14 +114,32 @@ RenderSystem::~RenderSystem()
 	d_renderer = nullptr;
 	d_manager = nullptr;
 	d_activeScene = nullptr;
-	
+
 	// Delete rendering window
-	if (Global::window != nullptr)
+	if (d_window != nullptr)
 	{
-		glfwDestroyWindow(Global::window);
-		Global::window = nullptr;
+		glfwDestroyWindow(d_window);
+		d_window = nullptr;
 	}
 	glfwTerminate();
+}
+
+GLFWwindow* RenderSystem::window() const
+{
+	return d_window;
+}
+
+bool RenderSystem::shouldClose() const
+{
+	return d_window != nullptr && glfwWindowShouldClose(d_window) != 0;
+}
+
+void RenderSystem::requestClose()
+{
+	if (d_window != nullptr)
+	{
+		glfwSetWindowShouldClose(d_window, GLFW_TRUE);
+	}
 }
 
 // Enables or disables culling in the scene
@@ -180,7 +207,7 @@ void RenderSystem::draw()
 void RenderSystem::swapBuffer()
 {
 	// Buffer swap
-	glfwSwapBuffers(Global::window);
+	glfwSwapBuffers(d_window);
 }
 
 void RenderSystem::loadModel(const std::string& modelName)

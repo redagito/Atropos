@@ -8,7 +8,6 @@
 
 #include "game/state/PlayState.h"
 
-#include "util/Global.h"
 
 #include "util/Input.h"
 
@@ -17,8 +16,6 @@
 #include <glfw/glfw3.h>
 
 #include <stdexcept>
-
-
 
 LoadState::LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys)
 	:

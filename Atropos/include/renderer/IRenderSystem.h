@@ -4,6 +4,8 @@
 class Renderable;
 class Camera;
 
+struct GLFWwindow;
+
 #include <glm/glm.hpp>
 
 #include <string>
@@ -89,4 +91,19 @@ public:
 	* \brief Returns the culling state.
 	*/
 	virtual bool getCulling() const = 0;
+
+	/**
+	* \brief Returns the render window.
+	*/
+	virtual GLFWwindow* window() const = 0;
+
+	/**
+	* \brief True once the window has been asked to close.
+	*/
+	virtual bool shouldClose() const = 0;
+
+	/**
+	* \brief Asks the window to close, which ends the main loop.
+	*/
+	virtual void requestClose() = 0;
 };

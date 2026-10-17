@@ -4,13 +4,10 @@
 #include "collision/CollisionSystem.h"
 #include "sound/SoundSystem.h"
 
-#include "util/Global.h"
 
 #include "util/Input.h"
 
 #include <glfw/glfw3.h>
-
-
 
 PauseState::PauseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
 	:

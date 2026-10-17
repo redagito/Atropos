@@ -116,6 +116,21 @@ public:
 	*/
 	void swapBuffer() override;
 
+	/**
+	* \brief Returns the render window.
+	*/
+	GLFWwindow* window() const override;
+
+	/**
+	* \brief True once the window has been asked to close.
+	*/
+	bool shouldClose() const override;
+
+	/**
+	* \brief Asks the window to close, which ends the main loop.
+	*/
+	void requestClose() override;
+
 private:
 	/**
 	* \brief Resize callback for glfw.
@@ -135,5 +150,6 @@ private:
 	Scene* d_activeScene; /**< Active scene. */
 	std::unique_ptr<ResourceManager> d_manager; /**< Rendering resource manager. */
 	std::shared_ptr<Renderer> d_renderer; /**< Active rendering device. */
+	GLFWwindow* d_window; /**< The render window this system owns. */
 	bool d_culling; /**< Culling mode. */
 };

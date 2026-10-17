@@ -1,5 +1,7 @@
 #pragma once
 
+struct GLFWwindow;
+
 /**
  * \brief Edge and level triggered keyboard state.
  *
@@ -17,7 +19,7 @@ public:
 	* Must be called once per frame after the window events have been polled and
 	* before any state reads the keyboard.
 	*/
-	static void poll();
+	static void poll(GLFWwindow* window);
 
 	/**
 	* \brief True on the frame the key went down, false otherwise.

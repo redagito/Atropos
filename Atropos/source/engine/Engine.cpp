@@ -24,7 +24,6 @@
 
 // IO and utility
 #include "io/ConfigFile.h"
-#include "util/Global.h"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -145,7 +144,7 @@ void Engine::run()
 	// Main loop
 	d_running = true;
 
-	while (!glfwWindowShouldClose(Global::window) && d_running)
+	while (!d_renderSystem->shouldClose() && d_running)
 	{
 		Profiler loopProfiler("engine_loop");
 		// Set start time
@@ -154,7 +153,7 @@ void Engine::run()
 		// Process user input
 		glfwPollEvents();
 		// Sample the keys so the states can tell a fresh press from a held key.
-		Input::poll();
+		Input::poll(d_renderSystem->window());
 
 		// F2 swaps culling. The press is edge triggered, so holding the key
 		// toggles once per press instead of twice a second.
@@ -167,7 +166,7 @@ void Engine::run()
 		if (Input::pressed(GLFW_KEY_ESCAPE))
 		{
 			// Termination
-			glfwSetWindowShouldClose(Global::window, true);
+			d_renderSystem->requestClose();
 		}
 
 		updateResources();

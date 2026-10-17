@@ -2,7 +2,7 @@
 
 Atropos is an old university project for a computer graphics course which I am releasing now as open source under the [MIT license](http://opensource.org/licenses/MIT).
 
-It includes a simple forward renderer written in OpenGL 3.3 core and some gameplay mechanics. It represents my first attempt to write a realtime renderer.
+It includes a simple forward renderer written in OpenGL 4.6 core and some gameplay mechanics. It represents my first attempt to write a realtime renderer.
 
 ## Screenshots
 
