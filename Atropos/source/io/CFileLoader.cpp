@@ -42,6 +42,7 @@ bool CFileLoader::load()
 
 	std::ifstream fileStream(d_path, std::ios::in);
 	d_content.assign("");
+	d_lines.clear();
 	
 	// Read in file
 	if (fileStream.is_open())
