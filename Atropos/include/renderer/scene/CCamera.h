@@ -36,11 +36,6 @@ public:
 	void setProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar);
 
 	/**
-	* \brief Returns current aspect ratio
-	*/
-	float getAspectRatio() const;
-
-	/**
 	* \brief Returns current field of view in degree
 	*/
 	float getFieldOfView() const;

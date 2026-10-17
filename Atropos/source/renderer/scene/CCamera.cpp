@@ -45,11 +45,6 @@ const glm::mat4& CCamera::getProjectionMatrix() const
 	return d_proj;
 }
 
-float CCamera::getAspectRatio() const
-{
-	return d_aspectRatio;
-}
-
 float CCamera::getFieldOfView() const
 {
 	return d_fieldOfView;
