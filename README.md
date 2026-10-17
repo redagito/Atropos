@@ -6,8 +6,8 @@ It includes a simple forward renderer written in OpenGL 3.3 core and some gamepl
 
 ## Screenshots
 
-![atropos screen1.png](https://github.com/redagito/Atropos/blob/master/Screenshot/screen1.png)
-![atropos screen2.png](https://github.com/redagito/Atropos/blob/master/Screenshot/screen2.png)
+![atropos screen1.png](https://raw.githubusercontent.com/redagito/Atropos/master/Screenshot/screen1.png)
+![atropos screen2.png](https://raw.githubusercontent.com/redagito/Atropos/master/Screenshot/screen2.png)
 
 ## Features
 
@@ -41,8 +41,18 @@ The project builds with CMake (3.20+) and Conan 2.x. On Windows it uses the Visu
 
 ```
 conan install . -s build_type=Debug -s compiler.cppstd=23 --output-folder=build --build=missing
+conan install . -s build_type=Release -s compiler.cppstd=23 --output-folder=build --build=missing
 cmake --preset conan-default
-cmake --build --preset conan-debug
 ```
 
-Run the demo with `build/App/Debug/app.exe`. Run the unit tests with `ctest --test-dir build -C Debug`.
+Build and test either configuration:
+
+```
+cmake --build --preset conan-debug
+ctest --test-dir build -C Debug
+
+cmake --build --preset conan-release
+ctest --test-dir build -C Release
+```
+
+Run the demo with `build/App/Debug/app.exe` or `build/App/Release/app.exe`.
