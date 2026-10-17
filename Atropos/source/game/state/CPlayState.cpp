@@ -90,7 +90,13 @@ bool CPlayState::init()
 	// TODO: Player object should be deserialized from data source (xml stream?).
 	d_player = new CGameObject;
 	// Add player
-	d_player->setDrawable(d_renderSystem->add("player", "Spieler"));
+	CRenderable* playerDrawable = d_renderSystem->add("player", "Spieler");
+	if (playerDrawable == nullptr)
+	{
+		LOG_ERROR("Failed to add player entity: model could not be loaded.");
+		return false;
+	}
+	d_player->setDrawable(playerDrawable);
 	// Player collidable added to player collision group
 	d_player->setCollidable(d_collisionSystem->add(d_player->getDrawable()->getAABBox(), d_playerGroup));
 	// Sets collidable damage dealt
@@ -120,7 +126,14 @@ bool CPlayState::init()
 			// TODO: Replace moving ground tiles with terrain system.
 			// TODO: Or at least clean up the initialization, right now its huge.
 			CGameObject* tile = new CGameObject;
-			tile->setDrawable(d_renderSystem->add("watertile", "water"));
+			CRenderable* tileDrawable = d_renderSystem->add("watertile", "water");
+			if (tileDrawable == nullptr)
+			{
+				LOG_ERROR("Failed to add water tile entity: model could not be loaded.");
+				delete tile;
+				continue;
+			}
+			tile->setDrawable(tileDrawable);
 			tile->addController(std::shared_ptr<IController>(new CShiftController(&d_renderSystem->getCamera(), 300.f)));
 
 			// Set transformation
@@ -166,22 +179,31 @@ bool CPlayState::update(float dtime)
 		d_enemySpawn = 0.6f;
 		// Create new enemy
 		CGameObject* enemy = new CGameObject;
-		enemy->setDrawable(d_renderSystem->add("enemy", "enemy"));
-		enemy->setCollidable(d_collisionSystem->add(enemy->getDrawable()->getAABBox(), d_enemyGroup));
-		enemy->getCollidable()->setDamage(30.f);
+		CRenderable* enemyDrawable = d_renderSystem->add("enemy", "enemy");
+		if (enemyDrawable == nullptr)
+		{
+			LOG_ERROR("Failed to add enemy entity: model could not be loaded.");
+			delete enemy;
+		}
+		else
+		{
+			enemy->setDrawable(enemyDrawable);
+			enemy->setCollidable(d_collisionSystem->add(enemy->getDrawable()->getAABBox(), d_enemyGroup));
+			enemy->getCollidable()->setDamage(30.f);
 
-		// Controller
-		enemy->addController(std::shared_ptr<IController>(new CLinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
-		enemy->addController(std::shared_ptr<IController>(new CHealthController(40.f)));
-		enemy->addController(std::shared_ptr<IController>(new CExplodeOnDeathController(d_soundSystem, "explosion")));
-		enemy->addController(std::shared_ptr<IController>(new CRemoveOnDeathController));
-		enemy->addController(std::shared_ptr<IController>(new CDespawnController(12.f)));
+			// Controller
+			enemy->addController(std::shared_ptr<IController>(new CLinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
+			enemy->addController(std::shared_ptr<IController>(new CHealthController(40.f)));
+			enemy->addController(std::shared_ptr<IController>(new CExplodeOnDeathController(d_soundSystem, "explosion")));
+			enemy->addController(std::shared_ptr<IController>(new CRemoveOnDeathController));
+			enemy->addController(std::shared_ptr<IController>(new CDespawnController(12.f)));
 
-		// Transformation
-		enemy->setTranslation(glm::translate(d_player->getTranslation(), glm::vec3(0.f, 0.f, 100.f)));
-		enemy->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f)));
-		enemy->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
-		d_world.addObject(enemy);
+			// Transformation
+			enemy->setTranslation(glm::translate(d_player->getTranslation(), glm::vec3(0.f, 0.f, 100.f)));
+			enemy->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f)));
+			enemy->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
+			d_world.addObject(enemy);
+		}
 	}
 
 	// Game end conditions. Player dies or survives long enough.

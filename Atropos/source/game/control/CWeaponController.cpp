@@ -14,6 +14,7 @@
 #include "game/control/CDespawnController.h"
 
 #include "util/Global.h"
+#include "debug/Log.h"
 
 #include <glfw/glfw3.h>
 #include <glm/ext.hpp>
@@ -71,27 +72,36 @@ void CWeaponController::update(float dtime)
 
 				// Create new projectile
 				CGameObject* projectile = new CGameObject;
-				projectile->setDrawable(d_renderSys->add(d_modelName.c_str(), "shot"));
-				projectile->getDrawable()->setShadow(false);
-				projectile->setCollidable(d_collSys->add(projectile->getDrawable()->getAABBox(), d_collisionGroup));
-				projectile->getCollidable()->setDamage(d_damage);
+				CRenderable* projectileDrawable = d_renderSys->add(d_modelName.c_str(), "shot");
+				if (projectileDrawable == nullptr)
+				{
+					LOG_ERROR("Failed to add projectile entity: model %s could not be loaded.", d_modelName.c_str());
+					delete projectile;
+				}
+				else
+				{
+					projectile->setDrawable(projectileDrawable);
+					projectile->getDrawable()->setShadow(false);
+					projectile->setCollidable(d_collSys->add(projectile->getDrawable()->getAABBox(), d_collisionGroup));
+					projectile->getCollidable()->setDamage(d_damage);
 
-				// Controller
-				projectile->addController(std::shared_ptr<IController>(new CLinearMovementController(glm::vec3(0.f, 0.f, 100.f))));
-				projectile->addController(std::shared_ptr<IController>(new CHealthController(0.1f)));
-				projectile->addController(std::shared_ptr<IController>(new CRemoveOnDeathController));
-				projectile->addController(std::shared_ptr<IController>(new CDespawnController(1.5f)));
+					// Controller
+					projectile->addController(std::shared_ptr<IController>(new CLinearMovementController(glm::vec3(0.f, 0.f, 100.f))));
+					projectile->addController(std::shared_ptr<IController>(new CHealthController(0.1f)));
+					projectile->addController(std::shared_ptr<IController>(new CRemoveOnDeathController));
+					projectile->addController(std::shared_ptr<IController>(new CDespawnController(1.5f)));
 
-				// Transformation
-				projectile->setTranslation(glm::translate(d_object->getTranslation(), glm::vec3(0.f, 0.f, 2.f)));
-				projectile->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
-				projectile->setScale(glm::scale(glm::mat4(1.f), glm::vec3(3.f, 3.f, 3.f)));
+					// Transformation
+					projectile->setTranslation(glm::translate(d_object->getTranslation(), glm::vec3(0.f, 0.f, 2.f)));
+					projectile->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
+					projectile->setScale(glm::scale(glm::mat4(1.f), glm::vec3(3.f, 3.f, 3.f)));
 
-				// Add to world
-				d_world->addObject(projectile);
+					// Add to world
+					d_world->addObject(projectile);
 
-				// Play shot sound
-				d_soundSys->playSFX(d_soundName);
+					// Play shot sound
+					d_soundSys->playSFX(d_soundName);
+				}
 			}
 		}
 	}

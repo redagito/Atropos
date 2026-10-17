@@ -156,7 +156,13 @@ CRenderable* CRenderSystem::add(const char* model)
 CRenderable* CRenderSystem::add(const char* model, const char* name)
 {
 	assert(d_activeScene != nullptr);
-	CRenderable* entity = new CRenderable(d_manager->getModel(model), name);
+	CModel* modelPtr = d_manager->getModel(model);
+	if (modelPtr == nullptr)
+	{
+		LOG_ERROR("Failed to add entity %s: model %s could not be loaded.", name, model);
+		return nullptr;
+	}
+	CRenderable* entity = new CRenderable(modelPtr, name);
 	d_activeScene->add(entity);
 	return entity;
 }
