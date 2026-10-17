@@ -26,6 +26,7 @@ TEST_CASE("LinearMovementController ignores updates while detached", "[controlle
 	controller.setActive(true);
 
 	GameObject object;
+	controller.attach(&object);
 	const glm::mat4 before = object.getTranslation();
 
 	controller.detach();
@@ -41,6 +42,7 @@ TEST_CASE("ShiftController ignores updates while detached", "[controller]")
 	controller.setActive(true);
 
 	GameObject object;
+	controller.attach(&object);
 	const glm::mat4 before = object.getTranslation();
 
 	controller.detach();

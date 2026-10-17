@@ -17,6 +17,8 @@ typedef struct
 
 /**
 * \brief TGA loader function
+*
+* Throws std::runtime_error if the file cannot be loaded.
 */
-bool loadTGAFile(const std::string& fileName, TGAFILE *tgaFile);
+void loadTGAFile(const std::string& fileName, TGAFILE *tgaFile);
 void deleteTGAFile(TGAFILE* tgaFile);

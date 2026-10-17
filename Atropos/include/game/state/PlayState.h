@@ -31,7 +31,7 @@ public:
 	/**
 	* \brief initializes state.
 	*/
-	bool init();
+	void init();
 
 	/**
 	* \brief On state enter callback.

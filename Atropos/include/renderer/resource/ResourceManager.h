@@ -38,57 +38,67 @@ public:
 	~ResourceManager();
 
 	/**
-	* \brief Loads model resource.
+	* \brief Loads model resource. Throws std::runtime_error on failure.
 	*/
-	bool loadModel(const std::string& name);
+	void loadModel(const std::string& name);
 	
 	/**
-	* \brief Loads mesh resource.
+	* \brief Loads mesh resource. Throws std::runtime_error on failure.
 	*/
-	bool loadMesh(const std::string& name);
+	void loadMesh(const std::string& name);
 
 	/**
-	* \brief Loads material resource.
+	* \brief Loads material resource. Throws std::runtime_error on failure.
 	*/
-	bool loadMaterial(const std::string& name);
+	void loadMaterial(const std::string& name);
 	
 	/**
-	* \brief Loads texture resource.
+	* \brief Loads texture resource. Throws std::runtime_error on failure.
 	*/
-	bool loadTexture(const std::string& name);
+	void loadTexture(const std::string& name);
 	
 	/**
-	* \brief Loads shader resource.
+	* \brief Loads shader resource. Throws std::runtime_error on failure.
 	*/
-	bool loadShader(const std::string& name);
+	void loadShader(const std::string& name);
 
 	/**
 	* \brief Returns pointer to requested material resource.
+	* Loads the material on demand.
 	* \param name Material name.
+	* Throws std::runtime_error if the material cannot be loaded.
 	*/
 	AMaterial* getMaterial(const std::string& name);
 
 	/**
 	* \brief Returns pointer to requested model resource.
+	* Loads the model on demand.
 	* \param name Model name.
+	* Throws std::runtime_error if the model cannot be loaded.
 	*/
 	Model* getModel(const std::string& name);
 
 	/**
 	* \brief Returns pointer to requested texture resource.
+	* Loads the texture on demand.
 	* \param name The name of the texture object.
+	* Throws std::runtime_error if the texture cannot be loaded.
 	*/
 	Texture* getTexture(const std::string& name);
 
 	/**
 	* \brief Returns pointer to requested shader resource.
+	* Loads the shader on demand.
 	* \param name The name of the shader object.
+	* Throws std::runtime_error if the shader cannot be loaded.
 	*/
 	Shader* getShader(const std::string& name);
 
 	/**
 	* \brief Returns pointer to requested mesh resource.
+	* Loads the mesh on demand.
 	* \param name Name of the mesh file.
+	* Throws std::runtime_error if the mesh cannot be loaded.
 	*/
 	Mesh* getMesh(const std::string& name);
 

@@ -21,8 +21,9 @@ public:
 
 	/**
 	* \brief Load image from file.
+	* Throws std::runtime_error if the image cannot be loaded.
 	*/
-	bool load(const std::string& fileName);
+	void load(const std::string& fileName);
 	
 	/**
 	* \brief Returns image width.

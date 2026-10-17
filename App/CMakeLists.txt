@@ -5,6 +5,7 @@ add_executable(app WIN32
 
 target_link_libraries(app PRIVATE
     atropos
+    spdlog::spdlog
 )
 
 # Keep main() as the entry point instead of requiring WinMain.

@@ -1,15 +1,14 @@
 #include "io/TgaLoader.h"
 
-#include <spdlog/spdlog.h>
-
 #include <cstddef>
 #include <cstdio>
-#include <new>
+#include <stdexcept>
+#include <string>
 
 /**
 * \brief TGA loader function from http://stackoverflow.com/questions/7046270/loading-a-tga-file-and-using-it-with-opengl.
 */
-bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
+void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
 {
     FILE *filePtr;
     unsigned char ucharBad;
@@ -19,7 +18,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     filePtr = fopen(filename.c_str(), "rb");
     if (filePtr == NULL)
     {
-        return false;
+        throw std::runtime_error("Failed to open TGA image: " + filename);
     }
 
     tgaFile->imageData = nullptr;
@@ -31,14 +30,14 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         || fread(&colorMapType, sizeof(unsigned char), 1, filePtr) != 1)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
     // Which type of image gets stored in imageTypeCode.
     if (fread(&tgaFile->imageTypeCode, sizeof(unsigned char), 1, filePtr) != 1)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
     // For our purposes, the type code should be 2 (uncompressed RGB image)
@@ -46,7 +45,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     if (tgaFile->imageTypeCode != 2 && tgaFile->imageTypeCode != 3)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Unsupported TGA image type: " + filename);
     }
 
     // Read 9 bytes of header data we don't need.
@@ -57,7 +56,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         || fread(&sintBad, sizeof(short int), 1, filePtr) != 1)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
     // Read the image's width and height.
@@ -65,28 +64,28 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         || fread(&tgaFile->imageHeight, sizeof(short int), 1, filePtr) != 1)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA dimensions: " + filename);
     }
 
     // Read the bit depth.
     if (fread(&tgaFile->bitCount, sizeof(unsigned char), 1, filePtr) != 1)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA bit depth: " + filename);
     }
 
     // Read one byte of data we don't need.
     if (fread(&ucharBad, sizeof(unsigned char), 1, filePtr) != 1)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
     // Color-mapped images are not supported.
     if (colorMapType != 0)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Color-mapped TGA images are not supported: " + filename);
     }
 
     // Skip the image identification field so the pixel data is read at the
@@ -94,13 +93,13 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     if (fseek(filePtr, idLength, SEEK_CUR) != 0)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA image identification field: " + filename);
     }
 
     if (tgaFile->imageWidth <= 0 || tgaFile->imageHeight <= 0)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Invalid TGA image dimensions: " + filename);
     }
 
     // Color mode -> 3 = BGR, 4 = BGRA.
@@ -108,7 +107,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     if (colorMode < 3 || colorMode > 4)
     {
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Unsupported TGA color depth: " + filename);
     }
 
     // Size calculation in std::size_t avoids integer overflow.
@@ -118,16 +117,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         * colorMode;
 
     // Allocate memory for the image data.
-    try
-    {
-        tgaFile->imageData = new unsigned char[imageSize]();
-    }
-    catch (const std::bad_alloc&)
-    {
-        SPDLOG_ERROR("Not enough memory to load TGA image {}.", filename);
-        fclose(filePtr);
-        return false;
-    }
+    tgaFile->imageData = new unsigned char[imageSize]();
 
     // Read the image data.
     if (fread(tgaFile->imageData, sizeof(unsigned char), imageSize, filePtr) != imageSize)
@@ -135,7 +125,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         delete[] tgaFile->imageData;
         tgaFile->imageData = nullptr;
         fclose(filePtr);
-        return false;
+        throw std::runtime_error("Failed to read TGA pixel data: " + filename);
     }
 
     // Change from BGR to RGB so OpenGL can read the image data.
@@ -147,7 +137,6 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     }
 
     fclose(filePtr);
-    return true;
 }
 
 void deleteTGAFile(TGAFILE* tgaFile)

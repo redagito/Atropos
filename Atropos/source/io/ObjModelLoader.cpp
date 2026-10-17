@@ -42,13 +42,12 @@ ObjModelLoader::ObjModelLoader()
 	
 }
 
-bool ObjModelLoader::load(const std::string& file)
+void ObjModelLoader::load(const std::string& file)
 {
 	std::ifstream ifs(file);
 	if (!ifs.is_open())
 	{
-		SPDLOG_ERROR("The mesh file {} could not be opened.", file);
-		return false;
+		throw std::runtime_error("The mesh file could not be opened: " + file);
 	}
 
 	// Reset any data from a previous load.
@@ -71,13 +70,11 @@ bool ObjModelLoader::load(const std::string& file)
 
 	if (d_vertices.empty())
 	{
-		SPDLOG_ERROR("The mesh file {} contains no geometry.", file);
-		return false;
+		throw std::runtime_error("The mesh file contains no geometry: " + file);
 	}
 
 	// Calculate bounding volume
 	calculateAABBox();
-	return true;
 }
 
 // Access model data

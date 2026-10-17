@@ -23,17 +23,13 @@ LoadState::LoadState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSys
 	return;
 }
 
-bool LoadState::init()
+void LoadState::init()
 {
 	d_renderSystem->createScene("load");
 	d_renderSystem->setActiveScene("load");
-	
+
 	// Load background music
-	if (!d_soundSystem->loadBGM("loading", "song2.mp3", 0.5f))
-	{
-		return false;
-	}
-	return true;
+	d_soundSystem->loadBGM("loading", "song2.mp3", 0.5f);
 }
 
 bool LoadState::update(float dtime)
@@ -42,11 +38,7 @@ bool LoadState::update(float dtime)
 	if (glfwGetKey(Global::window, GLFW_KEY_ENTER))
 	{
 		d_gameSystem->removeState("play");
-		if (!d_gameSystem->addState("play", new PlayState(d_renderSystem, d_collisionSystem, d_soundSystem)))
-		{
-			d_nextState = "exit";
-			return false;
-		}
+		d_gameSystem->addState("play", new PlayState(d_renderSystem, d_collisionSystem, d_soundSystem));
 		d_nextState = "play";
 		return false;
 	}

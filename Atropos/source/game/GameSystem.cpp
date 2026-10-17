@@ -1,7 +1,10 @@
 #include "game/GameSystem.h"
 
 #include "io/ConfigFile.h"
+
 #include <spdlog/spdlog.h>
+
+#include <stdexcept>
 
 
 
@@ -45,36 +48,29 @@ bool GameSystem::update(float dtime)
 	return true;
 }
 
-bool GameSystem::init(const ConfigFile& config)
+void GameSystem::init(const ConfigFile& config)
 {
 	SPDLOG_DEBUG("Initializing game system.");
 
 	// Get initial state property
-	std::string initialState = config.get("game_initialstate", "load");
-	SPDLOG_DEBUG("Game system initial state set to {}.", initialState.c_str());
+	const std::string initialState = config.get("game_initialstate", "load");
+	SPDLOG_DEBUG("Game system initial state set to {}.", initialState);
 
 	// Set initial state active
 	const auto it = d_gameStates.find(initialState);
 	if (it == d_gameStates.end())
 	{
-		SPDLOG_ERROR("Initial game state {} is not registered.", initialState.c_str());
-		return false;
+		throw std::runtime_error("Initial game state is not registered: " + initialState);
 	}
 	d_activeState = it->second.get();
 
 	// On enter state trigger
 	d_activeState->onEnter();
-	return true;
 }
 
-bool GameSystem::addState(const std::string& name, IGameState* state)
+void GameSystem::addState(const std::string& name, IGameState* state)
 {
-	if (!state->init())
-	{
-		SPDLOG_ERROR("Failed to initialize game state {}.", name.c_str());
-		delete state;
-		return false;
-	}
+	state->init();
 	const auto existing = d_gameStates.find(name);
 	const bool wasActive = (existing != d_gameStates.end() && d_activeState == existing->second.get());
 	if (existing != d_gameStates.end())
@@ -93,8 +89,7 @@ bool GameSystem::addState(const std::string& name, IGameState* state)
 		d_activeState = state;
 		d_activeState->onEnter();
 	}
-	SPDLOG_DEBUG("Added game state {} to game system.", name.c_str());
-	return true;
+	SPDLOG_DEBUG("Added game state {} to game system.", name);
 }
 
 void GameSystem::removeState(const std::string& name)

@@ -20,9 +20,10 @@ public:
 	/**
 	* \brief Attempts to read the file.
 	* \parm fileName Config file name.
-	* Returns true if the file was loaded successfully or false on error.
+	* Throws std::runtime_error if the file cannot be opened or contains a
+	* malformed line.
 	*/
-	bool load(const std::string& fileName);
+	void load(const std::string& fileName);
 
 	/**
 	* \brief Checks existence of a key.
@@ -63,7 +64,7 @@ private:
 	/**
 	* \brief Parses single line
 	*/
-	bool parseLine(const std::string& line);
+	void parseLine(const std::string& line);
 
 	std::unordered_map<std::string, std::string> d_values; /**< Config data. */
 };

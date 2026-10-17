@@ -34,32 +34,23 @@ Shader::~Shader()
 	return;
 }
 
-bool Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+void Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 {
-	SPDLOG_DEBUG("Creating shader from vertex shader {} and fragment shader {}.", vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+	SPDLOG_DEBUG("Creating shader from vertex shader {} and fragment shader {}.", vertexShaderPath, fragmentShaderPath);
 
 	// Load vertex shader
 	FileLoader vl(vertexShaderPath);
-	if (!vl.load())
-	{
-		SPDLOG_ERROR("Failed to load vertex shader {}", vertexShaderPath.c_str());
-		return false;
-	}
+	vl.load();
 
 	// Load fragment shader
 	FileLoader fl(fragmentShaderPath);
-	if (!fl.load())
-	{
-		SPDLOG_ERROR("Failed to load fragment shader {}", fragmentShaderPath.c_str());
-		return false;
-	}
+	fl.load();
 
 	// Convert to code
 	ShaderCode vc(vl.getContent());
 	ShaderCode fc(fl.getContent());
 
 	// Compile
-	// TODO Remove exceptions in vertex and fragment shader classes and replace with better error handling.
 	SPDLOG_DEBUG("Compiling shader objects.");
 	VertexShader vs(vc.getCode(), vc.getLineCount());
 	FragmentShader fs(fc.getCode(), fc.getLineCount());
@@ -82,18 +73,17 @@ bool Shader::init(const std::string& vertexShaderPath, const std::string& fragme
 	// Check result
 	if (result == GL_FALSE)
 	{
-		int length;
+		int length = 0;
 		glGetProgramiv(d_programId, GL_INFO_LOG_LENGTH, &length);
-		char* error = new char[length];
-		glGetProgramInfoLog(d_programId, length, NULL, error);
-		
-		std::string err("Shader link error: ");
-		err.append(error, length);
-		SPDLOG_ERROR("{}", err.c_str());
-		delete[] error;
-		return false;
+		std::vector<char> error(static_cast<std::size_t>(length) + 1, '\0');
+		glGetProgramInfoLog(d_programId, length, NULL, error.data());
+
+		// Release the failed program before reporting the error.
+		glDeleteProgram(d_programId);
+		d_programId = 0;
+
+		throw std::runtime_error(std::string("Shader link error: ") + error.data());
     }
-	return true;
 }
 
 // Set the shader program active

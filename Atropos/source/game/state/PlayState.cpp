@@ -22,7 +22,6 @@
 #include "game/control/RemoveOnDeathController.h"
 
 #include "util/Global.h"
-#include <spdlog/spdlog.h>
 
 // GLFW
 #include <glfw/glfw3.h>
@@ -43,7 +42,7 @@ PlayState::PlayState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSys
 	return;
 }
 
-bool PlayState::init()
+void PlayState::init()
 {
 	// TODO: All resource loading and game object creation should be directed by a level file.
 
@@ -53,32 +52,13 @@ bool PlayState::init()
 
 	// Loading resources
 	// TODO: Sound loading should be data driven, not hard coded.
-	// Load laser sound
-	if (!d_soundSystem->loadSFX("laser", "laser2.mp3", 0.2f))
-	{
-		return false;
-	}
-
-	// Load explosion sound
-	if (!d_soundSystem->loadSFX("explosion", "explosion2.wav", 0.6f))
-	{
-		return false;
-	}
-	// Load background music
-	if (!d_soundSystem->loadBGM("combat", "song3.mp3", 0.3f))
-	{
-		return false;
-	}
+	d_soundSystem->loadSFX("laser", "laser2.mp3", 0.2f);
+	d_soundSystem->loadSFX("explosion", "explosion2.wav", 0.6f);
+	d_soundSystem->loadBGM("combat", "song3.mp3", 0.3f);
 
 	// Preload model resources
-	if (!d_renderSystem->loadModel("shot"))
-	{
-		return false;
-	}
-	if (!d_renderSystem->loadModel("enemy"))
-	{
-		return false;
-	}
+	d_renderSystem->loadModel("shot");
+	d_renderSystem->loadModel("enemy");
 
 	// Collision group ids for enemy objects and the player model
 	d_playerGroup = d_collisionSystem->getNewGroupId();
@@ -86,11 +66,6 @@ bool PlayState::init()
 
 	// Add player
 	Renderable* playerDrawable = d_renderSystem->add("player");
-	if (playerDrawable == nullptr)
-	{
-		SPDLOG_ERROR("Failed to add player entity: model could not be loaded.");
-		return false;
-	}
 	// Player object controls camera
 	// TODO: Player object should be deserialized from data source (xml stream?).
 	d_player = new GameObject;
@@ -123,14 +98,8 @@ bool PlayState::init()
 			// Adds ground tiles
 			// TODO: Replace moving ground tiles with terrain system.
 			// TODO: Or at least clean up the initialization, right now its huge.
-			GameObject* tile = new GameObject;
 			Renderable* tileDrawable = d_renderSystem->add("watertile");
-			if (tileDrawable == nullptr)
-			{
-				SPDLOG_ERROR("Failed to add water tile entity: model could not be loaded.");
-				delete tile;
-				continue;
-			}
+			GameObject* tile = new GameObject;
 			tile->setDrawable(tileDrawable);
 			tile->addController(std::shared_ptr<IController>(new ShiftController(&d_renderSystem->getCamera(), 300.f)));
 
@@ -143,8 +112,6 @@ bool PlayState::init()
 			d_world.addObject(tile);
 		}
 	}
-
-	return true;
 }
 
 bool PlayState::update(float dtime)
@@ -176,32 +143,24 @@ bool PlayState::update(float dtime)
 	{
 		d_enemySpawn = 0.6f;
 		// Create new enemy
-		GameObject* enemy = new GameObject;
 		Renderable* enemyDrawable = d_renderSystem->add("enemy");
-		if (enemyDrawable == nullptr)
-		{
-			SPDLOG_ERROR("Failed to add enemy entity: model could not be loaded.");
-			delete enemy;
-		}
-		else
-		{
-			enemy->setDrawable(enemyDrawable);
-			enemy->setCollidable(d_collisionSystem->add(enemy->getDrawable()->getAABBox(), d_enemyGroup));
-			enemy->getCollidable()->setDamage(30.f);
+		GameObject* enemy = new GameObject;
+		enemy->setDrawable(enemyDrawable);
+		enemy->setCollidable(d_collisionSystem->add(enemy->getDrawable()->getAABBox(), d_enemyGroup));
+		enemy->getCollidable()->setDamage(30.f);
 
-			// Controller
-			enemy->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
-			enemy->addController(std::shared_ptr<IController>(new HealthController(40.f)));
-			enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion")));
-			enemy->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
-			enemy->addController(std::shared_ptr<IController>(new DespawnController(12.f)));
+		// Controller
+		enemy->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
+		enemy->addController(std::shared_ptr<IController>(new HealthController(40.f)));
+		enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion")));
+		enemy->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
+		enemy->addController(std::shared_ptr<IController>(new DespawnController(12.f)));
 
-			// Transformation
-			enemy->setTranslation(glm::translate(d_player->getTranslation(), glm::vec3(0.f, 0.f, 100.f)));
-			enemy->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f)));
-			enemy->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
-			d_world.addObject(enemy);
-		}
+		// Transformation
+		enemy->setTranslation(glm::translate(d_player->getTranslation(), glm::vec3(0.f, 0.f, 100.f)));
+		enemy->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f)));
+		enemy->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
+		d_world.addObject(enemy);
 	}
 
 	// Game end conditions. Player dies or survives long enough.

@@ -44,10 +44,8 @@ TEST_CASE("Image loads a 24-bit TGA as RGBA", "[image]")
 	writeFile(path, bytes);
 
 	Image image;
-	const bool result = image.load(path.string());
+	REQUIRE_NOTHROW(image.load(path.string()));
 	std::filesystem::remove(path);
-
-	REQUIRE(result);
 	REQUIRE(image.getWidth() == 2);
 	REQUIRE(image.getHeight() == 1);
 	const unsigned char* data = image.getData();
@@ -86,10 +84,8 @@ TEST_CASE("Image skips the TGA image identification field", "[image]")
 	writeFile(path, bytes);
 
 	Image image;
-	const bool result = image.load(path.string());
+	REQUIRE_NOTHROW(image.load(path.string()));
 	std::filesystem::remove(path);
-
-	REQUIRE(result);
 	REQUIRE(image.getWidth() == 2);
 	REQUIRE(image.getHeight() == 1);
 	const unsigned char* data = image.getData();
@@ -125,10 +121,8 @@ TEST_CASE("Image rejects a TGA with missing pixel data", "[image]")
 	writeFile(path, bytes);
 
 	Image image;
-	const bool result = image.load(path.string());
+	CHECK_THROWS(image.load(path.string()));
 	std::filesystem::remove(path);
-
-	CHECK_FALSE(result);
 }
 
 TEST_CASE("Image rejects a TGA with invalid dimensions", "[image]")
@@ -148,10 +142,8 @@ TEST_CASE("Image rejects a TGA with invalid dimensions", "[image]")
 	writeFile(path, header);
 
 	Image image;
-	const bool result = image.load(path.string());
+	CHECK_THROWS(image.load(path.string()));
 	std::filesystem::remove(path);
-
-	CHECK_FALSE(result);
 }
 
 TEST_CASE("Image rejects an 8-bit grayscale TGA", "[image]")
@@ -175,8 +167,6 @@ TEST_CASE("Image rejects an 8-bit grayscale TGA", "[image]")
 	writeFile(path, bytes);
 
 	Image image;
-	const bool result = image.load(path.string());
+	CHECK_THROWS(image.load(path.string()));
 	std::filesystem::remove(path);
-
-	CHECK_FALSE(result);
 }

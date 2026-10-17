@@ -14,9 +14,9 @@ public:
 	/**
 	* \brief Initializes engine and subsystems.
 	* \parm config Config file name containing initialization parameters.
-	* \return True on success and false on error.
+	* Throws std::runtime_error if the engine cannot be initialized.
 	*/
-	virtual bool init(const char* configFile) = 0;
+	virtual void init(const char* configFile) = 0;
 
 	/**
 	* \brief Starts game loop.

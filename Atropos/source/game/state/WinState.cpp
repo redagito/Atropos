@@ -19,17 +19,13 @@ WinState::WinState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSyste
 	return;
 }
 
-bool WinState::init()
+void WinState::init()
 {
 	d_renderSystem->createScene("win");
 	d_renderSystem->setActiveScene("win");
 
 	// Load background music
-	if (!d_soundSystem->loadBGM("win", "song1.mp3", 0.5f))
-	{
-		return false;
-	}
-	return true;
+	d_soundSystem->loadBGM("win", "song1.mp3", 0.5f);
 }
 
 bool WinState::update(float dtime)

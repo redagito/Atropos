@@ -28,7 +28,7 @@ public:
 	/**
 	* \brief Initializes state.
 	*/
-	bool init();
+	void init();
 
 	/**
 	* \brief Called on entering state.

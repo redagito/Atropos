@@ -46,19 +46,19 @@ Engine::~Engine()
 	SPDLOG_INFO("{}", Profiler::toString());
 }
 
-bool Engine::init(const char* configFile)
+void Engine::init(const char* configFile)
 {
 	// Prevent multiple init calls
 	if (d_init)
 	{
-		return true;
+		return;
 	}
 
 	// Configuration file with startup config
 	ConfigFile config;
-	bool configLoaded = config.load(configFile);
+	config.load(configFile);
 
-	// Set up console and file logging before reporting any problems.
+	// Set up console and file logging before creating any subsystem.
 	auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
 		config.get("log_filename", std::string("log.txt")), true);
@@ -68,33 +68,15 @@ bool Engine::init(const char* configFile)
 	logger->set_level(spdlog::level::trace);
 	spdlog::set_default_logger(logger);
 
-	if (!configLoaded)
-	{
-		SPDLOG_ERROR("Config file {} could not be opened.", configFile);
-		// TODO Just proceed with default config values?
-		cleanup();
-		return false;
-	}
-
 	// Initialize rendering system singleton
 	SPDLOG_INFO("Create rendering system.");
 	d_renderSystem.reset(new RenderSystem);
-	if (!d_renderSystem->init(config))
-	{
-		SPDLOG_ERROR("Failed to initialize rendering system.");
-		cleanup();
-		return false;
-	}
+	d_renderSystem->init(config);
 
 	// Initialize sound system
 	SPDLOG_INFO("Create sound system.");
 	d_soundSystem.reset(SoundSystem::create());
-	if (!d_soundSystem->init(config))
-	{
-		SPDLOG_ERROR("Failed to initialize sound system.");
-		cleanup();
-		return false;
-	}
+	d_soundSystem->init(config);
 
 	SPDLOG_INFO("Create collision system.");
 	// Initialize collision system
@@ -108,24 +90,13 @@ bool Engine::init(const char* configFile)
 	// Create game states
 	// TODO This should be data driven
 	SPDLOG_INFO("Create game states.");
-	if (!createGameStates())
-	{
-		SPDLOG_ERROR("Failed to create game states.");
-		cleanup();
-		return false;
-	}
+	createGameStates();
 
 	// Init game system
-	if (!d_gameSystem->init(config)) // Init subsystem
-	{
-		SPDLOG_ERROR("Failed to initialize game system.");
-		cleanup();
-		return false;
-	}
+	d_gameSystem->init(config); // Init subsystem
 
 	// Init successful
 	d_init = true;
-	return d_init;
 }
 
 void Engine::cleanup()
@@ -190,30 +161,17 @@ void Engine::run()
 	}
 }
 
-bool Engine::createGameStates()
+void Engine::createGameStates()
 {
 	// Add game states
 	// Load state, is initial state
-	if (!d_gameSystem->addState("load", new LoadState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_gameSystem.get())))
-	{
-		return false;
-	}
+	d_gameSystem->addState("load", new LoadState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_gameSystem.get()));
 	// Win state
-	if (!d_gameSystem->addState("win", new WinState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get())))
-	{
-		return false;
-	}
+	d_gameSystem->addState("win", new WinState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
 	// Lose state
-	if (!d_gameSystem->addState("lose", new LoseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get())))
-	{
-		return false;
-	}
+	d_gameSystem->addState("lose", new LoseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
 	// Pause state
-	if (!d_gameSystem->addState("pause", new PauseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get())))
-	{
-		return false;
-	}
-	return true;
+	d_gameSystem->addState("pause", new PauseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
 }
 
 void Engine::updateGame(float dtime)

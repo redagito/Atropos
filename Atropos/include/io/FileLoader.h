@@ -16,9 +16,9 @@ public:
 	/**
 	* \brief Loads the file content to memory.
 	*
-	* The functon returns true on success and false on error.
+	* Throws std::runtime_error if the file cannot be opened.
 	*/
-	bool load();
+	void load();
 
 	/**
 	* \brief Returns file content.

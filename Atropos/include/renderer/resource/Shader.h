@@ -35,8 +35,9 @@ public:
 	* Load vertex and fragment shader and compile to shader program.
 	* \param vertexShader Vertex shader file path.
 	* \param fragmentShader Fragment shader file path.
+	* Throws std::runtime_error if the sources cannot be loaded, compiled or linked.
 	*/
-	bool init(const std::string& vertexShader, const std::string& fragmentShader);
+	void init(const std::string& vertexShader, const std::string& fragmentShader);
 
 	/** 
 	* \brief Set as active shader.

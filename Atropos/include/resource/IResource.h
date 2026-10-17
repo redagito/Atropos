@@ -16,7 +16,7 @@ public:
 
 	/**
 	* \brief Loads resource from file.
-	* \return True on success and false on failure.
+	* Throws std::runtime_error on failure.
 	*/
-	virtual bool load(const std::string& file) = 0;
+	virtual void load(const std::string& file) = 0;
 };

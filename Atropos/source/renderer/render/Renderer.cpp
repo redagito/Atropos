@@ -150,7 +150,6 @@ void Renderer::draw(const VertexArrayObject* vao, int size, const AMaterial* mat
 	}
 	else
 	{
-		SPDLOG_ERROR("Called Renderer.draw while in end state");
 		throw std::runtime_error("Renderer.draw: Invalid call to draw without calling startFrame.");
 	}
 	// Add new render request

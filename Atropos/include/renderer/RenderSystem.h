@@ -34,8 +34,9 @@ public:
 
 	/**
 	* \brief Initialize render system.
+	* Throws std::runtime_error if the render system cannot be initialized.
 	*/
-	bool init(const ConfigFile& config);
+	void init(const ConfigFile& config);
 
 	/**
 	* \brief Enables or disables culling functionality
@@ -64,9 +65,9 @@ public:
 
 	/**
 	* \brief Loads model into resource cache.
-	* Loads model resource.
+	* Loads model resource. Throws std::runtime_error on failure.
 	*/
-	bool loadModel(const std::string& modelName);
+	void loadModel(const std::string& modelName);
 
 	/**
 	* \brief Add a new drawable entity to the scene.

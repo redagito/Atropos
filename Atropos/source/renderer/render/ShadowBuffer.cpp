@@ -1,6 +1,6 @@
 #include "renderer/render/ShadowBuffer.h"
 
-#include <spdlog/spdlog.h>
+#include <stdexcept>
 
 ShadowBuffer::ShadowBuffer()
 	:
@@ -32,13 +32,16 @@ ShadowBuffer::ShadowBuffer()
 	// Check error
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		SPDLOG_ERROR("Framebuffer not complete");
+		// Release the partially created resources before reporting the error.
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		return;
+		glDeleteFramebuffers(1, &d_shadowFramebuffer);
+		glDeleteTextures(1, &d_depthTexture);
+		d_shadowFramebuffer = 0;
+		d_depthTexture = 0;
+		throw std::runtime_error("Shadow framebuffer is not complete.");
 	}
 	// Set framebuffer to default
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	return;
 }
 
 ShadowBuffer::~ShadowBuffer()

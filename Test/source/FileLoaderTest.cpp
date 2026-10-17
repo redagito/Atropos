@@ -25,10 +25,10 @@ TEST_CASE("FileLoader reload does not duplicate content", "[fileloader]")
 	}
 
 	FileLoader loader(path.string());
-	REQUIRE(loader.load());
+	REQUIRE_NOTHROW(loader.load());
 	const std::string first = loader.getContent();
 
-	REQUIRE(loader.load());
+	REQUIRE_NOTHROW(loader.load());
 	const std::string second = loader.getContent();
 
 	std::filesystem::remove(path);
@@ -36,4 +36,11 @@ TEST_CASE("FileLoader reload does not duplicate content", "[fileloader]")
 	REQUIRE_FALSE(first.empty());
 	CHECK(first == "line one\nline two\nline three\n");
 	CHECK(first == second);
+}
+
+TEST_CASE("FileLoader throws when the file cannot be opened", "[fileloader]")
+{
+	FileLoader loader("definitely_missing_atropos_file.txt");
+
+	CHECK_THROWS(loader.load());
 }

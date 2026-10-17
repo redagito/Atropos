@@ -1,6 +1,6 @@
 #include "renderer/resource/Texture.h"
 
-#include <spdlog/spdlog.h>
+#include <stdexcept>
 
 Texture::Texture()
 	:
@@ -10,12 +10,11 @@ Texture::Texture()
 	glGenTextures(1, &d_texId);
 }
 
-bool Texture::init(const Image& image)
+void Texture::init(const Image& image)
 {
 	if (image.getWidth() == 0 || image.getHeight() == 0)
 	{
-		SPDLOG_ERROR("Cannot initialize a texture from an empty image.");
-		return false;
+		throw std::runtime_error("Cannot initialize a texture from an empty image.");
 	}
 
 	// Bind texture
@@ -35,7 +34,6 @@ bool Texture::init(const Image& image)
 	
 	// Unbind
 	glBindTexture(GL_TEXTURE_2D, 0);
-	return true;
 }
 
 // Clean up texture vram

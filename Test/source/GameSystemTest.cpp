@@ -26,9 +26,8 @@ namespace
 		{
 		}
 
-		bool init() override
+		void init() override
 		{
-			return true;
 		}
 
 		void onEnter() override
@@ -62,28 +61,38 @@ TEST_CASE("GameSystem replacing the active state exits the old state", "[gamesys
 	StateLog firstLog;
 	StateLog secondLog;
 
-	REQUIRE(system.addState("play", new FakeState(&firstLog)));
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&firstLog)));
 
 	ConfigFile config;
 	config.set("game_initialstate", "play");
-	REQUIRE(system.init(config));
+	REQUIRE_NOTHROW(system.init(config));
 	REQUIRE(firstLog.enters == 1);
 
-	REQUIRE(system.addState("play", new FakeState(&secondLog)));
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&secondLog)));
 
 	CHECK(firstLog.exits == 1);
 	CHECK(secondLog.enters == 1);
+}
+
+TEST_CASE("GameSystem init throws for an unregistered initial state", "[gamesystem]")
+{
+	GameSystem system;
+
+	ConfigFile config;
+	config.set("game_initialstate", "missing");
+
+	CHECK_THROWS(system.init(config));
 }
 
 TEST_CASE("GameSystem removing the active state leaves no active state", "[gamesystem]")
 {
 	GameSystem system;
 	StateLog log;
-	REQUIRE(system.addState("play", new FakeState(&log)));
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&log)));
 
 	ConfigFile config;
 	config.set("game_initialstate", "play");
-	REQUIRE(system.init(config));
+	REQUIRE_NOTHROW(system.init(config));
 
 	system.removeState("play");
 
@@ -95,12 +104,12 @@ TEST_CASE("GameSystem removing another state keeps the active state", "[gamesyst
 	GameSystem system;
 	StateLog activeLog;
 	StateLog otherLog;
-	REQUIRE(system.addState("play", new FakeState(&activeLog)));
-	REQUIRE(system.addState("pause", new FakeState(&otherLog)));
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&activeLog)));
+	REQUIRE_NOTHROW(system.addState("pause", new FakeState(&otherLog)));
 
 	ConfigFile config;
 	config.set("game_initialstate", "play");
-	REQUIRE(system.init(config));
+	REQUIRE_NOTHROW(system.init(config));
 
 	system.removeState("pause");
 

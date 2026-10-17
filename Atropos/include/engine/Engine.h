@@ -35,9 +35,9 @@ public:
 	/**
 	* \brief Initializes engine and subsystems.
 	* \parm config Config file name with startup data.
-	* \return True on success and false on error.
+	* Throws std::runtime_error if the engine or a subsystem cannot be initialized.
 	*/
-	bool init(const char* configFile);
+	void init(const char* configFile);
 
 	/**
 	* \brief Starts game loop.
@@ -54,7 +54,7 @@ protected:
 	/**
 	 * \brief Helper function for initializing the game system. Creates and adds game states.
 	 */
-	bool createGameStates();
+	void createGameStates();
 
 	/**
 	* \brief Update game state.

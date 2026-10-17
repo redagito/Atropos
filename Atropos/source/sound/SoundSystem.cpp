@@ -1,12 +1,13 @@
 #include "sound/SoundSystem.h"
 
 #include "sound/AudioDecoder.h"
-#include <spdlog/spdlog.h>
 
 #include <AL/al.h>
 #include <AL/alc.h>
 
 #include <cstddef>
+#include <stdexcept>
+#include <string>
 
 SoundSystem::SoundSystem()
 	:
@@ -53,7 +54,7 @@ SoundSystem::~SoundSystem()
 	}
 }
 
-bool SoundSystem::init(const ConfigFile& config)
+void SoundSystem::init(const ConfigFile& config)
 {
 	d_bgmPath = config.get("sound_bgmpath", "data/sound/bgm/");
 	d_sfxPath = config.get("sound_sfxpath", "data/sound/sfx/");
@@ -61,21 +62,21 @@ bool SoundSystem::init(const ConfigFile& config)
 	ALCdevice* device = alcOpenDevice(nullptr);
 	if (device == nullptr)
 	{
-		return false;
+		throw std::runtime_error("Failed to open the OpenAL device.");
 	}
 
 	ALCcontext* context = alcCreateContext(device, nullptr);
 	if (context == nullptr)
 	{
 		alcCloseDevice(device);
-		return false;
+		throw std::runtime_error("Failed to create the OpenAL context.");
 	}
 
 	if (alcMakeContextCurrent(context) == ALC_FALSE)
 	{
 		alcDestroyContext(context);
 		alcCloseDevice(device);
-		return false;
+		throw std::runtime_error("Failed to activate the OpenAL context.");
 	}
 
 	alGenSources(1, &d_bgmSource);
@@ -88,66 +89,61 @@ bool SoundSystem::init(const ConfigFile& config)
 		}
 		alcDestroyContext(context);
 		alcCloseDevice(device);
-		return false;
+		throw std::runtime_error("Failed to generate the background music source.");
 	}
 	alSourcei(d_bgmSource, AL_LOOPING, AL_TRUE);
 
 	d_device = device;
 	d_context = context;
-	return true;
 }
 
-bool SoundSystem::load(const std::string& name, const std::string& file, float volume, const std::string& path, std::unordered_map<std::string, Buffer>& buffers)
+void SoundSystem::load(const std::string& name, const std::string& file, float volume, const std::string& path, std::unordered_map<std::string, Buffer>& buffers)
 {
 	if (buffers.count(name) != 0)
 	{
-		return true;
+		return;
 	}
 
 	AudioDecoder::WaveData wave;
 	if (!AudioDecoder::decodeFile(path + file, wave))
 	{
-		return false;
+		throw std::runtime_error("Failed to decode audio file: " + path + file);
 	}
 
 	if (wave.channels < 1 || wave.channels > 2)
 	{
-		SPDLOG_ERROR("Unsupported channel count {} for {}.", wave.channels, name.c_str());
-		return false;
+		throw std::runtime_error("Unsupported channel count in audio file: " + path + file);
 	}
 
 	ALuint buffer = 0;
 	alGenBuffers(1, &buffer);
 	if (buffer == 0)
 	{
-		SPDLOG_ERROR("Failed to generate OpenAL buffer for {}.", name.c_str());
-		return false;
+		throw std::runtime_error("Failed to generate an OpenAL buffer for: " + name);
 	}
 	const std::size_t byteCount = wave.samples.size() * sizeof(short);
 	alBufferData(buffer, wave.channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
 		wave.samples.data(), static_cast<ALsizei>(byteCount), wave.sampleRate);
 	if (alGetError() != AL_NO_ERROR)
 	{
-		SPDLOG_ERROR("Failed to upload audio data for {}.", name.c_str());
 		alDeleteBuffers(1, &buffer);
-		return false;
+		throw std::runtime_error("Failed to upload audio data for: " + name);
 	}
 
 	Buffer entry;
 	entry.buffer = buffer;
 	entry.volume = volume;
 	buffers[name] = entry;
-	return true;
 }
 
-bool SoundSystem::loadBGM(const std::string& name, const std::string& file, float volume)
+void SoundSystem::loadBGM(const std::string& name, const std::string& file, float volume)
 {
-	return load(name, file, volume, d_bgmPath, d_bgmBuffers);
+	load(name, file, volume, d_bgmPath, d_bgmBuffers);
 }
 
-bool SoundSystem::loadSFX(const std::string& name, const std::string& file, float volume)
+void SoundSystem::loadSFX(const std::string& name, const std::string& file, float volume)
 {
-	return load(name, file, volume, d_sfxPath, d_sfxBuffers);
+	load(name, file, volume, d_sfxPath, d_sfxBuffers);
 }
 
 void SoundSystem::playBGM(const std::string& name)
@@ -155,7 +151,7 @@ void SoundSystem::playBGM(const std::string& name)
 	const auto it = d_bgmBuffers.find(name);
 	if (it == d_bgmBuffers.end())
 	{
-		return;
+		throw std::runtime_error("Background music is not loaded: " + name);
 	}
 
 	alSourceStop(d_bgmSource);
@@ -169,7 +165,7 @@ void SoundSystem::playSFX(const std::string& name)
 	const auto it = d_sfxBuffers.find(name);
 	if (it == d_sfxBuffers.end())
 	{
-		return;
+		throw std::runtime_error("Sound effect is not loaded: " + name);
 	}
 
 	for (auto source = d_sfxSources.begin(); source != d_sfxSources.end();)
@@ -192,7 +188,7 @@ void SoundSystem::playSFX(const std::string& name)
 	alGenSources(1, &handle);
 	if (handle == 0)
 	{
-		return;
+		throw std::runtime_error("Failed to generate an OpenAL source for: " + name);
 	}
 	alSourcei(handle, AL_BUFFER, static_cast<ALint>(it->second.buffer));
 	alSourcef(handle, AL_GAIN, it->second.volume);

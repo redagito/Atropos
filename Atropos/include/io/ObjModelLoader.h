@@ -23,8 +23,9 @@ public:
 
 	/**
 	* \brief Loads model from stream.
+	* Throws std::runtime_error if the file cannot be opened or holds no geometry.
 	*/
-	bool load(const std::string& file);
+	void load(const std::string& file);
 
 	/**
 	* \brief Returns vertex data.

@@ -8,7 +8,6 @@
 #include "renderer/scene/Camera.h"
 #include "renderer/render/Renderer.h"
 
-#include <spdlog/spdlog.h>
 #include "debug/Profiler.h"
 #include "util/Global.h"
 
@@ -16,7 +15,8 @@
 
 #include <glfw/glfw3.h>
 
-#include <sstream>
+#include <stdexcept>
+#include <string>
 
 void RenderSystem::resizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -36,15 +36,15 @@ RenderSystem::RenderSystem()
 
 }
 
-bool RenderSystem::init(const ConfigFile& config)
+void RenderSystem::init(const ConfigFile& config)
 {
-	unsigned int width = config.get("render_windowwidth", 800);
-	unsigned int height = config.get("render_windowheight", 600);
+	const unsigned int width = config.get("render_windowwidth", 800);
+	const unsigned int height = config.get("render_windowheight", 600);
 
 	// Init GLFW
 	if (!glfwInit())
 	{
-		return false;
+		throw std::runtime_error("Failed to initialize GLFW.");
 	}
 	// GL core context creation
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
@@ -58,7 +58,7 @@ bool RenderSystem::init(const ConfigFile& config)
 	if (Global::window == nullptr)
 	{
 		glfwTerminate();
-		return false;
+		throw std::runtime_error("Failed to create the render window.");
 	}
 	glfwMakeContextCurrent(Global::window);
 
@@ -71,7 +71,7 @@ bool RenderSystem::init(const ConfigFile& config)
 		glfwDestroyWindow(Global::window);
 		Global::window = nullptr;
 		glfwTerminate();
-		return false;
+		throw std::runtime_error("Failed to load the OpenGL function pointers.");
 	}
 
 	// Resize callback
@@ -80,22 +80,13 @@ bool RenderSystem::init(const ConfigFile& config)
 	// Create resource manager width resource path
 	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/")));
 
-	// Create render device with window size and shadow mapping shader
+	// Create render device with window size and shadow mapping shader.
+	// Loading the shadow shader throws if the resource is unavailable.
 	Shader* shadowShader = d_manager->getShader("shadow");
-	if (shadowShader == nullptr)
-	{
-		SPDLOG_ERROR("Failed to load shadow shader.");
-		d_manager = nullptr;
-		glfwDestroyWindow(Global::window);
-		Global::window = nullptr;
-		glfwTerminate();
-		return false;
-	}
 	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, shadowShader));
 
 	// Show window
 	glfwShowWindow(Global::window);
-	return true;
 }
 
 RenderSystem::~RenderSystem()
@@ -158,9 +149,9 @@ void RenderSystem::swapBuffer()
 	glfwSwapBuffers(Global::window);
 }
 
-bool RenderSystem::loadModel(const std::string& modelName)
+void RenderSystem::loadModel(const std::string& modelName)
 {
-	return d_manager->loadModel(modelName);
+	d_manager->loadModel(modelName);
 }
 
 // Add entity
@@ -168,11 +159,6 @@ Renderable* RenderSystem::add(const char* model)
 {
 	assert(d_activeScene != nullptr);
 	Model* modelPtr = d_manager->getModel(model);
-	if (modelPtr == nullptr)
-	{
-		SPDLOG_ERROR("Failed to add entity: model {} could not be loaded.", model);
-		return nullptr;
-	}
 	Renderable* entity = new Renderable(modelPtr);
 	d_activeScene->add(entity);
 	return entity;

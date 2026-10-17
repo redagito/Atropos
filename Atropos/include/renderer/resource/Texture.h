@@ -26,8 +26,9 @@ public:
 
 	/**
 	* \brief Init from image file.
+	* Throws std::runtime_error if the image is empty.
 	*/
-	bool init(const Image& image);
+	void init(const Image& image);
 
 	/**
 	 * \brief Set texture active as specified texture unit.

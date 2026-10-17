@@ -19,9 +19,8 @@ PauseState::PauseState(RenderSystem* renderSys, CollisionSystem* collSys, SoundS
 	return;
 }
 
-bool PauseState::init()
+void PauseState::init()
 {
-	return true;
 }
 
 bool PauseState::update(float dtime)

@@ -1,7 +1,7 @@
 #include "renderer/resource/Mesh.h"
-#include <spdlog/spdlog.h>
 
-#include "io/ObjModelLoader.h"
+#include <stdexcept>
+#include <vector>
 
 Mesh::Mesh()
 	:
@@ -17,12 +17,11 @@ Mesh::~Mesh()
 	return;
 }
 
-bool Mesh::init(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& uv, const AABBox& box)
+void Mesh::init(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& uv, const AABBox& box)
 {
 	if (vertices.empty())
 	{
-		SPDLOG_ERROR("Cannot initialize a mesh without vertex data.");
-		return false;
+		throw std::runtime_error("Cannot initialize a mesh without vertex data.");
 	}
 
 	// Load into VRAM
@@ -32,7 +31,6 @@ bool Mesh::init(const std::vector<float>& vertices, const std::vector<float>& no
 
 	// Store bounding box
 	d_box = box;
-	return true;
 }
 
 const AABBox& Mesh::getAABBox() const

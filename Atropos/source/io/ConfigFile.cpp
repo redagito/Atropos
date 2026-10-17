@@ -10,24 +10,20 @@ ConfigFile::ConfigFile()
 	return;
 }
 
-bool ConfigFile::load(const std::string& fileName)
+void ConfigFile::load(const std::string& fileName)
 {
 	std::ifstream ifs(fileName);
 	if (!ifs.is_open())
 	{
-		return false;
+		throw std::runtime_error("Failed to open config file: " + fileName);
 	}
 
 	// Parse lines with key value data
 	std::string line;
 	while (std::getline(ifs, line))
 	{
-		if (!parseLine(line))
-		{
-			return false;
-		}
+		parseLine(line);
 	}
-	return true;
 }
 
 bool ConfigFile::has(const std::string& key) const
@@ -104,22 +100,22 @@ void ConfigFile::set(const std::string& key, const std::string& value)
 	d_values[key] = value;
 }
 
-bool ConfigFile::parseLine(const std::string& line)
+void ConfigFile::parseLine(const std::string& line)
 {
 	// Comments and empty lines
 	if (line.size() == 0)
 	{
-		return true;
+		return;
 	}
 	if (line[0] == '#')
 	{
-		return true;
+		return;
 	}
 
 	std::size_t pos = line.find("=");
 	if (pos == std::string::npos)
 	{
-		return false;
+		throw std::runtime_error("Malformed config line: " + line);
 	}
 	std::string value = line.substr(pos + 1);
 	// Strip the carriage return of CRLF line endings.
@@ -128,5 +124,4 @@ bool ConfigFile::parseLine(const std::string& line)
 		value.pop_back();
 	}
 	d_values[line.substr(0, pos)] = value;
-	return true;
 }

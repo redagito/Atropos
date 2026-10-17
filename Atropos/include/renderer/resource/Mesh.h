@@ -28,8 +28,9 @@ public:
 
 	/**
 	* \brief Initialize with model loader.
+	* Throws std::runtime_error if the vertex data is empty.
 	*/
-	bool init(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& uv, const AABBox& box);
+	void init(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& uv, const AABBox& box);
 
 	/**
 	* \brief Read access to vertex buffer

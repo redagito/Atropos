@@ -8,7 +8,7 @@
 
 namespace
 {
-	bool loadFromString(const std::string& contents, ObjModelLoader& loader)
+	void loadFromString(const std::string& contents, ObjModelLoader& loader)
 	{
 		static int counter = 0;
 		const std::filesystem::path path = std::filesystem::temp_directory_path()
@@ -20,9 +20,16 @@ namespace
 		}
 
 		std::string fileName = path.string();
-		const bool result = loader.load(fileName);
+		try
+		{
+			loader.load(fileName);
+		}
+		catch (...)
+		{
+			std::filesystem::remove(path);
+			throw;
+		}
 		std::filesystem::remove(path);
-		return result;
 	}
 }
 
@@ -41,7 +48,7 @@ TEST_CASE("ObjModelLoader loads a fully specified triangle", "[obj]")
 		"f 1/1/1 2/2/2 3/3/3\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(contents, loader));
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
 	REQUIRE(loader.getNormals().size() == 9);
@@ -84,7 +91,7 @@ TEST_CASE("ObjModelLoader supports negative indices", "[obj]")
 		"f -3/-3/-3 -2/-2/-2 -1/-1/-1\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(contents, loader));
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
 	REQUIRE(loader.getNormals().size() == 9);
@@ -109,7 +116,7 @@ TEST_CASE("ObjModelLoader handles normals-only faces", "[obj]")
 		"f 1//1 2//2 3//3\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(contents, loader));
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
 	REQUIRE(loader.getNormals().size() == 9);
@@ -135,7 +142,7 @@ TEST_CASE("ObjModelLoader handles position-uv faces", "[obj]")
 		"f 1/1 2/2 3/3\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(contents, loader));
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
 	REQUIRE(loader.getNormals().size() == 9);
@@ -158,7 +165,7 @@ TEST_CASE("ObjModelLoader handles position-only faces", "[obj]")
 		"f 1 2 3\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(contents, loader));
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
 	REQUIRE(loader.getNormals().size() == 9);
@@ -186,7 +193,7 @@ TEST_CASE("ObjModelLoader skips out-of-range face indices", "[obj]")
 	ObjModelLoader loader;
 	// Every face index is out of range, so no geometry is produced and the
 	// load is rejected.
-	CHECK_FALSE(loadFromString(contents, loader));
+	CHECK_THROWS(loadFromString(contents, loader));
 	CHECK(loader.getVertices().empty());
 }
 
@@ -203,7 +210,7 @@ TEST_CASE("ObjModelLoader ignores malformed declaration lines", "[obj]")
 		"f 1 2 3\n";
 
 	ObjModelLoader loader;
-	CHECK(loadFromString(contents, loader));
+	CHECK_NOTHROW(loadFromString(contents, loader));
 	CHECK(loader.getVertices().size() == 9);
 }
 
@@ -221,7 +228,7 @@ TEST_CASE("ObjModelLoader ignores lines with missing float values", "[obj]")
 		"f 1/1/1 2/1/1 3/1/1\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(contents, loader));
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
 
 	// The malformed "v 1 2" must not shift the vertex indices.
 	REQUIRE(loader.getVertices().size() == 9);
@@ -243,7 +250,7 @@ TEST_CASE("ObjModelLoader rejects a model without geometry", "[obj]")
 	const std::string contents = "# empty model\n";
 
 	ObjModelLoader loader;
-	CHECK_FALSE(loadFromString(contents, loader));
+	CHECK_THROWS(loadFromString(contents, loader));
 }
 
 TEST_CASE("ObjModelLoader reload replaces the previous data", "[obj]")
@@ -261,10 +268,10 @@ TEST_CASE("ObjModelLoader reload replaces the previous data", "[obj]")
 		"f 1/1/1 2/2/2 3/3/3\n";
 
 	ObjModelLoader loader;
-	REQUIRE(loadFromString(triangle, loader));
+	REQUIRE_NOTHROW(loadFromString(triangle, loader));
 	REQUIRE(loader.getVertices().size() == 9);
 
-	REQUIRE(loadFromString(triangle, loader));
+	REQUIRE_NOTHROW(loadFromString(triangle, loader));
 	CHECK(loader.getVertices().size() == 9);
 	CHECK(loader.getUV().size() == 6);
 	CHECK(loader.getNormals().size() == 9);

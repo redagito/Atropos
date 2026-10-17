@@ -17,8 +17,9 @@ public:
 
 	/**
 	* \brief Explicit initialization.
+	* Throws std::runtime_error if the state cannot be initialized.
 	*/
-	virtual bool init() = 0;
+	virtual void init() = 0;
 
 	/**
 	* \brief Called on entering state.

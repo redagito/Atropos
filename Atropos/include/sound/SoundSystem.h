@@ -29,18 +29,21 @@ public:
 
 	/**
 	* \brief Initialize sound system.
+	* Throws std::runtime_error if the sound device or context cannot be created.
 	*/
-	bool init(const ConfigFile& config);
+	void init(const ConfigFile& config);
 
 	/**
 	* \brief Load audio file as background music.
+	* Throws std::runtime_error if the file cannot be loaded.
 	*/
-	bool loadBGM(const std::string& name, const std::string& file, float volume);
+	void loadBGM(const std::string& name, const std::string& file, float volume);
 
 	/**
 	* \brief Load audio file as sound effect.
+	* Throws std::runtime_error if the file cannot be loaded.
 	*/
-	bool loadSFX(const std::string& name, const std::string& file, float volume);
+	void loadSFX(const std::string& name, const std::string& file, float volume);
 
 	/**
 	* \brief Play background music in loop.
@@ -64,7 +67,7 @@ private:
 		float volume; /**< Playback volume. */
 	};
 
-	bool load(const std::string& name, const std::string& file, float volume, const std::string& path, std::unordered_map<std::string, Buffer>& buffers);
+	void load(const std::string& name, const std::string& file, float volume, const std::string& path, std::unordered_map<std::string, Buffer>& buffers);
 
 	std::string d_bgmPath; /**< Background music path. */
 	std::string d_sfxPath; /**< Sound effects path. */

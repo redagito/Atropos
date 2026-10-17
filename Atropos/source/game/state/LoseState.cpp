@@ -19,17 +19,13 @@ LoseState::LoseState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSys
 	return;
 }
 
-bool LoseState::init()
+void LoseState::init()
 {
 	d_renderSystem->createScene("lose");
 	d_renderSystem->setActiveScene("lose");
 
 	// Load background music
-	if (!d_soundSystem->loadBGM("lose", "song4.mp3", 0.5f))
-	{
-		return false;
-	}
-	return true;
+	d_soundSystem->loadBGM("lose", "song4.mp3", 0.5f);
 }
 
 bool LoseState::update(float dtime)
