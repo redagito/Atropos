@@ -2,6 +2,7 @@ add_executable(atropos_tests
     source/ConfigFileTest.cpp
     source/AudioDecoderTest.cpp
     source/ObjModelLoaderTest.cpp
+    source/ImageTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE

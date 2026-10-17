@@ -65,11 +65,14 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     fread(tgaFile->imageData, sizeof(unsigned char), imageSize, filePtr);
 
     // Change from BGR to RGB so OpenGL can read the image data.
-    for (int imageIdx = 0; imageIdx < imageSize; imageIdx += colorMode)
+    if (colorMode >= 3)
     {
-        colorSwap = tgaFile->imageData[imageIdx];
-        tgaFile->imageData[imageIdx] = tgaFile->imageData[imageIdx + 2];
-        tgaFile->imageData[imageIdx + 2] = colorSwap;
+        for (int imageIdx = 0; imageIdx < imageSize; imageIdx += colorMode)
+        {
+            colorSwap = tgaFile->imageData[imageIdx];
+            tgaFile->imageData[imageIdx] = tgaFile->imageData[imageIdx + 2];
+            tgaFile->imageData[imageIdx + 2] = colorSwap;
+        }
     }
 
     fclose(filePtr);

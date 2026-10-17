@@ -38,7 +38,29 @@ bool CImage::load(const std::string& fileName)
 		}
 		// Assign to vector
 		// RGBA data
-		d_data.assign(file.imageData, file.imageData + file.imageWidth * file.imageHeight * 4);
+		int channels = file.bitCount / 8;
+		if (channels == 4)
+		{
+			d_data.assign(file.imageData, file.imageData + file.imageWidth * file.imageHeight * 4);
+		}
+		else if (channels == 3)
+		{
+			d_data.clear();
+			d_data.reserve(file.imageWidth * file.imageHeight * 4);
+			for (int i = 0; i < file.imageWidth * file.imageHeight; ++i)
+			{
+				d_data.push_back(file.imageData[i * 3]);
+				d_data.push_back(file.imageData[i * 3 + 1]);
+				d_data.push_back(file.imageData[i * 3 + 2]);
+				d_data.push_back(255);
+			}
+		}
+		else
+		{
+			LOG_ERROR("Unsupported TGA color depth %d in file %s.", channels, fileName.c_str());
+			deleteTGAFile(&file);
+			return false;
+		}
 		// Set size
 		d_width = file.imageWidth;
 		d_height = file.imageHeight;
