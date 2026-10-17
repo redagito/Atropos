@@ -3,7 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include <cstdint>
-#include <mutex>
 
 /**
  * \brief Simple profiler class.
@@ -35,5 +34,4 @@ private:
 	double d_time; /**< Start time. */
 	std::string d_name; /**< Profile name. */
 	static std::unordered_map<std::string, SData> s_profileData; /**< Profile data. */
-	static std::mutex d_mutex;
 };

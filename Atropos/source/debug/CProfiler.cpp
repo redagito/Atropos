@@ -6,8 +6,6 @@
 #include <sstream>
 #include <iostream>
 
-std::mutex CProfiler::d_mutex;
-
 std::unordered_map<std::string, CProfiler::SData> CProfiler::s_profileData;
 
 CProfiler::CProfiler(const std::string& name)
@@ -21,10 +19,6 @@ CProfiler::CProfiler(const std::string& name)
 CProfiler::~CProfiler()
 {
 	d_time = (glfwGetTime() - d_time) * 1000.0;
-
-	// Lock map
-	// TODO Per entry locking
-	//std::lock_guard<std::mutex> lock(d_mutex);
 
 	// Get entry
 	CProfiler::SData& data = s_profileData[d_name];
@@ -48,9 +42,6 @@ std::string CProfiler::toString()
 {
 	std::stringstream ss;
 	ss << "[Profile data]" << std::endl;
-
-	// Lock map
-	//std::lock_guard<std::mutex> lock(d_mutex);
 
 	// Write profiling statistics
 	for (const auto& data : s_profileData)

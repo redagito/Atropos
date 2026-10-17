@@ -9,6 +9,7 @@
 #include "debug/CProfiler.h"
 
 #include <glm/ext.hpp>
+#include <stdexcept>
 
 // Initialize values, immutable class
 CRenderRequest::CRenderRequest(const CVertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool shadow)
