@@ -59,11 +59,6 @@ public:
 	void addController(const std::shared_ptr<IController>& controller);
 
 	/**
-	 * \brief Removes controller from object.
-	 */
-	void removeController(const std::shared_ptr<IController>& controller);
-
-	/**
 	* \brief Sets rotation matrix.
 	*/
 	void setRotation(const glm::mat4& rotation);
@@ -79,19 +74,9 @@ public:
 	void setScale(const glm::mat4& scale);
 
 	/**
-	* \brief Returns rotation matrix
-	*/
-	const glm::mat4& getRotation() const;
-
-	/**
 	* \brief Returns translation matrix
 	*/
 	const glm::mat4& getTranslation() const;
-	
-	/**
-	* \brief Returns scale matrix
-	*/
-	const glm::mat4& getScale() const;
 
 	/**
 	* \brief Marks this object for deletion.

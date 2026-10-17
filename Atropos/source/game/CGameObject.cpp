@@ -115,12 +115,6 @@ void CGameObject::addController(const std::shared_ptr<IController>& controller)
 	d_controllers.push_back(controller);
 }
 
-void CGameObject::removeController(const std::shared_ptr<IController>& controller)
-{
-	controller->detach();
-	d_controllers.remove(controller);
-}
-
 void CGameObject::setRotation(const glm::mat4& rotation)
 {
 	d_rotation = rotation;
@@ -139,19 +133,9 @@ void CGameObject::setScale(const glm::mat4& scale)
 	d_transformationChanged = true;
 }
 
-const glm::mat4& CGameObject::getRotation() const
-{
-	return d_rotation;
-}
-
 const glm::mat4& CGameObject::getTranslation() const
 {
 	return d_translation;
-}
-
-const glm::mat4& CGameObject::getScale() const
-{
-	return d_scale;
 }
 
 void CGameObject::markDeleted()
