@@ -6,8 +6,6 @@
 #include "renderer/resource/CModel.h"
 #include "renderer/resource/AMaterial.h"
 
-#include "core/TFactory.h"
-
 #include <string>
 #include <unordered_map>
 #include <memory>
@@ -25,8 +23,6 @@
 class CResourceManager
 {
 public:
-	typedef TFactory<AMaterial, std::string> MaterialFactory; /**< Material factory. */
-
 	/**
 	* \brief Initialization for the resource manager.
 	*
@@ -98,7 +94,6 @@ public:
 
 private:
 	std::string d_resourcePath; /**< Base resource path. */
-	MaterialFactory d_materialFactory; /**< Internal material factory. */
 
 	std::unordered_map<std::string, std::unique_ptr<CTexture>> d_textureMap; /**< Loaded textures. */
 	std::unordered_map<std::string, std::unique_ptr<CShader>> d_shaderMap; /**< Loaded shader. */
