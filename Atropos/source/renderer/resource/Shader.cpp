@@ -4,7 +4,6 @@
 #include "renderer/resource/shader/VertexShader.h"
 #include "renderer/resource/shader/ShaderCode.h"
 
-#include "io/FileLoader.h"
 #include <spdlog/spdlog.h>
 
 #include <glm/ext.hpp>
@@ -34,21 +33,13 @@ Shader::~Shader()
 	return;
 }
 
-void Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+void Shader::init(const ShaderSources& sources)
 {
-	SPDLOG_DEBUG("Creating shader from vertex shader {} and fragment shader {}.", vertexShaderPath, fragmentShaderPath);
-
-	// Load vertex shader
-	FileLoader vl(vertexShaderPath);
-	vl.load();
-
-	// Load fragment shader
-	FileLoader fl(fragmentShaderPath);
-	fl.load();
+	SPDLOG_DEBUG("Creating shader program from source.");
 
 	// Convert to code
-	ShaderCode vc(vl.getContent());
-	ShaderCode fc(fl.getContent());
+	ShaderCode vc(sources.vertex.c_str());
+	ShaderCode fc(sources.fragment.c_str());
 
 	// Compile
 	SPDLOG_DEBUG("Compiling shader objects.");

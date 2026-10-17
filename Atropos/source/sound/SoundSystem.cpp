@@ -6,8 +6,18 @@
 #include <AL/alc.h>
 
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <string>
+
+SoundBuffer::~SoundBuffer()
+{
+	if (id != 0)
+	{
+		ALuint buffer = id;
+		alDeleteBuffers(1, &buffer);
+	}
+}
 
 SoundSystem::SoundSystem()
 	:
@@ -20,6 +30,11 @@ SoundSystem::SoundSystem()
 
 SoundSystem::~SoundSystem()
 {
+	// Delete the decoded and uploaded buffers while the context is still
+	// current, the sound system must be destroyed before the thread pool.
+	d_bgm = nullptr;
+	d_sfx = nullptr;
+
 	if (d_context != nullptr)
 	{
 		stopAll();
@@ -28,18 +43,6 @@ SoundSystem::~SoundSystem()
 		{
 			alDeleteSources(1, &d_bgmSource);
 			d_bgmSource = 0;
-		}
-
-		for (const auto& entry : d_bgmBuffers)
-		{
-			ALuint buffer = entry.second.buffer;
-			alDeleteBuffers(1, &buffer);
-		}
-
-		for (const auto& entry : d_sfxBuffers)
-		{
-			ALuint buffer = entry.second.buffer;
-			alDeleteBuffers(1, &buffer);
 		}
 
 		alcMakeContextCurrent(nullptr);
@@ -54,7 +57,7 @@ SoundSystem::~SoundSystem()
 	}
 }
 
-void SoundSystem::init(const ConfigFile& config)
+void SoundSystem::init(const ConfigFile& config, ThreadPool& pool)
 {
 	d_bgmPath = config.get("sound_bgmpath", "data/sound/bgm/");
 	d_sfxPath = config.get("sound_sfxpath", "data/sound/sfx/");
@@ -95,31 +98,34 @@ void SoundSystem::init(const ConfigFile& config)
 
 	d_device = device;
 	d_context = context;
+
+	d_bgm = std::make_unique<Loader>(pool);
+	d_sfx = std::make_unique<Loader>(pool);
 }
 
-void SoundSystem::load(const std::string& name, const std::string& file, float volume, const std::string& path, std::unordered_map<std::string, Buffer>& buffers)
+AudioDecoder::WaveData SoundSystem::decodeAudio(const std::string& file)
 {
-	if (buffers.count(name) != 0)
-	{
-		return;
-	}
-
 	AudioDecoder::WaveData wave;
-	if (!AudioDecoder::decodeFile(path + file, wave))
+	if (!AudioDecoder::decodeFile(file, wave))
 	{
-		throw std::runtime_error("Failed to decode audio file: " + path + file);
+		throw std::runtime_error("Failed to decode audio file: " + file);
 	}
 
 	if (wave.channels < 1 || wave.channels > 2)
 	{
-		throw std::runtime_error("Unsupported channel count in audio file: " + path + file);
+		throw std::runtime_error("Unsupported channel count in audio file: " + file);
 	}
 
+	return wave;
+}
+
+std::unique_ptr<SoundBuffer> SoundSystem::createBuffer(const AudioDecoder::WaveData& wave, float volume)
+{
 	ALuint buffer = 0;
 	alGenBuffers(1, &buffer);
 	if (buffer == 0)
 	{
-		throw std::runtime_error("Failed to generate an OpenAL buffer for: " + name);
+		throw std::runtime_error("Failed to generate an OpenAL buffer.");
 	}
 	const std::size_t byteCount = wave.samples.size() * sizeof(short);
 	alBufferData(buffer, wave.channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
@@ -127,46 +133,44 @@ void SoundSystem::load(const std::string& name, const std::string& file, float v
 	if (alGetError() != AL_NO_ERROR)
 	{
 		alDeleteBuffers(1, &buffer);
-		throw std::runtime_error("Failed to upload audio data for: " + name);
+		throw std::runtime_error("Failed to upload audio data.");
 	}
 
-	Buffer entry;
-	entry.buffer = buffer;
-	entry.volume = volume;
-	buffers[name] = entry;
+	auto sound = std::make_unique<SoundBuffer>();
+	sound->id = buffer;
+	sound->volume = volume;
+	return sound;
 }
 
 void SoundSystem::loadBGM(const std::string& name, const std::string& file, float volume)
 {
-	load(name, file, volume, d_bgmPath, d_bgmBuffers);
+	const std::string path = d_bgmPath + file;
+	d_bgm->request(name,
+		[path] { return decodeAudio(path); },
+		[volume](const AudioDecoder::WaveData& wave) { return createBuffer(wave, volume); });
 }
 
 void SoundSystem::loadSFX(const std::string& name, const std::string& file, float volume)
 {
-	load(name, file, volume, d_sfxPath, d_sfxBuffers);
+	const std::string path = d_sfxPath + file;
+	d_sfx->request(name,
+		[path] { return decodeAudio(path); },
+		[volume](const AudioDecoder::WaveData& wave) { return createBuffer(wave, volume); });
 }
 
 void SoundSystem::playBGM(const std::string& name)
 {
-	const auto it = d_bgmBuffers.find(name);
-	if (it == d_bgmBuffers.end())
-	{
-		throw std::runtime_error("Background music is not loaded: " + name);
-	}
+	SoundBuffer* buffer = d_bgm->getHandle(name).get();
 
 	alSourceStop(d_bgmSource);
-	alSourcei(d_bgmSource, AL_BUFFER, static_cast<ALint>(it->second.buffer));
-	alSourcef(d_bgmSource, AL_GAIN, it->second.volume);
+	alSourcei(d_bgmSource, AL_BUFFER, static_cast<ALint>(buffer->id));
+	alSourcef(d_bgmSource, AL_GAIN, buffer->volume);
 	alSourcePlay(d_bgmSource);
 }
 
 void SoundSystem::playSFX(const std::string& name)
 {
-	const auto it = d_sfxBuffers.find(name);
-	if (it == d_sfxBuffers.end())
-	{
-		throw std::runtime_error("Sound effect is not loaded: " + name);
-	}
+	SoundBuffer* buffer = d_sfx->getHandle(name).get();
 
 	for (auto source = d_sfxSources.begin(); source != d_sfxSources.end();)
 	{
@@ -190,8 +194,8 @@ void SoundSystem::playSFX(const std::string& name)
 	{
 		throw std::runtime_error("Failed to generate an OpenAL source for: " + name);
 	}
-	alSourcei(handle, AL_BUFFER, static_cast<ALint>(it->second.buffer));
-	alSourcef(handle, AL_GAIN, it->second.volume);
+	alSourcei(handle, AL_BUFFER, static_cast<ALint>(buffer->id));
+	alSourcef(handle, AL_GAIN, buffer->volume);
 	alSourcePlay(handle);
 	d_sfxSources.push_back(handle);
 }
@@ -214,4 +218,20 @@ void SoundSystem::stopAll()
 		alDeleteSources(1, &handle);
 	}
 	d_sfxSources.clear();
+}
+
+void SoundSystem::process()
+{
+	d_bgm->process();
+	d_sfx->process();
+}
+
+bool SoundSystem::isIdle() const
+{
+	return d_bgm->isIdle() && d_sfx->isIdle();
+}
+
+bool SoundSystem::hasError() const
+{
+	return d_bgm->hasError() || d_sfx->hasError();
 }

@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include "glm/glm.hpp"
 
+#include "renderer/resource/ShaderSources.h"
+
 #include <string>
 #include <unordered_map>
 
@@ -30,14 +32,11 @@ public:
 	~Shader();
 
 	/**
-	* \brief Initializes shader resource.
-	*
-	* Load vertex and fragment shader and compile to shader program.
-	* \param vertexShader Vertex shader file path.
-	* \param fragmentShader Fragment shader file path.
+	* \brief Compiles and links shader source into a shader program.
+	* \param sources Vertex and fragment shader source text.
 	* Throws std::runtime_error if the sources cannot be loaded, compiled or linked.
 	*/
-	void init(const std::string& vertexShader, const std::string& fragmentShader);
+	void init(const ShaderSources& sources);
 
 	/** 
 	* \brief Set as active shader.

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "renderer/resource/VertexBufferObject.h"
+#include "renderer/resource/MeshData.h"
 #include "collision/AABBox.h"
 
 #include <memory>
@@ -27,10 +28,10 @@ public:
 	~Mesh();
 
 	/**
-	* \brief Initialize with model loader.
+	* \brief Uploads CPU side mesh data to the GPU.
 	* Throws std::runtime_error if the vertex data is empty.
 	*/
-	void init(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& uv, const AABBox& box);
+	void init(const MeshData& data);
 
 	/**
 	* \brief Read access to vertex buffer

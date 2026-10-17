@@ -5,109 +5,152 @@
 #include "renderer/resource/Texture.h"
 #include "renderer/resource/Model.h"
 #include "renderer/resource/AMaterial.h"
+#include "renderer/resource/MeshData.h"
+#include "renderer/resource/ShaderSources.h"
+
+#include "resource/Image.h"
+
+#include "core/AsyncLoader.h"
+
+#include "glm/glm.hpp"
 
 #include <string>
-#include <unordered_map>
 #include <memory>
 
+class ThreadPool;
+
 /**
-* \brief Loads and manages game resources.
+* \brief Parsed material definition, CPU side data for a material resource.
+*/
+struct MaterialDesc
+{
+	std::string materialClass; /**< Material class name. */
+	std::string shader; /**< Shader resource name. */
+	std::string texture; /**< Texture resource name, empty for color materials. */
+	float ambient = 0.1f; /**< Ambient term. */
+	float specular = 0.2f; /**< Specular term. */
+	glm::vec3 color{ 0.f }; /**< Color for color materials. */
+};
+
+/**
+* \brief Parsed model definition, CPU side data for a model resource.
+*/
+struct ModelDesc
+{
+	std::string mesh; /**< Mesh resource name. */
+	std::string material; /**< Material resource name. */
+};
+
+/**
+* \brief Loads and manages game resources asynchronously.
 *
-* Resource manager for on-demand loading of resources like textures, meshes, shader programs.
-* This should probably be a singleton, but using more than one of these, even for the same resources
-* should not cause any problems except for higher memory usage due to redundant data.
-* The resource lifetimes are managed by this class. Calling delete on the returned pointers
-* causes undefined behavior.
-* TODO: Implement proxy pattern for returned resources to eliminate this issue.
+* Parsing runs on the thread pool, the OpenGL upload runs on the main thread
+* during process(). The resource lifetimes are managed by this class.
+* The resource manager must be destroyed before the thread pool it uses.
 */
 class ResourceManager
 {
 public:
 	/**
-	* \brief Initialization for the resource manager.
-	*
-	* Sets the resource path to be searched.
+	* \brief Sets the resource path and the pool used for parsing.
 	*/
-	ResourceManager(const std::string& resourceBasePath);
+	ResourceManager(const std::string& resourceBasePath, ThreadPool& pool);
 
 	/**
-	* \brief Cleanup of resources
-	* 
-	* Deletes all loaded resources. Any pointer returned by this class is invalid after destructor call.
+	* \brief Deletes all loaded resources.
 	*/
 	~ResourceManager();
 
 	/**
-	* \brief Loads model resource. Throws std::runtime_error on failure.
+	* \brief Requests a model resource, loading happens asynchronously.
 	*/
 	void loadModel(const std::string& name);
-	
+
 	/**
-	* \brief Loads mesh resource. Throws std::runtime_error on failure.
+	* \brief Requests a mesh resource, loading happens asynchronously.
 	*/
 	void loadMesh(const std::string& name);
 
 	/**
-	* \brief Loads material resource. Throws std::runtime_error on failure.
+	* \brief Requests a material resource, loading happens asynchronously.
 	*/
 	void loadMaterial(const std::string& name);
-	
+
 	/**
-	* \brief Loads texture resource. Throws std::runtime_error on failure.
+	* \brief Requests a texture resource, loading happens asynchronously.
 	*/
 	void loadTexture(const std::string& name);
-	
+
 	/**
-	* \brief Loads shader resource. Throws std::runtime_error on failure.
+	* \brief Requests a shader resource, loading happens asynchronously.
 	*/
 	void loadShader(const std::string& name);
 
 	/**
-	* \brief Returns pointer to requested material resource.
-	* Loads the material on demand.
-	* \param name Material name.
+	* \brief Commits finished resources on the main thread.
+	*/
+	void process();
+
+	/**
+	* \brief True when all requested resources are loaded or failed.
+	*/
+	bool isIdle() const;
+
+	/**
+	* \brief True if any requested resource failed to load.
+	*/
+	bool hasError() const;
+
+	/**
+	* \brief Returns the material, loading it if necessary.
 	* Throws std::runtime_error if the material cannot be loaded.
 	*/
 	AMaterial* getMaterial(const std::string& name);
 
 	/**
-	* \brief Returns pointer to requested model resource.
-	* Loads the model on demand.
-	* \param name Model name.
+	* \brief Returns the model, loading it if necessary.
 	* Throws std::runtime_error if the model cannot be loaded.
 	*/
 	Model* getModel(const std::string& name);
 
 	/**
-	* \brief Returns pointer to requested texture resource.
-	* Loads the texture on demand.
-	* \param name The name of the texture object.
+	* \brief Returns the texture, loading it if necessary.
 	* Throws std::runtime_error if the texture cannot be loaded.
 	*/
 	Texture* getTexture(const std::string& name);
 
 	/**
-	* \brief Returns pointer to requested shader resource.
-	* Loads the shader on demand.
-	* \param name The name of the shader object.
+	* \brief Returns the shader, loading it if necessary.
 	* Throws std::runtime_error if the shader cannot be loaded.
 	*/
 	Shader* getShader(const std::string& name);
 
 	/**
-	* \brief Returns pointer to requested mesh resource.
-	* Loads the mesh on demand.
-	* \param name Name of the mesh file.
+	* \brief Returns the mesh, loading it if necessary.
 	* Throws std::runtime_error if the mesh cannot be loaded.
 	*/
 	Mesh* getMesh(const std::string& name);
 
 private:
+	ShaderSources parseShader(const std::string& name) const;
+	MeshData parseMesh(const std::string& name) const;
+	Image parseTexture(const std::string& name) const;
+	MaterialDesc parseMaterial(const std::string& name) const;
+	ModelDesc parseModel(const std::string& name) const;
+
+	Shader* lookupShader(const std::string& name) const;
+	Texture* lookupTexture(const std::string& name) const;
+	Mesh* lookupMesh(const std::string& name) const;
+	AMaterial* lookupMaterial(const std::string& name) const;
+
+	template <typename T, typename Parsed>
+	T* waitFor(AsyncLoader<T, Parsed>& loader, const std::string& name);
+
 	std::string d_resourcePath; /**< Base resource path. */
 
-	std::unordered_map<std::string, std::unique_ptr<Texture>> d_textureMap; /**< Loaded textures. */
-	std::unordered_map<std::string, std::unique_ptr<Shader>> d_shaderMap; /**< Loaded shader. */
-	std::unordered_map<std::string, std::unique_ptr<Mesh>> d_meshMap; /**< Loaded meshes. */
-	std::unordered_map<std::string, std::unique_ptr<AMaterial>> d_materialMap; /**< Loaded materials. */
-	std::unordered_map<std::string, std::unique_ptr<Model>> d_modelMap; /**< Loaded models. */
+	AsyncLoader<Shader, ShaderSources> d_shaders; /**< Shader resources. */
+	AsyncLoader<Texture, Image> d_textures; /**< Texture resources. */
+	AsyncLoader<Mesh, MeshData> d_meshes; /**< Mesh resources. */
+	AsyncLoader<AMaterial, MaterialDesc> d_materials; /**< Material resources. */
+	AsyncLoader<Model, ModelDesc> d_models; /**< Model resources. */
 };
