@@ -4,10 +4,7 @@
 
 CTexture::CTexture()
 	:
-	d_mipMapLevel(0),
-	d_texId(0),
-	d_height(0),
-	d_width(0)
+	d_texId(0)
 {
 	// Create texture id
 	glGenTextures(1, &d_texId);

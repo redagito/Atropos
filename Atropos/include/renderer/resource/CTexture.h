@@ -33,7 +33,4 @@ public:
 
 private:
 	GLuint d_texId; /**< GL texture id. */
-	GLint d_mipMapLevel; /**< Mip map level. */
-	int d_width; /**< Texture width. */
-	int d_height; /**< Texture height. */
 };
