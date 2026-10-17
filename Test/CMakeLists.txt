@@ -15,6 +15,10 @@ add_executable(atropos_tests
     source/ThreadPoolTest.cpp
     source/ResourceHandleTest.cpp
     source/AsyncLoaderTest.cpp
+    source/SceneTest.cpp
+    source/MenuShipTest.cpp
+    source/CameraTest.cpp
+    source/GameStateTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE
