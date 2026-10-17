@@ -1,7 +1,5 @@
 #include "Atropos.h"
 
-#pragma comment(lib, "legacy_stdio_definitions.lib")
-
 int main(int argc, char** argv)
 {
 	// Create engine interface
