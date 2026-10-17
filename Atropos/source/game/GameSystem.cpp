@@ -10,6 +10,13 @@
 
 GameSystem::~GameSystem()
 {
+	// The active state has to be given its exit while it is still alive, the
+	// same way a normal transition exits it.
+	if (d_activeState != nullptr)
+	{
+		d_activeState->onExit();
+		d_activeState = nullptr;
+	}
 	SPDLOG_DEBUG("Game system destroyed.");
 }
 
@@ -80,7 +87,11 @@ void GameSystem::init(const ConfigFile& config)
 
 void GameSystem::addState(const std::string& name, IGameState* state)
 {
-	state->init();
+	// Ownership is taken before init runs, so a state whose init throws is
+	// released instead of leaking.
+	std::unique_ptr<IGameState> owned(state);
+	owned->init();
+
 	const auto existing = d_gameStates.find(name);
 	const bool wasActive = (existing != d_gameStates.end() && d_activeState == existing->second.get());
 	if (existing != d_gameStates.end())
@@ -93,13 +104,22 @@ void GameSystem::addState(const std::string& name, IGameState* state)
 		}
 	}
 
-	d_gameStates[name] = std::unique_ptr<IGameState>(state);
+	d_gameStates[name] = std::move(owned);
 	if (wasActive)
 	{
-		d_activeState = state;
+		d_activeState = d_gameStates[name].get();
 		d_activeState->onEnter();
 	}
 	SPDLOG_DEBUG("Added game state {} to game system.", name);
+}
+
+bool GameSystem::collisionsEnabled() const
+{
+	if (d_activeState == nullptr)
+	{
+		return false;
+	}
+	return d_activeState->collisionsEnabled();
 }
 
 void GameSystem::removeState(const std::string& name)

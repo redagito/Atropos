@@ -5,7 +5,7 @@
 
 
 
-ExplodeOnDeathController::ExplodeOnDeathController(SoundSystem* soundSystem, const std::string& soundName)
+ExplodeOnDeathController::ExplodeOnDeathController(ISoundSystem* soundSystem, const std::string& soundName)
 	:
 	d_object(nullptr),
 	d_soundSystem(soundSystem),

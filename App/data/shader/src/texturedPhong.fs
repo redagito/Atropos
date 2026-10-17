@@ -50,7 +50,9 @@ float random(vec3 seed, int i){
 void main()
 {
 	// Shadow
-	vec3 n = normalize(_normalCamera);
+	// A face without normals loads as a zero vector, and normalize would turn
+	// that into a NaN that spreads through the whole lighting calculation.
+	vec3 n = dot(_normalCamera, _normalCamera) > 0.0 ? normalize(_normalCamera) : vec3(0.0, 0.0, 1.0);
 	vec3 l = normalize(_lightDir);
 	vec3 e = normalize(_cameraDir);
 	vec3 r = reflect(-l, n);
@@ -70,7 +72,8 @@ void main()
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
     vec4 baseColor = texture(texture0, _uv);
-	float diffuseFactor = max(0.0, dot(normalize(_normal), -lightDir));
+	vec3 surfaceNormal = dot(_normal, _normal) > 0.0 ? normalize(_normal) : vec3(0.0, 0.0, 1.0);
+	float diffuseFactor = max(0.0, dot(surfaceNormal, -lightDir));
 	color = baseColor * vec4(lightColor * (0.3 + diffuseFactor), 1.0)  * visible;
 	color.a = 1;
 }

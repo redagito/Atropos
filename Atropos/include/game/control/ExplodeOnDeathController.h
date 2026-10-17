@@ -1,6 +1,6 @@
 #pragma once
 
-class SoundSystem;
+class ISoundSystem;
 
 #include "game/IController.h"
 
@@ -17,7 +17,7 @@ public:
 	/**
 	* \brief Sets sound system and sound name.
 	*/
-	ExplodeOnDeathController(SoundSystem* soundSystem, const std::string& soundName);
+	ExplodeOnDeathController(ISoundSystem* soundSystem, const std::string& soundName);
 
 	/**
 	* \brief Destructor for cleanup.
@@ -43,7 +43,7 @@ public:
 
 private:
 	GameObject* d_object; /**< Controlled game object. */
-	SoundSystem* d_soundSystem; /**< Sound system. */
+	ISoundSystem* d_soundSystem; /**< Sound system. */
 	std::string d_soundName; /**< Sound name to be played. */
 	bool d_active;
 	bool d_exploded; /**< Whether the explosion was already triggered. */

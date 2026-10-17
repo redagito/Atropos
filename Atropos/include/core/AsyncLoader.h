@@ -148,6 +148,10 @@ public:
 					entry.resource = entry.committer(*entry.parsed);
 					entry.slot->setValue(entry.resource.get());
 					entry.committed = true;
+					// The parsed data is only needed until the committer has
+					// run. Keeping it would retain a full copy of every parsed
+					// buffer, such as the decoded PCM of a soundtrack.
+					entry.parsed.reset();
 					progress = true;
 				}
 				catch (const std::exception& e)

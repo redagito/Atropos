@@ -31,6 +31,7 @@ void CollisionSystem::releaseGroup(unsigned int groupId)
 	// Delete remaining entities and hand the id back for reuse
 	for (Collidable* entity : d_entities[groupId])
 	{
+		forgetContacts(entity);
 		delete entity;
 	}
 	d_entities[groupId].clear();
@@ -74,9 +75,29 @@ void CollisionSystem::remove(Collidable* entity)
 	entity->markDeleted();
 }
 
+// Drop the open contacts of an entity that is about to be freed. The address can
+// be handed to a new collidable, which must not inherit the contacts of the old
+// one and silently skip its damage.
+void CollisionSystem::forgetContacts(Collidable* entity)
+{
+	for (auto contact = d_openContacts.begin(); contact != d_openContacts.end();)
+	{
+		if (contact->first == entity || contact->second == entity)
+		{
+			contact = d_openContacts.erase(contact);
+		}
+		else
+		{
+			++contact;
+		}
+	}
+}
+
 // Test all entities for collision
 void CollisionSystem::update()
 {
+	d_currentContacts.clear();
+
 	for (unsigned int i = 0; i < d_entities.size(); ++i)
 	{
 		auto iter = d_entities[i].begin(); 
@@ -87,6 +108,7 @@ void CollisionSystem::update()
 			{
 				Collidable* temp = (*iter);
 				iter = d_entities[i].erase(iter);
+				forgetContacts(temp);
 				delete temp;
 			}
 			else
@@ -99,6 +121,10 @@ void CollisionSystem::update()
 			}
 		}
 	}
+
+	// Whatever is not touching any more closes its contact, so a later overlap
+	// counts as a new one.
+	d_openContacts.swap(d_currentContacts);
 }
 
 // Tests collidable entity against all entities not in the group
@@ -117,17 +143,26 @@ void CollisionSystem::testCollision(Collidable* entity, unsigned int group)
 				{
 					Collidable* temp = (*iter);
 					iter = d_entities[i].erase(iter);
+					forgetContacts(temp);
 					delete temp;
 				}
 				else
 				{
 					if ((*iter)->isCollidable())
 					{
-						if (collides(entity->getAABBox(), (*iter)->getAABBox()))
+if (collides(entity->getAABBox(), (*iter)->getAABBox()))
+					{
+						// Since every collision is tested both ways, damage only happens from first entity to second entity
+						const Contact contact(entity, *iter);
+						// A contact deals its damage once, when it opens. Repeating
+						// it every frame while the two overlap would make the damage
+						// depend on the frame rate instead of on the collision.
+						if (d_openContacts.count(contact) == 0)
 						{
-							// Since every collision is tested both ways, damage only happens from first entity to second entity
 							(*iter)->receiveDamage(entity->getDamage());
 						}
+						d_currentContacts.insert(contact);
+					}
 					}
 					++iter;
 				}

@@ -12,7 +12,8 @@
 
 namespace
 {
-	void settle(AsyncLoader<int, int>& loader)
+	template <typename T, typename Parsed>
+	void settle(AsyncLoader<T, Parsed>& loader)
 	{
 		for (int i = 0; i < 5000; ++i)
 		{
@@ -24,6 +25,38 @@ namespace
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
+
+	// Parsed data that reports when it is destroyed, standing in for the large
+	// CPU side buffers a real resource loader produces.
+	struct TrackedParsed
+	{
+		explicit TrackedParsed(std::atomic<bool>* releasedFlag)
+			:
+			d_released(releasedFlag)
+		{
+		}
+
+		TrackedParsed(TrackedParsed&& other) noexcept
+			:
+			d_released(other.d_released)
+		{
+			other.d_released = nullptr;
+		}
+
+		~TrackedParsed()
+		{
+			if (d_released != nullptr)
+			{
+				d_released->store(true);
+			}
+		}
+
+		TrackedParsed(const TrackedParsed&) = delete;
+		TrackedParsed& operator=(const TrackedParsed&) = delete;
+		TrackedParsed& operator=(TrackedParsed&&) = delete;
+
+		std::atomic<bool>* d_released;
+	};
 }
 
 TEST_CASE("AsyncLoader produces a value asynchronously", "[asyncloader]")
@@ -172,6 +205,25 @@ TEST_CASE("AsyncLoader resolves dependencies discovered during parsing", "[async
 	REQUIRE(commitOrder.size() == 2);
 	CHECK(commitOrder[0] == "dep");
 	CHECK(commitOrder[1] == "dependent");
+}
+
+TEST_CASE("AsyncLoader releases parsed data once a resource is committed", "[asyncloader]")
+{
+	ThreadPool pool(1);
+	std::atomic<bool> released{ false };
+	AsyncLoader<int, TrackedParsed> loader(pool);
+
+	ResourceHandle<int> handle = loader.request("parsed",
+		[&released] { return TrackedParsed(&released); },
+		[](const TrackedParsed&) { return std::make_unique<int>(1); });
+
+	settle(loader);
+
+	// The parsed data is only needed until the committer has run. Keeping it
+	// afterwards retains a full copy of every parsed buffer, such as the decoded
+	// PCM of a soundtrack.
+	REQUIRE(handle.isReady());
+	CHECK(released.load());
 }
 
 TEST_CASE("AsyncLoader commits each resource once", "[asyncloader]")

@@ -1,10 +1,11 @@
 #pragma once
-class RenderSystem;
+class IRenderSystem;
 class CollisionSystem;
-class SoundSystem;
+class ISoundSystem;
 
 #include "game/IGameState.h"
 #include "game/GameWorld.h"
+#include "game/MenuShip.h"
 
 #include <memory>
 #include <vector>
@@ -18,7 +19,7 @@ public:
 	/**
 	* \brief Sets sub systems for access.
 	*/
-	LoseState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys);
+	LoseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys);
 
 	/**
 	* \brief Updates state.
@@ -46,9 +47,10 @@ public:
 	const std::string& getNextState() const;
 
 private:
-	RenderSystem* d_renderSystem; /**< Rendering system. */
+	IRenderSystem* d_renderSystem; /**< Rendering system. */
 	CollisionSystem* d_collisionSystem; /**< Collision system. */
-	SoundSystem* d_soundSystem; /**< Sound system. */
+	ISoundSystem* d_soundSystem; /**< Sound system. */
+	MenuShip d_ship; /**< Model shown on the lose screen. */
 	GameWorld d_world; /**< Game objects. */
 	std::string d_nextState; /**< Next state. */
 };

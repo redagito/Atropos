@@ -2,6 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <process.h>
+
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -10,9 +12,12 @@ namespace
 {
 	void loadFromString(const std::string& contents, ObjModelLoader& loader)
 	{
+		// ctest gives every test case its own process, so the counter restarts
+		// at zero everywhere and would collide across concurrent runs. The
+		// process id makes the name unique among simultaneously running tests.
 		static int counter = 0;
 		const std::filesystem::path path = std::filesystem::temp_directory_path()
-			/ ("atropos_obj_" + std::to_string(counter++) + ".obj");
+			/ ("atropos_obj_" + std::to_string(_getpid()) + "_" + std::to_string(counter++) + ".obj");
 
 		{
 			std::ofstream out(path);

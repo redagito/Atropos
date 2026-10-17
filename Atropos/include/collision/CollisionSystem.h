@@ -4,6 +4,8 @@
 
 #include <vector>
 #include <list>
+#include <set>
+#include <utility>
 
 // Forward declare
 class Collidable;
@@ -61,7 +63,19 @@ private:
 	*/
 	void testCollision(Collidable* entity, unsigned int groupId);
 
+	/**
+	* \brief Drops every open contact of an entity that is about to be freed.
+	*/
+	void forgetContacts(Collidable* entity);
+
 	std::vector<std::list<Collidable*>> d_entities; /**< Stores entities by group id (vector index) in lists. */
 	std::vector<bool> d_groupFree; /**< Whether a group id has been released and may be reused. */
 	std::vector<unsigned int> d_freeGroups; /**< Released group ids available for reuse. */
+
+	// Damage is dealt once when two entities start touching, not on every frame
+	// they stay overlapping. The pair is ordered as dealer then receiver, so the
+	// two directions of a contact are tracked separately.
+	using Contact = std::pair<Collidable*, Collidable*>;
+	std::set<Contact> d_openContacts; /**< Contacts that were already touching during the last update. */
+	std::set<Contact> d_currentContacts; /**< Contacts found during the running update. */
 };

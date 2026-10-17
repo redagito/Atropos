@@ -1,11 +1,12 @@
 #pragma once
-class RenderSystem;
+class IRenderSystem;
 class CollisionSystem;
-class SoundSystem;
+class ISoundSystem;
 class GameSystem;
 
 #include "game/IGameState.h"
 #include "game/GameWorld.h"
+#include "game/MenuShip.h"
 
 #include <memory>
 #include <vector>
@@ -19,7 +20,7 @@ public:
 	/**
 	 * \brief Sets sub systems for access.
 	 */
-	LoadState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys, GameSystem* gameSys);
+	LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys);
 
 	/**
 	 * \brief Updates state.
@@ -47,10 +48,11 @@ public:
 	const std::string& getNextState() const;
 
 private:
-	RenderSystem* d_renderSystem; /**< Rendering system. */
+	IRenderSystem* d_renderSystem; /**< Rendering system. */
 	CollisionSystem* d_collisionSystem; /**< Collision system. */
-	SoundSystem* d_soundSystem; /**< Sound system. */
+	ISoundSystem* d_soundSystem; /**< Sound system. */
 	GameSystem* d_gameSystem; /**< Game system. */
+	MenuShip d_ship; /**< Model shown once the resources are loaded. */
 	GameWorld d_world; /**< Game objects. */
 	std::string d_nextState; /**< Next state. */
 	bool d_bgmStarted; /**< True once the loading music started. */

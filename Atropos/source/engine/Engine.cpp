@@ -18,6 +18,10 @@
 // Worker pool
 #include "core/ThreadPool.h"
 
+#include "util/Input.h"
+
+#include <algorithm>
+
 // IO and utility
 #include "io/ConfigFile.h"
 #include "util/Global.h"
@@ -80,13 +84,15 @@ void Engine::init(const char* configFile)
 
 	// Initialize rendering system singleton
 	SPDLOG_INFO("Create rendering system.");
-	d_renderSystem.reset(new RenderSystem);
-	d_renderSystem->init(config, *d_pool);
+	std::shared_ptr<RenderSystem> renderSystem(new RenderSystem);
+	renderSystem->init(config, *d_pool);
+	d_renderSystem = renderSystem;
 
 	// Initialize sound system
 	SPDLOG_INFO("Create sound system.");
-	d_soundSystem.reset(SoundSystem::create());
-	d_soundSystem->init(config, *d_pool);
+	std::shared_ptr<SoundSystem> soundSystem(SoundSystem::create());
+	soundSystem->init(config, *d_pool);
+	d_soundSystem = soundSystem;
 
 	SPDLOG_INFO("Create collision system.");
 	// Initialize collision system
@@ -135,7 +141,6 @@ void Engine::run()
 	SPDLOG_INFO("Starting game engine main loop.");
 	// Time difference
 	float dtime = 0.f;
-	float f2Reset = 0.f;
 
 	// Main loop
 	d_running = true;
@@ -148,22 +153,22 @@ void Engine::run()
 
 		// Process user input
 		glfwPollEvents();
+		// Sample the keys so the states can tell a fresh press from a held key.
+		Input::poll();
 
-		// F2 swaps culling
-		if (glfwGetKey(Global::window, GLFW_KEY_F2) && f2Reset > 0.5f)
+		// F2 swaps culling. The press is edge triggered, so holding the key
+		// toggles once per press instead of twice a second.
+		if (Input::pressed(GLFW_KEY_F2))
 		{
-			f2Reset = 0.f;
 			d_renderSystem->setCulling(!d_renderSystem->getCulling());
 		}
 
 		// ESC quits application
-		if (glfwGetKey(Global::window, GLFW_KEY_ESCAPE))
+		if (Input::pressed(GLFW_KEY_ESCAPE))
 		{
 			// Termination
 			glfwSetWindowShouldClose(Global::window, true);
 		}
-		
-		f2Reset += dtime;
 
 		updateResources();
 		updateRenderer();
@@ -171,8 +176,9 @@ void Engine::run()
 		updateCollision();
 		swapBuffer();
 
-		// Update time diff
-		dtime = (float) glfwGetTime() - startTime;
+		// Update time diff. The delta is capped so a hitch cannot make the
+		// simulation step so far that objects pass through each other.
+		dtime = std::min((float) glfwGetTime() - startTime, MAX_DTIME);
 	}
 }
 
@@ -198,6 +204,13 @@ void Engine::updateGame(float dtime)
 
 void Engine::updateCollision()
 {
+	// A frozen state must stop collision as well, otherwise damage keeps
+	// accumulating in the collidables while nothing consumes it and is applied
+	// all at once when the game resumes.
+	if (!d_gameSystem->collisionsEnabled())
+	{
+		return;
+	}
 	// Update collisions
 	Profiler profiler("update_collision");
 	d_collisionSystem->update();

@@ -1,16 +1,22 @@
 #include "game/state/LoseState.h"
 
 #include "renderer/RenderSystem.h"
+#include "renderer/scene/Camera.h"
 #include "collision/CollisionSystem.h"
 #include "sound/SoundSystem.h"
+#include "game/MenuShip.h"
 
 #include "util/Global.h"
 
+#include "util/Input.h"
+
 #include <glfw/glfw3.h>
 
+#include <glm/glm.hpp>
 
 
-LoseState::LoseState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys)
+
+LoseState::LoseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
 	:
 	d_renderSystem(renderSys),
 	d_collisionSystem(collSys),
@@ -23,6 +29,7 @@ void LoseState::init()
 {
 	d_renderSystem->createScene("lose");
 	d_renderSystem->setActiveScene("lose");
+	d_renderSystem->setSceneBackgroundColor("lose", glm::vec3(0.20f, 0.05f, 0.05f));
 
 	// Load background music
 	d_soundSystem->loadBGM("lose", "song4.mp3", 0.5f);
@@ -30,14 +37,16 @@ void LoseState::init()
 
 bool LoseState::update(float dtime)
 {
+	d_ship.update(dtime);
+
 	// Start game on enter
-	if (glfwGetKey(Global::window, GLFW_KEY_ENTER))
+	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		d_nextState = "load";
 		return false;
 	}
 	// End game on escape
-	if (glfwGetKey(Global::window, GLFW_KEY_ESCAPE))
+	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;
 		return false;
@@ -50,6 +59,11 @@ bool LoseState::update(float dtime)
 void LoseState::onEnter()
 {
 	d_renderSystem->setActiveScene("lose");
+	// The camera followed the player to where the run ended.
+	d_renderSystem->getCamera().resetView();
+	// The models are committed long before the player can lose, so showing one
+	// here does not block.
+	d_ship.show(d_renderSystem, "enemy");
 	// Start sound playback
 	d_soundSystem->playBGM("lose");
 }

@@ -5,7 +5,7 @@
 #include "renderer/Renderable.h"
 #include "collision/Collidable.h"
 
-#include <cassert>
+#include <stdexcept>
 
 // Constructor initializes drawable and matrices
 GameObject::GameObject()
@@ -47,6 +47,15 @@ GameObject::~GameObject()
 
 void GameObject::update(float dtime)
 {
+	// Update state with attached controllers first, so the collidable and
+	// drawable below describe the position the object ends this frame at. Doing
+	// it the other way round leaves every collision box one full step behind
+	// its owner.
+	for (const auto& controller : d_controllers)
+	{
+		controller->update(dtime);
+	}
+
 	if (d_transformationChanged)
 	{
 		d_transformationChanged = false;
@@ -65,12 +74,6 @@ void GameObject::update(float dtime)
 			d_drawable->setScaleMatrix(d_scale);
 			d_drawable->setModelMatrix(d_translation * d_scale * d_rotation);
 		}
-	}
-
-	// Update state with attached controllers
-	for (const auto& controller : d_controllers)
-	{
-		controller->update(dtime);
 	}
 }
 
@@ -126,7 +129,12 @@ Collidable* GameObject::getCollidable() const
 
 void GameObject::addController(const std::shared_ptr<IController>& controller)
 {
-	assert(controller != nullptr);
+	// A real check rather than an assert, because Release builds compile the
+	// assert away and would go on to dereference the null controller.
+	if (controller == nullptr)
+	{
+		throw std::runtime_error("Cannot add a null controller to a game object.");
+	}
 	controller->attach(this);
 	d_controllers.push_back(controller);
 }

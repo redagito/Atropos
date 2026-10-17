@@ -46,7 +46,8 @@ struct ModelDesc
 *
 * Parsing runs on the thread pool, the OpenGL upload runs on the main thread
 * during process(). The resource lifetimes are managed by this class.
-* The resource manager must be destroyed before the thread pool it uses.
+* The thread pool must outlive the resource manager, because a queued parse
+ * task holds a raw pointer to it and the pool drains its queue when it stops.
 */
 class ResourceManager
 {

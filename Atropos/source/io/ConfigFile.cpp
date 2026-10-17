@@ -1,5 +1,7 @@
 #include "io/ConfigFile.h"
 
+#include <spdlog/spdlog.h>
+
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
@@ -46,13 +48,23 @@ float ConfigFile::get(const std::string& key, float defaultValue) const
 {
 	if (has(key))
 	{
+		const std::string& value = d_values.at(key);
 		try
 		{
-			return std::stof(d_values.at(key));
+			// std::stof stops at the first character it cannot parse, so a value
+			// such as "800x" would silently become 800. Requiring the whole value
+			// to be consumed makes a typo fall back to the default.
+			std::size_t consumed = 0;
+			const float result = std::stof(value, &consumed);
+			if (consumed == value.size())
+			{
+				return result;
+			}
+			SPDLOG_WARN("Config value {} of {} is not a number.", key, value);
 		}
 		catch (const std::exception&)
 		{
-			// Conversion error
+			SPDLOG_WARN("Config value {} of {} is not a number.", key, value);
 		}
 		return defaultValue;
 	}
@@ -63,13 +75,20 @@ int ConfigFile::get(const std::string& key, int defaultValue) const
 {
 	if (has(key))
 	{
+		const std::string& value = d_values.at(key);
 		try
 		{
-			return std::stoi(d_values.at(key));
+			std::size_t consumed = 0;
+			const int result = std::stoi(value, &consumed);
+			if (consumed == value.size())
+			{
+				return result;
+			}
+			SPDLOG_WARN("Config value {} of {} is not a number.", key, value);
 		}
 		catch (const std::exception&)
 		{
-			// Conversion error
+			SPDLOG_WARN("Config value {} of {} is not a number.", key, value);
 		}
 		return defaultValue;
 	}
@@ -104,26 +123,29 @@ void ConfigFile::set(const std::string& key, const std::string& value)
 
 void ConfigFile::parseLine(const std::string& line)
 {
-	// Comments and empty lines
-	if (line.size() == 0)
+	// Strip the newline characters of CRLF and LF line endings first, so an
+	// empty or comment line is recognised the same way on every platform.
+	std::string text = line;
+	while (!text.empty() && (text.back() == '\r' || text.back() == '\n'))
+	{
+		text.pop_back();
+	}
+
+	// Comments and empty lines, both of which may be indented.
+	const std::size_t firstChar = text.find_first_not_of(" \t");
+	if (firstChar == std::string::npos)
 	{
 		return;
 	}
-	if (line[0] == '#')
+	if (text[firstChar] == '#')
 	{
 		return;
 	}
 
-	std::size_t pos = line.find("=");
+	std::size_t pos = text.find("=");
 	if (pos == std::string::npos)
 	{
-		throw std::runtime_error("Malformed config line: " + line);
+		throw std::runtime_error("Malformed config line: " + text);
 	}
-	std::string value = line.substr(pos + 1);
-	// Strip the carriage return of CRLF line endings.
-	if (!value.empty() && value.back() == '\r')
-	{
-		value.pop_back();
-	}
-	d_values[line.substr(0, pos)] = value;
+	d_values[text.substr(0, pos)] = text.substr(pos + 1);
 }

@@ -23,13 +23,15 @@
 
 #include "util/Global.h"
 
+#include "util/Input.h"
+
 // GLFW
 #include <glfw/glfw3.h>
 #include <glm/ext.hpp>
 
 
 
-PlayState::PlayState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys)
+PlayState::PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
 	:
 	d_renderSystem(renderSys),
 	d_collisionSystem(collSys),
@@ -126,21 +128,21 @@ void PlayState::init()
 bool PlayState::update(float dtime)
 {
 	// Pause
-	if (glfwGetKey(Global::window, GLFW_KEY_P))
+	if (Input::pressed(GLFW_KEY_P))
 	{
 		d_nextState = "pause";
 		return false;
 	}
 	
 	// Force state transition to lose state
-	if (glfwGetKey(Global::window, GLFW_KEY_F6))
+	if (Input::pressed(GLFW_KEY_F6))
 	{
 		d_nextState = "lose";
 		return false;
 	}
 	
 	// Force state transition to win state
-	if (glfwGetKey(Global::window, GLFW_KEY_F7))
+	if (Input::pressed(GLFW_KEY_F7))
 	{
 		d_nextState = "win";
 		return false;
@@ -160,7 +162,9 @@ bool PlayState::update(float dtime)
 
 		// Controller
 		enemy->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
-		enemy->addController(std::shared_ptr<IController>(new HealthController(40.f)));
+		// Health is below the damage the player and a projectile deal, so any single
+	// contact kills the enemy.
+	enemy->addController(std::shared_ptr<IController>(new HealthController(25.f)));
 		enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion")));
 		enemy->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
 		enemy->addController(std::shared_ptr<IController>(new DespawnController(12.f)));

@@ -5,6 +5,8 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
+#include <spdlog/spdlog.h>
+
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
@@ -31,7 +33,8 @@ SoundSystem::SoundSystem()
 SoundSystem::~SoundSystem()
 {
 	// Delete the decoded and uploaded buffers while the context is still
-	// current, the sound system must be destroyed before the thread pool.
+	// current. The thread pool has to outlive the sound system, because a queued
+	// decode task holds a raw pointer to a loader that is destroyed here.
 	d_bgm = nullptr;
 	d_sfx = nullptr;
 
@@ -160,7 +163,15 @@ void SoundSystem::loadSFX(const std::string& name, const std::string& file, floa
 
 void SoundSystem::playBGM(const std::string& name)
 {
-	SoundBuffer* buffer = d_bgm->getHandle(name).get();
+	const ResourceHandle<SoundBuffer> sound = d_bgm->getHandle(name);
+	// A missing, still loading or failed track must not end the game, so the
+	// request is skipped instead of letting the slot throw.
+	if (!sound.isReady())
+	{
+		SPDLOG_ERROR("Background music {} is not ready to play.", name);
+		return;
+	}
+	SoundBuffer* buffer = sound.get();
 
 	alSourceStop(d_bgmSource);
 	alSourcei(d_bgmSource, AL_BUFFER, static_cast<ALint>(buffer->id));
@@ -170,7 +181,13 @@ void SoundSystem::playBGM(const std::string& name)
 
 void SoundSystem::playSFX(const std::string& name)
 {
-	SoundBuffer* buffer = d_sfx->getHandle(name).get();
+	const ResourceHandle<SoundBuffer> sound = d_sfx->getHandle(name);
+	if (!sound.isReady())
+	{
+		SPDLOG_ERROR("Sound effect {} is not ready to play.", name);
+		return;
+	}
+	SoundBuffer* buffer = sound.get();
 
 	for (auto source = d_sfxSources.begin(); source != d_sfxSources.end();)
 	{

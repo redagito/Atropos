@@ -48,4 +48,14 @@ public:
 	* TODO: Should this return the actual next state?
 	*/
 	virtual const std::string& getNextState() const = 0;
+
+	/**
+	* \brief True while collisions should be processed.
+	* A state that freezes the world must return false, otherwise damage keeps
+	* accumulating in the collidables while nothing consumes it.
+	*/
+	virtual bool collisionsEnabled() const
+	{
+		return true;
+	}
 };

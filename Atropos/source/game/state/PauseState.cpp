@@ -6,11 +6,13 @@
 
 #include "util/Global.h"
 
+#include "util/Input.h"
+
 #include <glfw/glfw3.h>
 
 
 
-PauseState::PauseState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys)
+PauseState::PauseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
 	:
 	d_renderSystem(renderSys),
 	d_collisionSystem(collSys),
@@ -26,13 +28,13 @@ void PauseState::init()
 bool PauseState::update(float dtime)
 {
 	// Continue game on enter
-	if (glfwGetKey(Global::window, GLFW_KEY_ENTER))
+	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		d_nextState = "play";
 		return false;
 	}
 	// End game on escape
-	if (glfwGetKey(Global::window, GLFW_KEY_ESCAPE))
+	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;
 		return false;
@@ -55,4 +57,9 @@ void PauseState::onExit()
 const std::string& PauseState::getNextState() const
 {
 	return d_nextState;
+}
+
+bool PauseState::collisionsEnabled() const
+{
+	return false;
 }

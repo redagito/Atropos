@@ -51,6 +51,11 @@ public:
 	*/
 	void removeState(const std::string& name);
 
+	/**
+	* \brief True while the active state wants collisions to be processed.
+	*/
+	bool collisionsEnabled() const;
+
 private:
 	std::unordered_map<std::string, std::unique_ptr<IGameState>> d_gameStates; /**< Game states stored by name. */
 	IGameState* d_activeState; /**< Current game state. */

@@ -1,6 +1,7 @@
 #include "game/state/LoadState.h"
 
 #include "renderer/RenderSystem.h"
+#include "renderer/scene/Camera.h"
 #include "collision/CollisionSystem.h"
 #include "sound/SoundSystem.h"
 #include "game/GameSystem.h"
@@ -8,6 +9,8 @@
 #include "game/state/PlayState.h"
 
 #include "util/Global.h"
+
+#include "util/Input.h"
 
 #include <spdlog/spdlog.h>
 
@@ -17,7 +20,7 @@
 
 
 
-LoadState::LoadState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys, GameSystem* gameSys)
+LoadState::LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys)
 	:
 	d_renderSystem(renderSys),
 	d_collisionSystem(collSys),
@@ -33,6 +36,7 @@ void LoadState::init()
 {
 	d_renderSystem->createScene("load");
 	d_renderSystem->setActiveScene("load");
+	d_renderSystem->setSceneBackgroundColor("load", glm::vec3(0.05f, 0.07f, 0.15f));
 
 	// Request all assets for this and the following states. The loads run
 	// asynchronously on the worker pool and are committed by the engine.
@@ -48,11 +52,29 @@ void LoadState::init()
 
 bool LoadState::update(float dtime)
 {
-	// Start the loading music as soon as the sounds are available.
+	// Showing a model blocks until it is loaded, so the display is only added
+	// once the loading it would wait for is actually done. Otherwise the loading
+	// screen would freeze the loop and never be seen.
+	if (!d_renderSystem->hasError() && d_renderSystem->isIdle())
+	{
+		d_ship.show(d_renderSystem, "player");
+	}
+	d_ship.update(dtime);
+
+	// Start the loading music as soon as the sounds are available. Nothing is
+	// pending once a sound has failed, so the failure is reported instead of
+	// starting music that will never play.
 	if (!d_bgmStarted && d_soundSystem->isIdle())
 	{
 		d_bgmStarted = true;
-		d_soundSystem->playBGM("loading");
+		if (d_soundSystem->hasError())
+		{
+			SPDLOG_ERROR("Not starting the loading music, a sound failed to load.");
+		}
+		else
+		{
+			d_soundSystem->playBGM("loading");
+		}
 	}
 
 	const bool idle = d_renderSystem->isIdle() && d_soundSystem->isIdle();
@@ -63,7 +85,7 @@ bool LoadState::update(float dtime)
 	}
 
 	// Start game on enter, but only once everything is loaded
-	if (glfwGetKey(Global::window, GLFW_KEY_ENTER))
+	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		if (d_renderSystem->hasError() || d_soundSystem->hasError())
 		{
@@ -82,7 +104,7 @@ bool LoadState::update(float dtime)
 		}
 	}
 	// End game on escape
-	if (glfwGetKey(Global::window, GLFW_KEY_ESCAPE))
+	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;
 		return false;
@@ -95,6 +117,16 @@ bool LoadState::update(float dtime)
 void LoadState::onEnter()
 {
 	d_renderSystem->setActiveScene("load");
+
+	// A run leaves this state with the music started and the resources reported
+	// as ready. Coming back has to start over, otherwise the music is never
+	// played again and the stale next state can trigger an unwanted transition.
+	d_bgmStarted = false;
+	d_ready = false;
+	d_nextState.clear();
+
+	// The camera followed the player through the previous run.
+	d_renderSystem->getCamera().resetView();
 }
 
 void LoadState::onExit()

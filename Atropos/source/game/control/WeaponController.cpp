@@ -20,7 +20,7 @@
 
 
 
-WeaponController::WeaponController(RenderSystem* renderSys, SoundSystem* soundSys, CollisionSystem* collSys, GameWorld* world, const std::string& soundName, float volume, const std::string& modelName, unsigned int collisionGroup, float cooldown, float damage)
+WeaponController::WeaponController(IRenderSystem* renderSys, ISoundSystem* soundSys, CollisionSystem* collSys, GameWorld* world, const std::string& soundName, float volume, const std::string& modelName, unsigned int collisionGroup, float cooldown, float damage)
 	:
 	d_object(nullptr),
 	d_renderSys(renderSys),

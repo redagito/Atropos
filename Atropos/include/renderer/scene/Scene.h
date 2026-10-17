@@ -49,6 +49,16 @@ public:
 	*/
 	void draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera, bool culling = true);
 
+	/**
+	* \brief Sets the color the scene is cleared to.
+	*/
+	void setBackgroundColor(const glm::vec3& color);
+
+	/**
+	* \brief Returns the color the scene is cleared to.
+	*/
+	const glm::vec3& getBackgroundColor() const;
+
 private:
 	/**
 	* \brief Checks culling state for scene object.

@@ -1,7 +1,7 @@
 #pragma once
 
-class RenderSystem;
-class SoundSystem;
+class IRenderSystem;
+class ISoundSystem;
 class CollisionSystem;
 class GameWorld;
 
@@ -18,7 +18,7 @@ public:
 	/**
 	* \brief .
 	*/
-	WeaponController(RenderSystem* renderSys, SoundSystem* soundSys, CollisionSystem* collSys, GameWorld* world, const std::string& soundName, float volume, const std::string& modelName, unsigned int collisionGroup, float cooldown, float damage);
+	WeaponController(IRenderSystem* renderSys, ISoundSystem* soundSys, CollisionSystem* collSys, GameWorld* world, const std::string& soundName, float volume, const std::string& modelName, unsigned int collisionGroup, float cooldown, float damage);
 
 	/**
 	* \brief Destructor for cleanup.
@@ -47,8 +47,8 @@ public:
 
 private:
 	GameObject* d_object; /**< Controlled game object. */
-	RenderSystem* d_renderSys;
-	SoundSystem* d_soundSys;
+	IRenderSystem* d_renderSys;
+	ISoundSystem* d_soundSys;
 	CollisionSystem* d_collSys;
 	GameWorld* d_world;
 	std::string d_soundName;

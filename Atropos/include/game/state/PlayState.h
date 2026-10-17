@@ -1,9 +1,9 @@
 #pragma once
 // TODO: The sub systems should be accessible by a global communication port,
 // the play state class just hands them over to the game objects.
-class RenderSystem;
+class IRenderSystem;
 class CollisionSystem;
-class SoundSystem;
+class ISoundSystem;
 class GameObject;
 
 #include "game/IGameState.h"
@@ -21,7 +21,7 @@ public:
 	/**
 	* \brief Sets sub systems.
 	*/
-	PlayState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys);
+	PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys);
 
 	/**
 	* \brief Destroys the world and releases the collision groups.
@@ -54,9 +54,9 @@ public:
 	const std::string& getNextState() const;
 
 private:
-	RenderSystem* d_renderSystem; /**< Rendering system. */
+	IRenderSystem* d_renderSystem; /**< Rendering system. */
 	CollisionSystem* d_collisionSystem; /**< Collision system. */
-	SoundSystem* d_soundSystem; /**< Sound system. */
+	ISoundSystem* d_soundSystem; /**< Sound system. */
 
 	GameWorld d_world; /**< Game objects. */
 	GameObject* d_player; /**< Player object. */

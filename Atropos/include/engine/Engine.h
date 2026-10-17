@@ -3,7 +3,8 @@
 class RenderSystem; /**< Rendering subsystem forward delcare. */
 class CollisionSystem; /**< Collision subsystem forward delcare. */
 class GameSystem; /**< Game subsystem forward delcare. */
-class SoundSystem; /**< Sound system forward declare. */
+class ISoundSystem; /**< Sound system interface forward declare. */
+class IRenderSystem; /**< Rendering system interface forward declare. */
 class ThreadPool; /**< Worker pool forward declare. */
 
 class ConfigFile; /**< Config file forward declare. */
@@ -23,6 +24,13 @@ class Engine
 	public TCreatorMixin<Engine, IEngine>
 {
 public:
+	/** 
+	* \brief Largest frame delta the simulation is allowed to use, in seconds.
+	* A longer frame would move objects far enough to pass through each other
+	* before their bounding boxes are compared.
+	*/
+	static constexpr float MAX_DTIME = 0.1f;
+
 	/**
 	* \brief Constructor.
 	*/
@@ -88,8 +96,8 @@ private:
 	bool d_running; /**< Running flag. */
 
 	std::unique_ptr<ThreadPool> d_pool; /**< Worker pool for resource loading. */
-	std::shared_ptr<SoundSystem> d_soundSystem; /**< Sound system. */
-	std::shared_ptr<RenderSystem> d_renderSystem; /**< Rendering system. */
+	std::shared_ptr<ISoundSystem> d_soundSystem; /**< Sound system. */
+	std::shared_ptr<IRenderSystem> d_renderSystem; /**< Rendering system. */
 	std::shared_ptr<CollisionSystem> d_collisionSystem; /**< Collision system. */
 	std::shared_ptr<GameSystem> d_gameSystem; /**< Game system. */
 };

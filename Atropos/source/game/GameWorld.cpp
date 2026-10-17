@@ -1,6 +1,6 @@
 #include "game/GameWorld.h"
 
-#include <cassert>
+#include <stdexcept>
 
 
 
@@ -24,7 +24,12 @@ void GameWorld::update(float dtime)
 
 void GameWorld::addObject(GameObject* object)
 {
-	assert(object != nullptr);
+	// A real check rather than an assert, because Release builds compile the
+	// assert away and would take ownership of nothing.
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Cannot add a null game object.");
+	}
 	d_objects.push_back(std::unique_ptr<GameObject>(object));
 }
 

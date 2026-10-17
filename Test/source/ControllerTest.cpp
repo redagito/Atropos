@@ -6,6 +6,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
 TEST_CASE("LinearMovementController moves its attached object", "[controller]")
@@ -42,11 +43,20 @@ TEST_CASE("ShiftController ignores updates while detached", "[controller]")
 	controller.setActive(true);
 
 	GameObject object;
+	// ShiftController only shifts the object while it sits behind the camera
+	// plane, so the object starts far back to make that guard hold.
+	object.setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -100.f)));
+	const glm::mat4 start = object.getTranslation();
 	controller.attach(&object);
-	const glm::mat4 before = object.getTranslation();
+
+	// One update while attached moves the object, which proves the guard is
+	// live and that the assertion below is not vacuously true.
+	controller.update(1.f);
+	const glm::mat4 shifted = object.getTranslation();
+	REQUIRE(shifted != start);
 
 	controller.detach();
 	controller.update(1.f);
 
-	CHECK(object.getTranslation() == before);
+	CHECK(object.getTranslation() == shifted);
 }

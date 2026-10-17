@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include <process.h>
+
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -62,6 +64,18 @@ TEST_CASE("ConfigFile falls back to defaults for malformed values", "[config]")
 	REQUIRE(config.get("count", 7) == 7);
 }
 
+TEST_CASE("ConfigFile rejects a number with trailing characters", "[config]")
+{
+	ConfigFile config;
+	config.set("count", "800x");
+	config.set("scale", "0.5 meters");
+
+	// A numeric prefix would otherwise be accepted silently, so a typo in the
+	// config would be read as a valid but unintended value.
+	REQUIRE(config.get("count", 7) == 7);
+	REQUIRE(config.get("scale", 1.f) == 1.f);
+}
+
 TEST_CASE("ConfigFile returns the default vec3 for a malformed value", "[config]")
 {
 	ConfigFile config;
@@ -70,10 +84,54 @@ TEST_CASE("ConfigFile returns the default vec3 for a malformed value", "[config]
 	CHECK(config.get("origin", glm::vec3(9.f)) == glm::vec3(9.f));
 }
 
+TEST_CASE("ConfigFile skips a whitespace-only line", "[config]")
+{
+	// ctest gives every test case its own process, so the process id makes the
+	// name unique among simultaneously running tests.
+	const std::string id = std::to_string(_getpid());
+	const std::filesystem::path path = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_whitespace.cfg");
+	writeFile(path, "alpha=1\n   \nbeta=2\n");
+
+	ConfigFile config;
+	REQUIRE_NOTHROW(config.load(path.string()));
+	std::filesystem::remove(path);
+	REQUIRE(config.get("alpha", std::string()) == "1");
+	REQUIRE(config.get("beta", std::string()) == "2");
+}
+
+TEST_CASE("ConfigFile skips an indented comment", "[config]")
+{
+	const std::string id = std::to_string(_getpid());
+	const std::filesystem::path path = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_indented.cfg");
+	writeFile(path, "alpha=1\n  # note\nbeta=2\n");
+
+	ConfigFile config;
+	REQUIRE_NOTHROW(config.load(path.string()));
+	std::filesystem::remove(path);
+	REQUIRE(config.get("alpha", std::string()) == "1");
+	REQUIRE(config.get("beta", std::string()) == "2");
+}
+
+TEST_CASE("ConfigFile skips a carriage return only line", "[config]")
+{
+	const std::string id = std::to_string(_getpid());
+	const std::filesystem::path path = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_carriage.cfg");
+	writeFile(path, "alpha=1\r\n\r\nbeta=2\r\n");
+
+	ConfigFile config;
+	REQUIRE_NOTHROW(config.load(path.string()));
+	std::filesystem::remove(path);
+	REQUIRE(config.get("alpha", std::string()) == "1");
+	REQUIRE(config.get("beta", std::string()) == "2");
+}
+
 TEST_CASE("ConfigFile load replaces previously loaded values", "[config]")
 {
-	const std::filesystem::path first = std::filesystem::temp_directory_path() / "atropos_config_first.cfg";
-	const std::filesystem::path second = std::filesystem::temp_directory_path() / "atropos_config_second.cfg";
+	// ctest gives every test case its own process, so the process id makes the
+	// names unique among simultaneously running tests.
+	const std::string id = std::to_string(_getpid());
+	const std::filesystem::path first = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_first.cfg");
+	const std::filesystem::path second = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_second.cfg");
 	writeFile(first, "alpha=1\n");
 	writeFile(second, "beta=2\n");
 

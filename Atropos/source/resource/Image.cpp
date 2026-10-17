@@ -38,7 +38,7 @@ void Image::load(const std::string& fileName)
 		static_cast<std::size_t>(file.imageWidth) * static_cast<std::size_t>(file.imageHeight);
 	if (channels == 4)
 	{
-		d_data.assign(file.imageData, file.imageData + pixelCount * 4);
+		d_data.assign(file.imageData.get(), file.imageData.get() + pixelCount * 4);
 	}
 	else if (channels == 3)
 	{
@@ -54,14 +54,11 @@ void Image::load(const std::string& fileName)
 	}
 	else
 	{
-		deleteTGAFile(&file);
 		throw std::runtime_error("Unsupported TGA color depth in file: " + fileName);
 	}
 	// Set size
 	d_width = file.imageWidth;
 	d_height = file.imageHeight;
-	// Cleanup
-	deleteTGAFile(&file);
 }
 
 unsigned int Image::getWidth() const

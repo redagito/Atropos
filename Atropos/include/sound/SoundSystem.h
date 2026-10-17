@@ -2,6 +2,7 @@
 
 #include "io/ConfigFile.h"
 #include "sound/AudioDecoder.h"
+#include "sound/ISoundSystem.h"
 #include "core/AsyncLoader.h"
 #include "core/TCreatorMixin.h"
 
@@ -32,7 +33,7 @@ struct SoundBuffer
 * Files are decoded on a worker thread, the OpenAL upload runs on the main
 * thread during process().
 */
-class SoundSystem : public TCreatorMixin<SoundSystem>
+class SoundSystem : public TCreatorMixin<SoundSystem>, public ISoundSystem
 {
 public:
 	/**
@@ -57,46 +58,46 @@ public:
 	/**
 	* \brief Requests an audio file as background music, loading asynchronously.
 	*/
-	void loadBGM(const std::string& name, const std::string& file, float volume);
+		void loadBGM(const std::string& name, const std::string& file, float volume) override;
 
 	/**
 	* \brief Requests an audio file as sound effect, loading asynchronously.
 	*/
-	void loadSFX(const std::string& name, const std::string& file, float volume);
+		void loadSFX(const std::string& name, const std::string& file, float volume) override;
 
 	/**
 	* \brief Play background music in loop.
 	* Throws std::runtime_error if the sound failed to load and std::logic_error
 	* if it is not ready yet.
 	*/
-	void playBGM(const std::string& name);
+		void playBGM(const std::string& name) override;
 
 	/**
 	* \brief Play sound effect once.
 	* Throws std::runtime_error if the sound failed to load and std::logic_error
 	* if it is not ready yet.
 	*/
-	void playSFX(const std::string& name);
+		void playSFX(const std::string& name) override;
 
 	/**
 	* \brief Stops all sound playback.
 	*/
-	void stopAll();
+		void stopAll() override;
 
 	/**
 	* \brief Commits finished sound buffers. Must run on the main thread.
 	*/
-	void process();
+		void process() override;
 
 	/**
 	* \brief True when all requested sounds are loaded or failed.
 	*/
-	bool isIdle() const;
+		bool isIdle() const override;
 
 	/**
 	* \brief True if any requested sound failed to load.
 	*/
-	bool hasError() const;
+		bool hasError() const override;
 
 private:
 	using Loader = AsyncLoader<SoundBuffer, AudioDecoder::WaveData>;

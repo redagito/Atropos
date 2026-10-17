@@ -14,6 +14,9 @@ namespace
 		int enters = 0;
 		int exits = 0;
 		bool updateResult = true;
+		bool collisions = true;
+		bool throwOnInit = false;
+		int destructions = 0;
 		std::string nextState;
 	};
 
@@ -26,8 +29,17 @@ namespace
 		{
 		}
 
+		~FakeState() override
+		{
+			++d_log->destructions;
+		}
+
 		void init() override
 		{
+			if (d_log->throwOnInit)
+			{
+				throw std::runtime_error("init failed");
+			}
 		}
 
 		void onEnter() override
@@ -48,6 +60,11 @@ namespace
 		const std::string& getNextState() const override
 		{
 			return d_log->nextState;
+		}
+
+		bool collisionsEnabled() const override
+		{
+			return d_log->collisions;
 		}
 
 	private:
@@ -82,6 +99,67 @@ TEST_CASE("GameSystem init throws for an unregistered initial state", "[gamesyst
 	config.set("game_initialstate", "missing");
 
 	CHECK_THROWS(system.init(config));
+}
+
+TEST_CASE("GameSystem reports whether the active state wants collisions", "[gamesystem]")
+{
+	GameSystem system;
+	StateLog playLog;
+	StateLog pauseLog;
+	REQUIRE_NOTHROW(system.addState("play", new FakeState(&playLog)));
+	REQUIRE_NOTHROW(system.addState("pause", new FakeState(&pauseLog)));
+
+	ConfigFile config;
+	config.set("game_initialstate", "play");
+	REQUIRE_NOTHROW(system.init(config));
+
+	// A state that leaves collisions running, such as the play state.
+	CHECK(system.collisionsEnabled());
+
+	// A state such as pause must be able to stop them, otherwise damage keeps
+	// accumulating in the collidables while the world itself is not updated.
+	pauseLog.collisions = false;
+	playLog.updateResult = false;
+	playLog.nextState = "pause";
+	REQUIRE(system.update(0.f));
+
+	CHECK_FALSE(system.collisionsEnabled());
+}
+
+TEST_CASE("GameSystem disables collisions when there is no active state", "[gamesystem]")
+{
+	GameSystem system;
+
+	CHECK_FALSE(system.collisionsEnabled());
+}
+
+TEST_CASE("GameSystem takes ownership of a state whose init throws", "[gamesystem]")
+{
+	GameSystem system;
+	StateLog log;
+	log.throwOnInit = true;
+
+	CHECK_THROWS(system.addState("play", new FakeState(&log)));
+
+	// The state must be owned before init runs, otherwise a throwing init
+	// leaks it and its onExit never happens.
+	CHECK(log.destructions == 1);
+}
+
+TEST_CASE("GameSystem exits the active state when it is destroyed", "[gamesystem]")
+{
+	StateLog log;
+	{
+		GameSystem system;
+		REQUIRE_NOTHROW(system.addState("play", new FakeState(&log)));
+
+		ConfigFile config;
+		config.set("game_initialstate", "play");
+		REQUIRE_NOTHROW(system.init(config));
+	}
+
+	CHECK(log.exits == 1);
+	CHECK(log.destructions == 1);
 }
 
 TEST_CASE("GameSystem transitions to a registered next state", "[gamesystem]")

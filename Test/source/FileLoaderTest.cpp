@@ -2,6 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <process.h>
+
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -10,9 +12,12 @@ namespace
 {
 	std::filesystem::path tempTextPath()
 	{
+		// ctest gives every test case its own process, so the counter restarts
+		// at zero everywhere and would collide across concurrent runs. The
+		// process id makes the name unique among simultaneously running tests.
 		static int counter = 0;
 		return std::filesystem::temp_directory_path()
-			/ ("atropos_file_" + std::to_string(counter++) + ".txt");
+			/ ("atropos_file_" + std::to_string(_getpid()) + "_" + std::to_string(counter++) + ".txt");
 	}
 }
 

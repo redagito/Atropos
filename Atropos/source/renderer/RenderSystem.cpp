@@ -87,6 +87,17 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 
 	// Show window
 	glfwShowWindow(Global::window);
+
+	// GLFW does not raise a resize event when the window is created, so the
+	// camera projection would otherwise keep its default aspect ratio until the
+	// user resizes the window for the first time.
+	int framebufferWidth = 0;
+	int framebufferHeight = 0;
+	glfwGetFramebufferSize(Global::window, &framebufferWidth, &framebufferHeight);
+	if (framebufferWidth > 0 && framebufferHeight > 0)
+	{
+		onResize(framebufferWidth, framebufferHeight);
+	}
 }
 
 RenderSystem::~RenderSystem()
@@ -117,18 +128,41 @@ bool RenderSystem::getCulling() const
 
 void RenderSystem::createScene(const std::string& name)
 {
+	// Replacing an existing scene destroys every renderable it holds, so the
+	// active pointer has to stop referring to it first.
+	const auto existing = d_scenes.find(name);
+	if (existing != d_scenes.end() && d_activeScene == &existing->second)
+	{
+		d_activeScene = nullptr;
+	}
 	d_scenes[name] = Scene();
 }
 
 void RenderSystem::setActiveScene(const std::string& name)
 {
-	assert(hasScene(name));
+	// A real check rather than an assert, because Release builds compile the
+	// assert away and would go on to dereference a scene that does not exist.
+	if (!hasScene(name))
+	{
+		throw std::runtime_error("Cannot activate a scene that does not exist: " + name);
+	}
 	d_activeScene = &(d_scenes.at(name));
 }
 
 bool RenderSystem::hasScene(const std::string& name) const
 {
 	return (d_scenes.count(name) != 0);
+}
+
+void RenderSystem::setSceneBackgroundColor(const std::string& name, const glm::vec3& color)
+{
+	// A real check rather than an assert, because Release builds compile the
+	// assert away and would go on to colour a scene that does not exist.
+	if (!hasScene(name))
+	{
+		throw std::runtime_error("Cannot set the background of a scene that does not exist: " + name);
+	}
+	d_scenes.at(name).setBackgroundColor(color);
 }
 
 // Draw call
@@ -172,7 +206,12 @@ bool RenderSystem::hasError() const
 // Add entity
 Renderable* RenderSystem::add(const char* model)
 {
-	assert(d_activeScene != nullptr);
+	// A real check rather than an assert, because Release builds compile the
+	// assert away and would go on to add to a scene that does not exist.
+	if (d_activeScene == nullptr)
+	{
+		throw std::runtime_error("Cannot add a renderable without an active scene.");
+	}
 	Model* modelPtr = d_manager->getModel(model);
 	Renderable* entity = new Renderable(modelPtr);
 	d_activeScene->add(entity);
@@ -194,9 +233,9 @@ void RenderSystem::onResize(int width, int height)
 	}
 	d_renderer->onResize(width, height);
 
-	// A minimized window reports a zero height, which would produce an
-	// infinite aspect ratio and an invalid projection matrix.
-	if (height <= 0)
+	// A minimized window reports a zero size, which would produce an infinite
+	// aspect ratio and an invalid projection matrix.
+	if (width <= 0 || height <= 0)
 	{
 		return;
 	}

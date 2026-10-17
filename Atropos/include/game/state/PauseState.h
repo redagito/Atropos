@@ -1,7 +1,7 @@
 #pragma once
-class RenderSystem;
+class IRenderSystem;
 class CollisionSystem;
-class SoundSystem;
+class ISoundSystem;
 
 #include "game/IGameState.h"
 #include "game/GameWorld.h"
@@ -18,7 +18,7 @@ public:
 	/**
 	* \brief Sets sub systems for access.
 	*/
-	PauseState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys);
+	PauseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys);
 
 	/**
 	* \brief Updates state.
@@ -45,10 +45,15 @@ public:
 	*/
 	const std::string& getNextState() const;
 
+	/**
+	* \brief Pausing freezes the world, so collisions must stop as well.
+	*/
+	bool collisionsEnabled() const;
+
 private:
-	RenderSystem* d_renderSystem; /**< Rendering system. */
+	IRenderSystem* d_renderSystem; /**< Rendering system. */
 	CollisionSystem* d_collisionSystem; /**< Collision system. */
-	SoundSystem* d_soundSystem; /**< Sound system. */
+	ISoundSystem* d_soundSystem; /**< Sound system. */
 	GameWorld d_world; /**< Game objects. */
 	std::string d_nextState; /**< Next state. */
 };

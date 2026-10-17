@@ -51,9 +51,17 @@ bool Scene::isCulled(const Renderable* entity, const Camera& camera) const
 	return false;
 }
 
-/*
-* Send scene objects to renderer for drawing
-*/
+void Scene::setBackgroundColor(const glm::vec3& color)
+{
+	d_backgroundColor = color;
+}
+
+const glm::vec3& Scene::getBackgroundColor() const
+{
+	return d_backgroundColor;
+}
+
+// Sends scene objects to renderer for drawing
 void Scene::draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera, bool culling)
 {
 	Profiler profiler("scene_draw");

@@ -60,6 +60,15 @@ public:
 	*/
 	const glm::mat4& getProjectionMatrix() const;
 
+	/**
+	* \brief Restores the default view.
+	*
+	* The camera is moved around by the game, so this puts it back to the
+	* framing the constructor starts with. The projection is left alone, because
+	* it belongs to the window rather than to the view.
+	*/
+	void resetView();
+
 private:
 	glm::vec3 d_position; /**< Camera position. */
 	glm::mat4 d_view; /**< View matrix. */

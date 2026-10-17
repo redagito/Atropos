@@ -5,9 +5,14 @@
 // Create from view matrix
 Camera::Camera()
 {
+	resetView();
+	setProjectionMatrix(60.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+}
+
+void Camera::resetView()
+{
 	// Default
 	setViewMatrix(glm::vec3(0.f, 7.f, -10.f), glm::vec3(0.f, 5.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-	setProjectionMatrix(60.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 }
 
 Camera::~Camera()

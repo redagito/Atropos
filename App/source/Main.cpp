@@ -1,5 +1,6 @@
 #include "Atropos.h"
 
+#include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
 #include <exception>
@@ -19,6 +20,15 @@ namespace
 
 int main()
 {
+	// The app is linked against the GUI subsystem, so there is no console for
+	// stderr or for spdlog's stdout sink to reach. A file logger is installed
+	// before the engine runs, otherwise a failure while reading the config
+	// leaves nothing behind but a non zero exit code.
+	auto bootstrapLogger = spdlog::basic_logger_mt("atropos", "log.txt");
+	bootstrapLogger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
+	bootstrapLogger->set_level(spdlog::level::trace);
+	spdlog::set_default_logger(bootstrapLogger);
+
 	// Owns the engine, so it is destroyed even if initialization or the main
 	// loop throws.
 	std::unique_ptr<IEngine, EngineDeleter> engine(createEngine());
