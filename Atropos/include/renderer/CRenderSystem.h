@@ -14,7 +14,6 @@ struct GLFWwindow; /**< GLFW window forwrad declare. */
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include <thread>
 
 /**
 * \brief The rendering system manages window creation, scenes and rendering.
@@ -114,5 +113,4 @@ private:
 	std::unique_ptr<CResourceManager> d_manager; /**< Rendering resource manager. */
 	std::shared_ptr<CRenderer> d_renderer; /**< Active rendering device. */
 	bool d_culling; /**< Culling mode. */
-	std::thread d_renderingThread; /**< Rendering worker thread. */
 };
