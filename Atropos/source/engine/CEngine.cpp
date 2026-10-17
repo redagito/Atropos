@@ -22,15 +22,7 @@
 #include "util/CTimeStamp.h"
 #include "util/Global.h"
 
-#include "renderer/flext/flextGL.h"
-
 #include "glfw/glfw3.h"
-#include "glm/ext.hpp"
-
-#include <cmath>
-#include <iostream>
-#include <list>
-#include <cassert>
 
 CEngine::CEngine()
 	:
