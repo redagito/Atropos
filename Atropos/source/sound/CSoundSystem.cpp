@@ -1,6 +1,7 @@
 #include "sound/CSoundSystem.h"
 
 #include "sound/CAudioDecoder.h"
+#include "debug/Log.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -68,9 +69,25 @@ bool CSoundSystem::init(const CConfigFile& config)
 		return false;
 	}
 
-	alcMakeContextCurrent(context);
+	if (alcMakeContextCurrent(context) == ALC_FALSE)
+	{
+		alcDestroyContext(context);
+		alcCloseDevice(device);
+		return false;
+	}
 
 	alGenSources(1, &d_bgmSource);
+	if (d_bgmSource == 0 || alGetError() != AL_NO_ERROR)
+	{
+		if (d_bgmSource != 0)
+		{
+			alDeleteSources(1, &d_bgmSource);
+			d_bgmSource = 0;
+		}
+		alcDestroyContext(context);
+		alcCloseDevice(device);
+		return false;
+	}
 	alSourcei(d_bgmSource, AL_LOOPING, AL_TRUE);
 
 	d_device = device;
@@ -91,10 +108,21 @@ bool CSoundSystem::load(const std::string& name, const std::string& file, float 
 		return false;
 	}
 
-	ALuint buffer;
+	ALuint buffer = 0;
 	alGenBuffers(1, &buffer);
+	if (buffer == 0)
+	{
+		LOG_ERROR("Failed to generate OpenAL buffer for %s.", name.c_str());
+		return false;
+	}
 	alBufferData(buffer, wave.channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
 		wave.samples.data(), static_cast<ALsizei>(wave.samples.size() * sizeof(short)), wave.sampleRate);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		LOG_ERROR("Failed to upload audio data for %s.", name.c_str());
+		alDeleteBuffers(1, &buffer);
+		return false;
+	}
 
 	SBuffer entry;
 	entry.buffer = buffer;
@@ -151,8 +179,12 @@ void CSoundSystem::playSFX(const std::string& name)
 		}
 	}
 
-	ALuint handle;
+	ALuint handle = 0;
 	alGenSources(1, &handle);
+	if (handle == 0)
+	{
+		return;
+	}
 	alSourcei(handle, AL_BUFFER, static_cast<ALint>(it->second.buffer));
 	alSourcef(handle, AL_GAIN, it->second.volume);
 	alSourcePlay(handle);
