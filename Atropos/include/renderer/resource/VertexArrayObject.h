@@ -14,6 +14,9 @@ public:
 	*/
 	VertexArrayObject();
 
+	VertexArrayObject(const VertexArrayObject&) = delete;
+	VertexArrayObject& operator=(const VertexArrayObject&) = delete;
+
 	/**
 	* \brief Cleanup of resources.
 	*/

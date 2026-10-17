@@ -5,9 +5,9 @@
 
 Mesh::Mesh()
 	:
+	d_vertices(nullptr),
 	d_normals(nullptr),
-	d_texCoords(nullptr),
-	d_vertices(nullptr)
+	d_texCoords(nullptr)
 {
 	
 }

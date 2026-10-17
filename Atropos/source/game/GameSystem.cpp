@@ -76,24 +76,40 @@ bool GameSystem::addState(const std::string& name, IGameState* state)
 		delete state;
 		return false;
 	}
-	if (d_gameStates.count(name) != 0)
+	const auto existing = d_gameStates.find(name);
+	const bool wasActive = (existing != d_gameStates.end() && d_activeState == existing->second.get());
+	if (existing != d_gameStates.end())
 	{
 		// State with name already exists
 		LOG_WARNING("Overwriting game state %s.", name.c_str());
+		if (wasActive)
+		{
+			existing->second->onExit();
+		}
 	}
 
 	d_gameStates[name] = std::unique_ptr<IGameState>(state);
+	if (wasActive)
+	{
+		d_activeState = state;
+		d_activeState->onEnter();
+	}
 	LOG_DEBUG("Added game state %s to game system.", name.c_str());
 	return true;
 }
 
 void GameSystem::removeState(const std::string& name)
 {
-	if (d_gameStates.count(name) == 0)
+	const auto it = d_gameStates.find(name);
+	if (it == d_gameStates.end())
 	{
 		LOG_WARNING("Could not remove state %s, the state does not exist.", name.c_str());
 		return;
 	}
-	d_gameStates.erase(name);
+	if (d_activeState == it->second.get())
+	{
+		d_activeState = nullptr;
+	}
+	d_gameStates.erase(it);
 	LOG_DEBUG("Removed game state %s from game system.", name.c_str());
 }

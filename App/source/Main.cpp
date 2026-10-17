@@ -5,7 +5,8 @@ int main()
 	// Create engine interface
 	IEngine* engine = createEngine();
 
-	if (engine->init("startup.cfg"))
+	const bool initialized = engine->init("startup.cfg");
+	if (initialized)
 	{
 		// Start main loop
 		engine->run();
@@ -13,5 +14,5 @@ int main()
 
 	// Destroy engine interface
 	destroyEngine(engine);
-	return 0;
+	return initialized ? 0 : 1;
 }

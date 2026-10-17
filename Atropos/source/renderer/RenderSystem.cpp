@@ -52,12 +52,13 @@ bool RenderSystem::init(const ConfigFile& config)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_REFRESH_RATE, 30);
-	glfwSwapInterval(30);
+	glfwSwapInterval(1);
 
 	// Global window access, remove later
 	Global::window = glfwCreateWindow(width, height, config.get("render_windowtitle", "Atropos").c_str(), NULL, NULL);
 	if (Global::window == nullptr)
 	{
+		glfwTerminate();
 		return false;
 	}
 	glfwMakeContextCurrent(Global::window);
@@ -65,6 +66,9 @@ bool RenderSystem::init(const ConfigFile& config)
 	// Load OpenGL function pointers
 	if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0)
 	{
+		glfwDestroyWindow(Global::window);
+		Global::window = nullptr;
+		glfwTerminate();
 		return false;
 	}
 
@@ -75,7 +79,17 @@ bool RenderSystem::init(const ConfigFile& config)
 	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/")));
 
 	// Create render device with window size and shadow mapping shader
-	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, d_manager->getShader("shadow")));
+	Shader* shadowShader = d_manager->getShader("shadow");
+	if (shadowShader == nullptr)
+	{
+		LOG_ERROR("Failed to load shadow shader.");
+		d_manager = nullptr;
+		glfwDestroyWindow(Global::window);
+		Global::window = nullptr;
+		glfwTerminate();
+		return false;
+	}
+	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, shadowShader));
 
 	// Show window
 	glfwShowWindow(Global::window);

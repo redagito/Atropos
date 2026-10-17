@@ -7,12 +7,12 @@
 Renderable::Renderable(Model* model)
 	:
 	d_modelPtr(model),
-	d_deleteMe(false),
 	d_model(glm::mat4(1.f)),
 	d_rotation(glm::mat4(1.f)),
 	d_translation(glm::mat4(1.f)),
 	d_scale(glm::mat4(1.f)),
 	d_hasShadow(true),
+	d_deleteMe(false),
 	d_isCulled(true),
 	d_visible(true)
 {

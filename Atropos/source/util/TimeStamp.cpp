@@ -9,13 +9,25 @@ std::string TimeStamp::createTimeStamp()
 {
 	// Create timestamp
 	time_t rawtime;
-	struct tm* timeinfo;
 	char buffer[20];
 	memset(&buffer[0], 0, 20);
 
 	time(&rawtime);
-	timeinfo = localtime(&rawtime);
-	strftime(buffer, 20, "%Y%m%d%H%M%S", timeinfo);
+
+	struct tm timeinfo;
+#ifdef _WIN32
+	if (localtime_s(&timeinfo, &rawtime) != 0)
+	{
+		return std::string();
+	}
+#else
+	if (localtime_r(&rawtime, &timeinfo) == nullptr)
+	{
+		return std::string();
+	}
+#endif
+
+	strftime(buffer, 20, "%Y%m%d%H%M%S", &timeinfo);
 
 	// Create log file name
 	return std::string(buffer);

@@ -33,6 +33,8 @@ FragmentShader::FragmentShader(const char** code, std::size_t lines)
 		std::string err("FragmentShader: Compile error: ");
 		err.append(&error[0]);
 		LOG_ERROR("%s", err.c_str());
+		glDeleteShader(d_shaderId);
+		d_shaderId = 0;
 		throw std::runtime_error(err);
 	}
 }
@@ -42,13 +44,6 @@ FragmentShader::~FragmentShader()
 {
 	glDeleteShader(d_shaderId);
 	return;
-}
-
-// Private copy constructor
-FragmentShader::FragmentShader(const FragmentShader&)
-{
-	// Never use this
-	throw std::runtime_error("FragmentShader: Never copy FragmentShader objects");
 }
 
 // Returns id

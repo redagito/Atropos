@@ -141,8 +141,6 @@ void Engine::run()
 	LOG_INFO("Starting game engine main loop.");
 	// Time difference
 	float dtime = 0.f;
-	float accumTime = 0.f;
-	unsigned int frameCount = 0;
 	float f2Reset = 0.f;
 
 	// Main loop
@@ -171,19 +169,8 @@ void Engine::run()
 			glfwSetWindowShouldClose(Global::window, true);
 		}
 		
-		accumTime += dtime;
 		f2Reset += dtime;
-		if (accumTime >= 1.f)
-		{
-			accumTime -= 1.f;
-			// Print frame count
-			//LOG_DEBUG("FPS: %u", frameCount);
-			// Print rendering statistics
-			//LOG_DEBUG("%s", d_renderSystem->statisticsToString().c_str());
-			frameCount = 0;
-		}
-		++frameCount;
-		
+
 		updateRenderer();
 		updateGame(dtime);
 		updateCollision();

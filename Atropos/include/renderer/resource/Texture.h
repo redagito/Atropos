@@ -16,6 +16,9 @@ public:
 	 */
 	Texture();
 
+	Texture(const Texture&) = delete;
+	Texture& operator=(const Texture&) = delete;
+
 	/**
 	 * \brief Frees GPU resources.
 	 */

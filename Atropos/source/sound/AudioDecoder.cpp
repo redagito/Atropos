@@ -145,6 +145,7 @@ bool AudioDecoder::decodeMp3(const std::vector<char>& data, WaveData& out)
 	std::memset(&info, 0, sizeof(info));
 	if (mp3dec_load_buf(&decoder, reinterpret_cast<const std::uint8_t*>(data.data()), data.size(), &info, nullptr, nullptr) != 0)
 	{
+		std::free(info.buffer);
 		return false;
 	}
 

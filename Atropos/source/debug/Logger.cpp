@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <cstdio>
 #include <cstdarg>
+#include <filesystem>
 #include <iostream>
 
 std::ofstream Logger::s_stream;
@@ -34,6 +35,14 @@ bool Logger::initLogFile(const std::string& logFile)
 {
 	if (!s_stream.is_open())
 	{
+		// Make sure the containing directory exists so the log file can be created.
+		const std::filesystem::path logPath(logFile);
+		const std::filesystem::path parent = logPath.parent_path();
+		if (!parent.empty())
+		{
+			std::error_code error;
+			std::filesystem::create_directories(parent, error);
+		}
 		s_stream.open(logFile);
 		if (!s_stream.is_open())
 		{

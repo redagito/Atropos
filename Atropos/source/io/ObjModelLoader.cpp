@@ -3,6 +3,7 @@
 
 #include "debug/Log.h"
 
+#include <cstddef>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -63,7 +64,7 @@ bool ObjModelLoader::load(std::string& file)
 	{
 		parseLine(line, tempVert, tempNorm, tempUV);
 	}
-	LOG_INFO("Loaded obj model with %u triangles.", d_vertices.size() / 3);
+	LOG_INFO("Loaded obj model with %zu triangles.", d_vertices.size() / 3);
 
 	// Calculate bounding volume
 	calculateAABBox();
@@ -105,7 +106,7 @@ void ObjModelLoader::calculateAABBox()
 	float zmin = d_vertices[2];
 	float zmax = d_vertices[2];
 
-	for (unsigned int i = 0; i < d_vertices.size(); i += 3)
+	for (std::size_t i = 0; i < d_vertices.size(); i += 3)
 	{
 		// X coord
 		if (d_vertices[i] < xmin)
@@ -148,25 +149,26 @@ void ObjModelLoader::parseLine(const std::string& line, std::vector<float>& temp
 	{
 		// Ignore comments
 	}
-	else if (line[0] == 'v')
+	else if (line[0] == 'v' && line.size() > 1)
 	{
-		if (line[1] == ' ')
+		if (line[1] == ' ' && line.size() > 2)
 		{
 			// Parse as vertex
 			parseVertex(line.substr(2), tempVert);
 		}
-		else if (line[1] == 't')
+		else if (line[1] == 't' && line.size() > 3 && line[2] == ' ')
 		{
 			// Parse as texture coord
 			parseUV(line.substr(3), tempUV);
 		}
-		else if (line[1] == 'n')
+		else if (line[1] == 'n' && line.size() > 3 && line[2] == ' ')
 		{
 			// Parse as normal
 			parseNormal(line.substr(3), tempNorm);
 		}
+		// Lines like a bare "v", "vt" or "vn" without data are ignored.
 	}
-	else if (line[0] == 'f')
+	else if (line[0] == 'f' && line.size() > 2 && line[1] == ' ')
 	{
 		// Parse as indices
 		parseIndex(line.substr(2), tempVert, tempNorm, tempUV);

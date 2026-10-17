@@ -41,7 +41,15 @@ Collidable* CollisionSystem::add(const AABBox& box, unsigned int groupId)
 // Removes collidable entity
 void CollisionSystem::remove(Collidable* entity)
 {
-	d_entities[entity->getGroupId()].remove(entity);
+	if (entity == nullptr)
+	{
+		return;
+	}
+	const unsigned int groupId = entity->getGroupId();
+	if (groupId < d_entities.size())
+	{
+		d_entities[groupId].remove(entity);
+	}
 	delete entity;
 }
 

@@ -13,6 +13,10 @@ class ShaderCode
 public:
 	// Construct from shader code
 	ShaderCode(const char* code);
+
+	ShaderCode(const ShaderCode&) = delete;
+	ShaderCode& operator=(const ShaderCode&) = delete;
+
 	~ShaderCode();
 	
 	// Returns array of null terminated character arrays

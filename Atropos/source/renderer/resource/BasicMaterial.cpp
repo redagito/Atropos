@@ -6,9 +6,9 @@
 BasicMaterial::BasicMaterial(Shader* shader, float ambient, float specular, Texture* texture)
 	:
 	AMaterial(shader),
+	d_texture(texture),
 	d_ambient(ambient),
-	d_specular(specular),
-	d_texture(texture)
+	d_specular(specular)
 {
 	d_shader->setActive();
 	d_shader->setShaderValueFloat("ambient", d_ambient);

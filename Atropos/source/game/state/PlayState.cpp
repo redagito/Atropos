@@ -84,9 +84,6 @@ bool PlayState::init()
 	d_playerGroup = d_collisionSystem->getNewGroupId();
 	d_enemyGroup = d_collisionSystem->getNewGroupId();
 
-	// Player object controls camera
-	// TODO: Player object should be deserialized from data source (xml stream?).
-	d_player = new GameObject;
 	// Add player
 	Renderable* playerDrawable = d_renderSystem->add("player");
 	if (playerDrawable == nullptr)
@@ -94,6 +91,9 @@ bool PlayState::init()
 		LOG_ERROR("Failed to add player entity: model could not be loaded.");
 		return false;
 	}
+	// Player object controls camera
+	// TODO: Player object should be deserialized from data source (xml stream?).
+	d_player = new GameObject;
 	d_player->setDrawable(playerDrawable);
 	// Player collidable added to player collision group
 	d_player->setCollidable(d_collisionSystem->add(d_player->getDrawable()->getAABBox(), d_playerGroup));

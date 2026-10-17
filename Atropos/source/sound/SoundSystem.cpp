@@ -6,6 +6,8 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
+#include <cstddef>
+
 SoundSystem::SoundSystem()
 	:
 	d_device(nullptr),
@@ -108,6 +110,12 @@ bool SoundSystem::load(const std::string& name, const std::string& file, float v
 		return false;
 	}
 
+	if (wave.channels < 1 || wave.channels > 2)
+	{
+		LOG_ERROR("Unsupported channel count %d for %s.", wave.channels, name.c_str());
+		return false;
+	}
+
 	ALuint buffer = 0;
 	alGenBuffers(1, &buffer);
 	if (buffer == 0)
@@ -115,8 +123,9 @@ bool SoundSystem::load(const std::string& name, const std::string& file, float v
 		LOG_ERROR("Failed to generate OpenAL buffer for %s.", name.c_str());
 		return false;
 	}
+	const std::size_t byteCount = wave.samples.size() * sizeof(short);
 	alBufferData(buffer, wave.channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
-		wave.samples.data(), static_cast<ALsizei>(wave.samples.size() * sizeof(short)), wave.sampleRate);
+		wave.samples.data(), static_cast<ALsizei>(byteCount), wave.sampleRate);
 	if (alGetError() != AL_NO_ERROR)
 	{
 		LOG_ERROR("Failed to upload audio data for %s.", name.c_str());

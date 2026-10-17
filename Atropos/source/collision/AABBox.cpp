@@ -6,6 +6,14 @@
 // Custom memory manager
 
 
+AABBox::AABBox()
+	:
+	d_middlePoint(0.f),
+	d_halfWidth(0.f)
+{
+	return;
+}
+
 // Returns mid point
 const glm::vec3& AABBox::getMid() const
 {

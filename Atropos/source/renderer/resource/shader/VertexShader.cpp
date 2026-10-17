@@ -33,6 +33,8 @@ VertexShader::VertexShader(const char** code, std::size_t lines)
 		std::string err("VertexShader: Compile error: ");
 		err.append(&error[0]);
 		LOG_ERROR("%s", err.c_str());
+		glDeleteShader(d_shaderId);
+		d_shaderId = 0;
 		throw std::runtime_error(err);
 	}
 }
@@ -42,13 +44,6 @@ VertexShader::~VertexShader()
 {
 	glDeleteShader(d_shaderId);
 	return;
-}
-
-// Private copy constructor
-VertexShader::VertexShader(const VertexShader&)
-{
-	// Blow up if used
-	throw std::runtime_error("VertexShader: Never copy VertexShader objects");
 }
 
 // Returns id

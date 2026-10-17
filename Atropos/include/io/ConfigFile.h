@@ -33,7 +33,7 @@ public:
 	/**
 	* \brief Returns value to key or, if not found, the default string value.
 	*/
-	const std::string& get(const std::string& key, const std::string& defaultValue) const;
+	std::string get(const std::string& key, const std::string& defaultValue) const;
 
 	/**
 	* \brief Returns float value to key or, if not found, the default float value.
@@ -67,6 +67,5 @@ private:
 	*/
 	bool parseLine(const std::string& line);
 
-	static std::string s_emptyString; /**< Return value for failed lookups. */
 	std::unordered_map<std::string, std::string> d_values; /**< Config data. */
 };

@@ -32,16 +32,18 @@ bool Image::load(const std::string& fileName)
 		}
 		// Assign to vector
 		// RGBA data
-		int channels = file.bitCount / 8;
+		const int channels = file.bitCount / 8;
+		const std::size_t pixelCount =
+			static_cast<std::size_t>(file.imageWidth) * static_cast<std::size_t>(file.imageHeight);
 		if (channels == 4)
 		{
-			d_data.assign(file.imageData, file.imageData + file.imageWidth * file.imageHeight * 4);
+			d_data.assign(file.imageData, file.imageData + pixelCount * 4);
 		}
 		else if (channels == 3)
 		{
 			d_data.clear();
-			d_data.reserve(file.imageWidth * file.imageHeight * 4);
-			for (int i = 0; i < file.imageWidth * file.imageHeight; ++i)
+			d_data.reserve(pixelCount * 4);
+			for (std::size_t i = 0; i < pixelCount; ++i)
 			{
 				d_data.push_back(file.imageData[i * 3]);
 				d_data.push_back(file.imageData[i * 3 + 1]);

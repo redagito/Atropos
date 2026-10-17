@@ -7,8 +7,6 @@
 // Custom memory manager
 
 
-std::string ConfigFile::s_emptyString;
-
 ConfigFile::ConfigFile()
 {
 	return;
@@ -39,7 +37,7 @@ bool ConfigFile::has(const std::string& key) const
 	return (d_values.count(key) != 0);
 }
 
-const std::string& ConfigFile::get(const std::string& key, const std::string& defaultValue) const
+std::string ConfigFile::get(const std::string& key, const std::string& defaultValue) const
 {
 	if (has(key))
 	{

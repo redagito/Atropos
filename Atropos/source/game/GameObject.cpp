@@ -80,10 +80,13 @@ void GameObject::setDrawable(Renderable* proxy)
 	{
 		d_drawable = proxy;
 		// Update
-		d_drawable->setRotationMatrix(d_rotation);
-		d_drawable->setTranslationMatrix(d_translation);
-		d_drawable->setScaleMatrix(d_scale);
-		d_drawable->setModelMatrix(d_translation * d_scale * d_rotation);
+		if (d_drawable != nullptr)
+		{
+			d_drawable->setRotationMatrix(d_rotation);
+			d_drawable->setTranslationMatrix(d_translation);
+			d_drawable->setScaleMatrix(d_scale);
+			d_drawable->setModelMatrix(d_translation * d_scale * d_rotation);
+		}
 	}
 }
 
@@ -98,8 +101,11 @@ void GameObject::setCollidable(Collidable* entity)
 	{
 		d_collidable = entity;
 		// Update
-		d_collidable->setScale(d_scale);
-		d_collidable->setTranslation(d_translation);
+		if (d_collidable != nullptr)
+		{
+			d_collidable->setScale(d_scale);
+			d_collidable->setTranslation(d_translation);
+		}
 	}
 }
 

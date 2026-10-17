@@ -10,6 +10,11 @@ class AABBox
 {
 public:
 	/**
+	* \brief Creates an empty box at the origin.
+	*/
+	AABBox();
+
+	/**
 	* \brief Returns middle of the box
 	*/
 	const glm::vec3& getMid() const;

@@ -31,7 +31,7 @@ void HealthController::detach()
 
 void HealthController::update(float)
 {
-	if (d_active && d_object != nullptr)
+	if (d_active && d_object != nullptr && d_object->getCollidable() != nullptr)
 	{
 		// Set health
 		d_health -= d_object->getCollidable()->getDamageReceived();

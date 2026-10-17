@@ -17,11 +17,11 @@ RenderRequest::RenderRequest(const VertexArrayObject* vao, int size, const AMate
 	d_vao(vao),
 	d_size(size),
 	d_material(material),
+	d_shadow(shadow),
 	d_model(model),
 	d_rotation(rotation),
 	d_translation(translation),
-	d_scale(scale),
-	d_shadow(shadow)
+	d_scale(scale)
 {
 	return;
 }
@@ -68,12 +68,14 @@ bool RenderRequest::hasShadow() const
 
 Renderer::Renderer(int width, int height, Shader* shadow)
 	:	
+	d_shadowShader(shadow), // Shadow shader
+	d_useWireframe(false), // Wireframe mode
+	d_stage(Renderer::End), // Initial stage
 	d_width(width), // Screen width
 	d_height(height), // Screen height
-	d_stage(Renderer::End), // Initial stage
 	d_clearColor(1.f), // Default white
-	d_useWireframe(false), // Wireframe mode
-	d_shadowShader(shadow), // Shadow shader
+	d_view(glm::mat4(1.f)), // Active view matrix
+	d_proj(glm::mat4(1.f)), // Active projection matrix
 	d_lightPosition(0.f, 100.f, 50.f) // The sun, TODO remove from here!
 {
 	LOG_INFO("Created renderer.");
@@ -268,7 +270,7 @@ void Renderer::geometryPass()
 		request.getVAO()->setInactive();
 
 		// Add vertex stats
-		d_frameStats.vertexCount += request.getSize() * 3; // Triangles * 3 -> vertices
+		d_frameStats.vertexCount += request.getSize();
 	}
 	return;
 }
@@ -319,7 +321,7 @@ void Renderer::shadowPass()
 			request.getVAO()->setInactive();
 
 			// Add vertex stats
-			d_frameStats.vertexCount += request.getSize() * 3; // Triangles * 3 -> vertices
+			d_frameStats.vertexCount += request.getSize();
 		}
 	}
 	// Reset face culling state
