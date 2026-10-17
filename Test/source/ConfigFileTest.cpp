@@ -50,3 +50,11 @@ TEST_CASE("ConfigFile falls back to defaults for malformed values", "[config]")
 
 	REQUIRE(config.get("count", 7) == 7);
 }
+
+TEST_CASE("ConfigFile returns the default vec3 for a malformed value", "[config]")
+{
+	ConfigFile config;
+	config.set("origin", "not a vec3");
+
+	CHECK(config.get("origin", glm::vec3(9.f)) == glm::vec3(9.f));
+}

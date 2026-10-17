@@ -11,6 +11,7 @@ add_executable(atropos_tests
     source/HealthControllerTest.cpp
     source/GameSystemTest.cpp
     source/RenderableTest.cpp
+    source/MeshTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE

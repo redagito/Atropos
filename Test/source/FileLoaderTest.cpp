@@ -4,16 +4,15 @@
 
 #include <filesystem>
 #include <fstream>
-#include <random>
 #include <string>
 
 namespace
 {
 	std::filesystem::path tempTextPath()
 	{
-		static std::mt19937 generator(std::random_device{}());
+		static int counter = 0;
 		return std::filesystem::temp_directory_path()
-			/ ("atropos_file_" + std::to_string(generator()) + ".txt");
+			/ ("atropos_file_" + std::to_string(counter++) + ".txt");
 	}
 }
 

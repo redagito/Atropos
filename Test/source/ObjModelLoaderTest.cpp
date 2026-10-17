@@ -4,16 +4,15 @@
 
 #include <filesystem>
 #include <fstream>
-#include <random>
 #include <string>
 
 namespace
 {
 	bool loadFromString(const std::string& contents, ObjModelLoader& loader)
 	{
-		static std::mt19937 generator(std::random_device{}());
+		static int counter = 0;
 		const std::filesystem::path path = std::filesystem::temp_directory_path()
-			/ ("atropos_obj_" + std::to_string(generator()) + ".obj");
+			/ ("atropos_obj_" + std::to_string(counter++) + ".obj");
 
 		{
 			std::ofstream out(path);
@@ -185,7 +184,9 @@ TEST_CASE("ObjModelLoader skips out-of-range face indices", "[obj]")
 		"f 99/99/99 100/100/100 101/101/101\n";
 
 	ObjModelLoader loader;
-	CHECK(loadFromString(contents, loader));
+	// Every face index is out of range, so no geometry is produced and the
+	// load is rejected.
+	CHECK_FALSE(loadFromString(contents, loader));
 	CHECK(loader.getVertices().empty());
 }
 
@@ -237,11 +238,34 @@ TEST_CASE("ObjModelLoader ignores lines with missing float values", "[obj]")
 	CHECK(loader.getNormals()[2] == 1.f);
 }
 
-TEST_CASE("ObjModelLoader handles a vertex-less model", "[obj]")
+TEST_CASE("ObjModelLoader rejects a model without geometry", "[obj]")
 {
 	const std::string contents = "# empty model\n";
 
 	ObjModelLoader loader;
-	CHECK(loadFromString(contents, loader));
-	CHECK(loader.getVertices().empty());
+	CHECK_FALSE(loadFromString(contents, loader));
+}
+
+TEST_CASE("ObjModelLoader reload replaces the previous data", "[obj]")
+{
+	const std::string triangle =
+		"v 0 0 0\n"
+		"v 1 0 0\n"
+		"v 0 1 0\n"
+		"vt 0 0\n"
+		"vt 1 0\n"
+		"vt 0 1\n"
+		"vn 0 0 1\n"
+		"vn 0 0 1\n"
+		"vn 0 0 1\n"
+		"f 1/1/1 2/2/2 3/3/3\n";
+
+	ObjModelLoader loader;
+	REQUIRE(loadFromString(triangle, loader));
+	REQUIRE(loader.getVertices().size() == 9);
+
+	REQUIRE(loadFromString(triangle, loader));
+	CHECK(loader.getVertices().size() == 9);
+	CHECK(loader.getUV().size() == 6);
+	CHECK(loader.getNormals().size() == 9);
 }

@@ -4,7 +4,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <random>
 #include <string>
 #include <vector>
 
@@ -12,9 +11,9 @@ namespace
 {
 	std::filesystem::path tempImagePath()
 	{
-		static std::mt19937 generator(std::random_device{}());
+		static int counter = 0;
 		return std::filesystem::temp_directory_path()
-			/ ("atropos_img_" + std::to_string(generator()) + ".tga");
+			/ ("atropos_img_" + std::to_string(counter++) + ".tga");
 	}
 
 	void writeFile(const std::filesystem::path& path, const std::vector<unsigned char>& bytes)
