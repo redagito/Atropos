@@ -24,6 +24,7 @@ CShadowBuffer::CShadowBuffer()
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, d_depthTexture, 0);
 	// Disable draw buffer
 	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 	
 	// Check error
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
