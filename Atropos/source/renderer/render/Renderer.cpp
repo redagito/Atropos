@@ -241,7 +241,7 @@ void Renderer::geometryPass()
 		material->getShader()->setShaderValueMat4("bias", depthBias * request.getModel());
 		
 		// Inverse light direction
-		// TODO: The direction should be stiored in a directional light object and not inside the renderer.
+		// TODO: The direction should be stored in a directional light object and not inside the renderer.
 		material->getShader()->setShaderValueVec3("lightInvDir", d_lightPosition);
 		
 		// Set texture unit 1 active for depth texture for shadow mapping

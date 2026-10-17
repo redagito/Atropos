@@ -44,7 +44,7 @@ ObjModelLoader::ObjModelLoader()
 	
 }
 
-bool ObjModelLoader::load(std::string& file)
+bool ObjModelLoader::load(const std::string& file)
 {
 	std::ifstream ifs(file);
 	if (!ifs.is_open())

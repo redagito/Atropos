@@ -86,7 +86,7 @@ void PlayerMovementController::update(float dtime)
 			}
 		}
 
-		// Rotate left
+		// Rotate right
 		if (glfwGetKey(Global::window, GLFW_KEY_RIGHT))
 		{
 			d_rotationDegree += dtime * rateOfRotation;
@@ -104,7 +104,7 @@ void PlayerMovementController::update(float dtime)
 			}
 		}
 
-		// Rotate right
+		// Rotate left
 		if (glfwGetKey(Global::window, GLFW_KEY_LEFT))
 		{
 			d_rotationDegree -= dtime * rateOfRotation;

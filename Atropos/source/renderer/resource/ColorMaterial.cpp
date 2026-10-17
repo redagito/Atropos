@@ -1,7 +1,6 @@
 #include "renderer/resource/ColorMaterial.h"
 
 #include "renderer/resource/Shader.h"
-#include "renderer/resource/Texture.h"
 
 ColorMaterial::ColorMaterial(Shader* shader, const glm::vec3& color)
 	:

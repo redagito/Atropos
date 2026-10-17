@@ -4,15 +4,12 @@
 
 #include <glm/glm.hpp>
 
-#include <memory>
-
 TEST_CASE("AABBox starts at the origin with zero halfwidths", "[aabb]")
 {
-	// Allocate on the heap so the members are not zero-filled by the stack.
-	auto box = std::make_unique<AABBox>();
+	AABBox box;
 
-	REQUIRE(box->getMid() == glm::vec3(0.f));
-	REQUIRE(box->getHalfWidths() == glm::vec3(0.f));
+	REQUIRE(box.getMid() == glm::vec3(0.f));
+	REQUIRE(box.getHalfWidths() == glm::vec3(0.f));
 }
 
 TEST_CASE("AABBox stores its middle point and halfwidths", "[aabb]")

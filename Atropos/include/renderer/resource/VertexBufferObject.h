@@ -6,7 +6,8 @@
 
 /*
 * \brief Manages an OpenGL VBO in VRAM.
-* Stores float triples (x, y, z) and uses static draw modifier.
+* Stores a float buffer (e.g. positions, normals or texture coordinates)
+* and uses the static draw modifier.
 */
 class VertexBufferObject
 {

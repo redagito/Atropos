@@ -9,7 +9,6 @@ class Camera; /**< Camera forward declare. */
 #include "glm/glm.hpp"
 
 #include <memory>
-#include <mutex>
 
 /**
 * \brief Drawable entity class for the render system.

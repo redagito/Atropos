@@ -24,6 +24,9 @@ public:
 	*/
 	~SoundSystem();
 
+	SoundSystem(const SoundSystem&) = delete;
+	SoundSystem& operator=(const SoundSystem&) = delete;
+
 	/**
 	* \brief Initialize sound system.
 	*/

@@ -37,7 +37,7 @@ void LinearMovementController::setActive(bool state)
 
 void LinearMovementController::update(float dtime)
 {
-	if (d_active)
+	if (d_active && d_object != nullptr)
 	{
 		d_object->setTranslation(glm::translate(d_object->getTranslation(), d_velocity * dtime));
 	}

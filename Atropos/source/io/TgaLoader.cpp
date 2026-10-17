@@ -24,9 +24,11 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
 
     tgaFile->imageData = nullptr;
 
-    // Read the two first bytes we don't need.
-    if (fread(&ucharBad, sizeof(unsigned char), 1, filePtr) != 1
-        || fread(&ucharBad, sizeof(unsigned char), 1, filePtr) != 1)
+    // Image identification field length and color map type.
+    unsigned char idLength = 0;
+    unsigned char colorMapType = 0;
+    if (fread(&idLength, sizeof(unsigned char), 1, filePtr) != 1
+        || fread(&colorMapType, sizeof(unsigned char), 1, filePtr) != 1)
     {
         fclose(filePtr);
         return false;
@@ -47,7 +49,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         return false;
     }
 
-    // Read 13 bytes of data we don't need.
+    // Read 9 bytes of header data we don't need.
     if (fread(&sintBad, sizeof(short int), 1, filePtr) != 1
         || fread(&sintBad, sizeof(short int), 1, filePtr) != 1
         || fread(&ucharBad, sizeof(unsigned char), 1, filePtr) != 1
@@ -75,6 +77,21 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
 
     // Read one byte of data we don't need.
     if (fread(&ucharBad, sizeof(unsigned char), 1, filePtr) != 1)
+    {
+        fclose(filePtr);
+        return false;
+    }
+
+    // Color-mapped images are not supported.
+    if (colorMapType != 0)
+    {
+        fclose(filePtr);
+        return false;
+    }
+
+    // Skip the image identification field so the pixel data is read at the
+    // correct offset.
+    if (fseek(filePtr, idLength, SEEK_CUR) != 0)
     {
         fclose(filePtr);
         return false;

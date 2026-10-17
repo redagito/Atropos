@@ -24,7 +24,7 @@ public:
 	/**
 	* \brief Loads model from stream.
 	*/
-	bool load(std::string& file);
+	bool load(const std::string& file);
 
 	/**
 	* \brief Returns vertex data.

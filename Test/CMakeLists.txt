@@ -6,6 +6,7 @@ add_executable(atropos_tests
     source/FileLoaderTest.cpp
     source/AABBoxTest.cpp
     source/GameObjectTest.cpp
+    source/ControllerTest.cpp
     source/CollisionSystemTest.cpp
     source/HealthControllerTest.cpp
     source/GameSystemTest.cpp

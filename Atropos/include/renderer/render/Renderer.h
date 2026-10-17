@@ -111,7 +111,7 @@ public:
 	/**
 	* \brief Window resize callback.
 	*
-	* Resizes viewport to the new window wize.
+	* Resizes viewport to the new window size.
 	*/
 	void onResize(int width, int height);
 

@@ -26,6 +26,10 @@ VertexShader::VertexShader(const char** code, std::size_t lines)
 	{
 		int length;
 		glGetShaderiv(d_shaderId, GL_INFO_LOG_LENGTH, &length);
+		if (length < 1)
+		{
+			length = 1;
+		}
 		std::vector<char> error(length);
 		glGetShaderInfoLog(d_shaderId, length, NULL, &error[0]);
 		

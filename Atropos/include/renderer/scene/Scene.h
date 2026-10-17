@@ -10,10 +10,7 @@ class Camera;
 #include <list>
 
 /**
-* \brief Stores all entities in the current scene for culling rendering. 
-*
-* The scene stores the scene entities in a spatial hierarchy for culling and
-* efficient rendering.
+* \brief Stores all entities in the current scene for rendering.
 */
 class Scene
 {

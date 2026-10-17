@@ -10,7 +10,7 @@
 * \brief Contains mesh data (vertices, faces, normals and uv data).
 *
 * Represents mesh data in the VRAM. It holds a buffer object for vertices,
-* one for texture coordinates and one for nomal data. the data can be used for
+* one for texture coordinates and one for normal data. The data can be used for
 * direct rendering or used in conjunction with an VAO.
 */
 class Mesh

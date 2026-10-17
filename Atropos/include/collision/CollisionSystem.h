@@ -11,10 +11,15 @@ class Collidable;
 class CollisionSystem
 {
 public:
+	CollisionSystem() = default;
+
 	/**
 	* \brief Cleanup of resources.
 	*/
 	~CollisionSystem();
+
+	CollisionSystem(const CollisionSystem&) = delete;
+	CollisionSystem& operator=(const CollisionSystem&) = delete;
 
 	/**
 	* \brief Creates a new collidable and adds it to the specified group.

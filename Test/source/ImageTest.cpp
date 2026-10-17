@@ -62,6 +62,48 @@ TEST_CASE("Image loads a 24-bit TGA as RGBA", "[image]")
 	CHECK(data[7] == 255);
 }
 
+TEST_CASE("Image skips the TGA image identification field", "[image]")
+{
+	// The image ID field is 4 bytes long and must be skipped before the
+	// pixel data, otherwise every pixel is read at the wrong offset.
+	const std::vector<unsigned char> header = {
+		4, 0, 2,
+		0, 0, 0, 0, 0,
+		0, 0,
+		0, 0,
+		2, 0,
+		1, 0,
+		24,
+		0
+	};
+	const std::vector<unsigned char> imageId = { 0xAA, 0xBB, 0xCC, 0xDD };
+	const std::vector<unsigned char> pixels = { 10, 20, 30, 40, 50, 60 };
+
+	std::vector<unsigned char> bytes = header;
+	bytes.insert(bytes.end(), imageId.begin(), imageId.end());
+	bytes.insert(bytes.end(), pixels.begin(), pixels.end());
+
+	const std::filesystem::path path = tempImagePath();
+	writeFile(path, bytes);
+
+	Image image;
+	const bool result = image.load(path.string());
+	std::filesystem::remove(path);
+
+	REQUIRE(result);
+	REQUIRE(image.getWidth() == 2);
+	REQUIRE(image.getHeight() == 1);
+	const unsigned char* data = image.getData();
+	CHECK(data[0] == 30);
+	CHECK(data[1] == 20);
+	CHECK(data[2] == 10);
+	CHECK(data[3] == 255);
+	CHECK(data[4] == 60);
+	CHECK(data[5] == 50);
+	CHECK(data[6] == 40);
+	CHECK(data[7] == 255);
+}
+
 TEST_CASE("Image rejects a TGA with missing pixel data", "[image]")
 {
 	const std::vector<unsigned char> header = {

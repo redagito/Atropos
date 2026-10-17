@@ -33,6 +33,7 @@ ShadowBuffer::ShadowBuffer()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		LOG_ERROR("Framebuffer not complete");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return;
 	}
 	// Set framebuffer to default
