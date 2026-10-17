@@ -1,6 +1,6 @@
 #pragma once
 
-class CGameObject; /**< Game object forward declare. */
+class GameObject; /**< Game object forward declare. */
 
 /**
 * \brief Controller class interface.
@@ -18,7 +18,7 @@ public:
 	/**
 	* \brief Called on attaching to game object.
 	*/
-	virtual void attach(CGameObject* object) = 0;
+	virtual void attach(GameObject* object) = 0;
 
 	/**
 	* \brief Called on detaching from game object.

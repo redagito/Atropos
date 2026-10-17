@@ -1,10 +1,10 @@
 #include "Atropos.h"
 
-#include "engine/CEngine.h"
+#include "engine/Engine.h"
 
 IEngine* createEngine()
 {
-	return CEngine::create();
+	return Engine::create();
 }
 
 void destroyEngine(IEngine* engine)

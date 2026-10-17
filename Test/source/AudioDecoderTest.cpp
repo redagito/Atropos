@@ -1,4 +1,4 @@
-#include "sound/CAudioDecoder.h"
+#include "sound/AudioDecoder.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -60,13 +60,13 @@ namespace
 	}
 }
 
-TEST_CASE("CAudioDecoder decodes 16-bit PCM WAV data", "[audio]")
+TEST_CASE("AudioDecoder decodes 16-bit PCM WAV data", "[audio]")
 {
 	const std::vector<short> samples = { 0, 1000, -1000, 32767, -32768, 42 };
 	const std::vector<char> wav = makeWav(2, 44100, 16, samples);
 
-	CAudioDecoder::SWaveData wave;
-	REQUIRE(CAudioDecoder::decode(wav, wave));
+	AudioDecoder::WaveData wave;
+	REQUIRE(AudioDecoder::decode(wav, wave));
 	CHECK(wave.channels == 2);
 	CHECK(wave.sampleRate == 44100);
 	REQUIRE(wave.samples.size() == samples.size());
@@ -75,51 +75,51 @@ TEST_CASE("CAudioDecoder decodes 16-bit PCM WAV data", "[audio]")
 	CHECK(wave.samples[4] == -32768);
 }
 
-TEST_CASE("CAudioDecoder decodes 8-bit PCM WAV data", "[audio]")
+TEST_CASE("AudioDecoder decodes 8-bit PCM WAV data", "[audio]")
 {
 	const std::vector<short> samples = { 0, 256, -256, 32512, -32768 };
 	const std::vector<char> wav = makeWav(1, 16000, 8, samples);
 
-	CAudioDecoder::SWaveData wave;
-	REQUIRE(CAudioDecoder::decode(wav, wave));
+	AudioDecoder::WaveData wave;
+	REQUIRE(AudioDecoder::decode(wav, wave));
 	CHECK(wave.channels == 1);
 	CHECK(wave.sampleRate == 16000);
 	REQUIRE(wave.samples.size() == samples.size());
 	CHECK(wave.samples == samples);
 }
 
-TEST_CASE("CAudioDecoder rejects data that is not audio", "[audio]")
+TEST_CASE("AudioDecoder rejects data that is not audio", "[audio]")
 {
 	const std::vector<char> garbage = { 'n', 'o', 't', 'a', 'u', 'd', 'i', 'o' };
 
-	CAudioDecoder::SWaveData wave;
-	CHECK_FALSE(CAudioDecoder::decode(garbage, wave));
+	AudioDecoder::WaveData wave;
+	CHECK_FALSE(AudioDecoder::decode(garbage, wave));
 }
 
-TEST_CASE("CAudioDecoder reports missing files", "[audio]")
+TEST_CASE("AudioDecoder reports missing files", "[audio]")
 {
-	CAudioDecoder::SWaveData wave;
-	CHECK_FALSE(CAudioDecoder::decodeFile("definitely_missing.mp3", wave));
+	AudioDecoder::WaveData wave;
+	CHECK_FALSE(AudioDecoder::decodeFile("definitely_missing.mp3", wave));
 }
 
-TEST_CASE("CAudioDecoder decodes an MP3 file", "[audio]")
+TEST_CASE("AudioDecoder decodes an MP3 file", "[audio]")
 {
 	const std::string file = std::string(ATROPOS_SOUND_DIR) + "/sfx/laser2.mp3";
 
-	CAudioDecoder::SWaveData wave;
-	REQUIRE(CAudioDecoder::decodeFile(file, wave));
+	AudioDecoder::WaveData wave;
+	REQUIRE(AudioDecoder::decodeFile(file, wave));
 	CHECK((wave.channels == 1 || wave.channels == 2));
 	CHECK(wave.sampleRate > 0);
 	REQUIRE_FALSE(wave.samples.empty());
 	CHECK(wave.samples.size() % wave.channels == 0);
 }
 
-TEST_CASE("CAudioDecoder decodes the 8-bit WAV sound effect", "[audio]")
+TEST_CASE("AudioDecoder decodes the 8-bit WAV sound effect", "[audio]")
 {
 	const std::string file = std::string(ATROPOS_SOUND_DIR) + "/sfx/explosion2.wav";
 
-	CAudioDecoder::SWaveData wave;
-	REQUIRE(CAudioDecoder::decodeFile(file, wave));
+	AudioDecoder::WaveData wave;
+	REQUIRE(AudioDecoder::decodeFile(file, wave));
 	CHECK(wave.channels == 1);
 	CHECK(wave.sampleRate == 16000);
 	REQUIRE_FALSE(wave.samples.empty());

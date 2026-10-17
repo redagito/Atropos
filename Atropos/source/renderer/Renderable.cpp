@@ -1,0 +1,116 @@
+#include "renderer/Renderable.h"
+#include "renderer/resource/Model.h"
+#include "renderer/render/Renderer.h"
+
+#include "debug/Log.h"
+
+Renderable::Renderable(Model* model)
+	:
+	d_modelPtr(model),
+	d_deleteMe(false),
+	d_model(glm::mat4(1.f)),
+	d_rotation(glm::mat4(1.f)),
+	d_translation(glm::mat4(1.f)),
+	d_scale(glm::mat4(1.f)),
+	d_hasShadow(true),
+	d_isCulled(true),
+	d_visible(true)
+{
+	if (model != nullptr && model->getMesh() != nullptr)
+	{
+		d_box = model->getMesh()->getAABBox();
+	}
+	else
+	{
+		LOG_ERROR("Failed to create renderable: missing model or mesh.");
+	}
+}
+
+// Set model matrix
+void Renderable::setModelMatrix(const glm::mat4& matrix)
+{
+	d_model = matrix;
+}
+
+// Set rotation matrix
+void Renderable::setRotationMatrix(const glm::mat4& matrix)
+{
+	d_rotation = matrix;
+}
+
+// Set translation matrix
+void Renderable::setTranslationMatrix(const glm::mat4& matrix)
+{
+	d_translation = matrix;
+	updateAABBoxPosition();
+}
+
+void Renderable::updateAABBoxPosition()
+{
+	// Translate box centre
+	d_box.setMid(glm::vec3(d_translation * glm::vec4(d_modelPtr->getMesh()->getAABBox().getMid(), 1.f)));
+}
+
+void Renderable::updateAABBoxSize()
+{
+	// Scale box halfwidths
+	d_box.setHalfWidths(glm::vec3(d_scale * glm::vec4(d_modelPtr->getMesh()->getAABBox().getHalfWidths(), 1.f)));
+}
+
+// Set scale matrix
+void Renderable::setScaleMatrix(const glm::mat4& matrix)
+{
+	d_scale = matrix;
+	updateAABBoxSize();
+}
+
+// Draw with renderer
+void Renderable::draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera) const
+{
+	renderer->draw(	getModel()->getVertexArrayObject(), 
+					getModel()->getMesh()->getVertexBuffer()->getSize() / 3, 
+					getModel()->getMaterial(), 
+					d_model,
+					d_rotation,
+					d_translation,
+					d_scale,
+					d_hasShadow);
+}
+
+// Returns model
+Model* Renderable::getModel() const
+{
+	return d_modelPtr;
+}
+
+// Returns transformed bounding volume
+const AABBox& Renderable::getAABBox() const
+{
+	return d_box;
+}
+
+// Set to true if culled -> not visible, or false -> visible
+void Renderable::setCullingState(bool state)
+{
+	d_isCulled = state;
+}
+
+bool Renderable::getVisibility() const
+{
+	return d_visible;
+}
+
+bool Renderable::deleteRequested() const
+{
+	return d_deleteMe;
+}
+
+void Renderable::markDeleted()
+{
+	d_deleteMe = true;
+}
+
+void Renderable::setShadow(bool hasShadow)
+{
+	d_hasShadow = hasShadow;
+}

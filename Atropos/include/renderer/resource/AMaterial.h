@@ -1,7 +1,7 @@
 #pragma once
 
 // Forward declaration
-class CShader;
+class Shader;
 
 /**
 * \brief Surface rendering information for models.
@@ -25,16 +25,16 @@ public:
 	/**
 	* \brief Read access to the material shader.
 	*/
-	const CShader* getShader() const;
+	const Shader* getShader() const;
 
 protected:
 	/**
 	* \brief Protected constructor for abstract base class.
 	*/
-	AMaterial(CShader* shader);
+	AMaterial(Shader* shader);
 
 	/**
 	* \brief The material shader.
 	*/
-	CShader* d_shader;
+	Shader* d_shader;
 };

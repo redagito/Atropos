@@ -1,4 +1,4 @@
-#include "resource/CImage.h"
+#include "resource/Image.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -24,7 +24,7 @@ namespace
 	}
 }
 
-TEST_CASE("CImage loads a 24-bit TGA as RGBA", "[image]")
+TEST_CASE("Image loads a 24-bit TGA as RGBA", "[image]")
 {
 	const std::vector<unsigned char> header = {
 		0, 0, 2,
@@ -44,7 +44,7 @@ TEST_CASE("CImage loads a 24-bit TGA as RGBA", "[image]")
 	const std::filesystem::path path = tempImagePath();
 	writeFile(path, bytes);
 
-	CImage image;
+	Image image;
 	const bool result = image.load(path.string());
 	std::filesystem::remove(path);
 
@@ -62,7 +62,7 @@ TEST_CASE("CImage loads a 24-bit TGA as RGBA", "[image]")
 	CHECK(data[7] == 255);
 }
 
-TEST_CASE("CImage rejects an 8-bit grayscale TGA", "[image]")
+TEST_CASE("Image rejects an 8-bit grayscale TGA", "[image]")
 {
 	const std::vector<unsigned char> header = {
 		0, 0, 3,
@@ -82,7 +82,7 @@ TEST_CASE("CImage rejects an 8-bit grayscale TGA", "[image]")
 	const std::filesystem::path path = tempImagePath();
 	writeFile(path, bytes);
 
-	CImage image;
+	Image image;
 	const bool result = image.load(path.string());
 	std::filesystem::remove(path);
 

@@ -1,4 +1,4 @@
-#include "io/CObjModelLoader.h"
+#include "io/ObjModelLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -9,7 +9,7 @@
 
 namespace
 {
-	bool loadFromString(const std::string& contents, CObjModelLoader& loader)
+	bool loadFromString(const std::string& contents, ObjModelLoader& loader)
 	{
 		static std::mt19937 generator(std::random_device{}());
 		const std::filesystem::path path = std::filesystem::temp_directory_path()
@@ -27,7 +27,7 @@ namespace
 	}
 }
 
-TEST_CASE("CObjModelLoader loads a fully specified triangle", "[obj]")
+TEST_CASE("ObjModelLoader loads a fully specified triangle", "[obj]")
 {
 	const std::string contents =
 		"v 0 0 0\n"
@@ -41,7 +41,7 @@ TEST_CASE("CObjModelLoader loads a fully specified triangle", "[obj]")
 		"vn 0 0 1\n"
 		"f 1/1/1 2/2/2 3/3/3\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	REQUIRE(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
@@ -70,7 +70,7 @@ TEST_CASE("CObjModelLoader loads a fully specified triangle", "[obj]")
 	CHECK(loader.getUV()[5] == 1.f);
 }
 
-TEST_CASE("CObjModelLoader supports negative indices", "[obj]")
+TEST_CASE("ObjModelLoader supports negative indices", "[obj]")
 {
 	const std::string contents =
 		"v 0 0 0\n"
@@ -84,7 +84,7 @@ TEST_CASE("CObjModelLoader supports negative indices", "[obj]")
 		"vn 0 0 1\n"
 		"f -3/-3/-3 -2/-2/-2 -1/-1/-1\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	REQUIRE(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
@@ -98,7 +98,7 @@ TEST_CASE("CObjModelLoader supports negative indices", "[obj]")
 	CHECK(loader.getUV()[5] == 1.f);
 }
 
-TEST_CASE("CObjModelLoader handles normals-only faces", "[obj]")
+TEST_CASE("ObjModelLoader handles normals-only faces", "[obj]")
 {
 	const std::string contents =
 		"v 0 0 0\n"
@@ -109,7 +109,7 @@ TEST_CASE("CObjModelLoader handles normals-only faces", "[obj]")
 		"vn 0 0 1\n"
 		"f 1//1 2//2 3//3\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	REQUIRE(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
@@ -124,7 +124,7 @@ TEST_CASE("CObjModelLoader handles normals-only faces", "[obj]")
 	}
 }
 
-TEST_CASE("CObjModelLoader handles position-uv faces", "[obj]")
+TEST_CASE("ObjModelLoader handles position-uv faces", "[obj]")
 {
 	const std::string contents =
 		"v 0 0 0\n"
@@ -135,7 +135,7 @@ TEST_CASE("CObjModelLoader handles position-uv faces", "[obj]")
 		"vt 0 1\n"
 		"f 1/1 2/2 3/3\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	REQUIRE(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
@@ -150,7 +150,7 @@ TEST_CASE("CObjModelLoader handles position-uv faces", "[obj]")
 	}
 }
 
-TEST_CASE("CObjModelLoader handles position-only faces", "[obj]")
+TEST_CASE("ObjModelLoader handles position-only faces", "[obj]")
 {
 	const std::string contents =
 		"v 0 0 0\n"
@@ -158,7 +158,7 @@ TEST_CASE("CObjModelLoader handles position-only faces", "[obj]")
 		"v 0 1 0\n"
 		"f 1 2 3\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	REQUIRE(loadFromString(contents, loader));
 
 	REQUIRE(loader.getVertices().size() == 9);
@@ -176,7 +176,7 @@ TEST_CASE("CObjModelLoader handles position-only faces", "[obj]")
 	}
 }
 
-TEST_CASE("CObjModelLoader skips out-of-range face indices", "[obj]")
+TEST_CASE("ObjModelLoader skips out-of-range face indices", "[obj]")
 {
 	const std::string contents =
 		"v 0 0 0\n"
@@ -184,16 +184,16 @@ TEST_CASE("CObjModelLoader skips out-of-range face indices", "[obj]")
 		"v 0 1 0\n"
 		"f 99/99/99 100/100/100 101/101/101\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	CHECK(loadFromString(contents, loader));
 	CHECK(loader.getVertices().empty());
 }
 
-TEST_CASE("CObjModelLoader handles a vertex-less model", "[obj]")
+TEST_CASE("ObjModelLoader handles a vertex-less model", "[obj]")
 {
 	const std::string contents = "# empty model\n";
 
-	CObjModelLoader loader;
+	ObjModelLoader loader;
 	CHECK(loadFromString(contents, loader));
 	CHECK(loader.getVertices().empty());
 }

@@ -1,6 +1,6 @@
 #include "renderer/resource/AMaterial.h"
 
-AMaterial::AMaterial(CShader* shader)
+AMaterial::AMaterial(Shader* shader)
 	: d_shader(shader)
 {
 	// Nothing here
@@ -11,7 +11,7 @@ AMaterial::~AMaterial()
 	// Nothing to clean up
 }
 
-const CShader* AMaterial::getShader() const
+const Shader* AMaterial::getShader() const
 {
 	return d_shader;
 }

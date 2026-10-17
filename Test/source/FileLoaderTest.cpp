@@ -1,4 +1,4 @@
-#include "io/CFileLoader.h"
+#include "io/FileLoader.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -17,7 +17,7 @@ namespace
 	}
 }
 
-TEST_CASE("CFileLoader reload does not duplicate content", "[fileloader]")
+TEST_CASE("FileLoader reload does not duplicate content", "[fileloader]")
 {
 	const std::filesystem::path path = tempTextPath();
 	{
@@ -25,7 +25,7 @@ TEST_CASE("CFileLoader reload does not duplicate content", "[fileloader]")
 		out << "line one\nline two\nline three\n";
 	}
 
-	CFileLoader loader(path.string());
+	FileLoader loader(path.string());
 	REQUIRE(loader.load());
 	const std::string first = loader.getContent();
 
