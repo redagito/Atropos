@@ -29,12 +29,6 @@ public:
 	*/
 	void setHalfWidths(const glm::vec3& halfWidths);
 
-	/**
-	* \brief Returns string representation of the bounding box.
-	* Used for debugging.
-	*/
-	std::string toString() const;
-
 private:
 	glm::vec3 d_middlePoint; /**< Middle of the box. */
 	glm::vec3 d_halfWidth; /**< Halfwidths of the box. */

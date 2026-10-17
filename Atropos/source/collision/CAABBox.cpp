@@ -30,19 +30,6 @@ void CAABBox::setHalfWidths(const glm::vec3& halfWidth)
 	d_halfWidth = halfWidth;
 }
 
-// Returns as string
-std::string CAABBox::toString() const
-{
-	std::stringstream ss("CAABBox:");
-	ss << " mid.x =" << d_middlePoint.x;
-	ss << " mid.y =" << d_middlePoint.y;
-	ss << " mid.z =" << d_middlePoint.z;
-	ss << " halfwidth.x =" << d_halfWidth.x;
-	ss << " halfwidth.y =" << d_halfWidth.y;
-	ss << " halfwidth.z =" << d_halfWidth.z;
-	return ss.str(); 
-}
-
 bool collides(const CAABBox& box1, const CAABBox& box2)
 {
 	glm::vec3 diff = box1.getMid() - box2.getMid();
