@@ -11,7 +11,8 @@ CExplodeOnDeathController::CExplodeOnDeathController(CSoundSystem* soundSystem, 
 	d_object(nullptr),
 	d_soundSystem(soundSystem),
 	d_soundName(soundName),
-	d_active(true)
+	d_active(true),
+	d_exploded(false)
 {
 	return;
 }
@@ -33,10 +34,11 @@ void CExplodeOnDeathController::detach()
 
 void CExplodeOnDeathController::update(float dtime)
 {
-	if (d_object != nullptr && d_active && d_object->isDead())
+	if (d_object != nullptr && d_active && d_object->isDead() && !d_exploded)
 	{
 		// Trigger explosion
 		d_soundSystem->playSFX(d_soundName);
+		d_exploded = true;
 	}
 }
 

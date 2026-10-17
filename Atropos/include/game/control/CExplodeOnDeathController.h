@@ -46,4 +46,5 @@ private:
 	CSoundSystem* d_soundSystem; /**< Sound system. */
 	std::string d_soundName; /**< Sound name to be played. */
 	bool d_active;
+	bool d_exploded; /**< Whether the explosion was already triggered. */
 };
