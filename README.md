@@ -2,7 +2,7 @@
 
 Atropos is an old university project for a computer graphics course which I am releasing now as open source under the [MIT license](http://opensource.org/licenses/MIT).
 
-It includes a simple forward renderer written in OpenGL 3.3 core and some gameplay mechanics. It represents my first attempt to write a realtime renderer and I will NOT update this project as it only serves as an historic reference.
+It includes a simple forward renderer written in OpenGL 3.3 core and some gameplay mechanics. It represents my first attempt to write a realtime renderer.
 
 ## Screenshots
 
@@ -14,7 +14,6 @@ It includes a simple forward renderer written in OpenGL 3.3 core and some gamepl
 * Simple OpenGL forward renderer
 * Shadow Mapping with Poisson filtering
 * State based gameplay system
-* Uses [OpenAL Soft](https://github.com/kcat/openal-soft) and [minimp3](https://github.com/lieff/minimp3) for sound replay
 
 ## Gameplay
 
@@ -32,6 +31,10 @@ All assets are either produced by myself or used  under the fair use license.
 
 If you are the copyright holder of an asset, contact me and I will remove/replace the asset.
 
+## Versions
+
+* `v1` is the original version of the project, preserved as it was before the CMake/Conan build system and the OpenAL sound backend.
+
 ## Building
 
 The project builds with CMake (3.20+) and Conan 2.x. On Windows it uses the Visual Studio generator:
@@ -43,7 +46,3 @@ cmake --build --preset conan-debug
 ```
 
 Run the demo with `build/ConsoleLauncher/Debug/consolelauncher.exe`. Run the unit tests with `ctest --test-dir build -C Debug`.
-
-## TODO List
-
-- Replace the remaining vendored dependencies (lodepng, tinyobjloader, tinyxml2, flextGL) with Conan packages
