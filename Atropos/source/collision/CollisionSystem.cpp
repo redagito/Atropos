@@ -7,10 +7,35 @@
 
 unsigned int CollisionSystem::getNewGroupId()
 {
+	// Reuse a released group id if available
+	if (!d_freeGroups.empty())
+	{
+		unsigned int id = d_freeGroups.back();
+		d_freeGroups.pop_back();
+		d_groupFree[id] = false;
+		return id;
+	}
 	// Add new collision group
 	d_entities.push_back(std::list<Collidable*>());
+	d_groupFree.push_back(false);
 	// Return the group id
 	return static_cast<unsigned int>(d_entities.size() - 1);
+}
+
+void CollisionSystem::releaseGroup(unsigned int groupId)
+{
+	if (groupId >= d_entities.size() || d_groupFree[groupId])
+	{
+		return;
+	}
+	// Delete remaining entities and hand the id back for reuse
+	for (Collidable* entity : d_entities[groupId])
+	{
+		delete entity;
+	}
+	d_entities[groupId].clear();
+	d_groupFree[groupId] = true;
+	d_freeGroups.push_back(groupId);
 }
 
 // Cleanup

@@ -89,6 +89,25 @@ public:
 		return d_state == State::Ready ? d_value : nullptr;
 	}
 
+	/**
+	* \brief Returns the resource, resolving state and value atomically.
+	* Throws std::runtime_error if loading failed and std::logic_error if the
+	* resource is not ready yet.
+	*/
+	T* get() const
+	{
+		std::lock_guard<std::mutex> lock(d_mutex);
+		if (d_state == State::Failed)
+		{
+			throw std::runtime_error(d_error);
+		}
+		if (d_state != State::Ready)
+		{
+			throw std::logic_error("Resource is not ready.");
+		}
+		return d_value;
+	}
+
 	std::string getError() const override
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -147,16 +166,7 @@ public:
 		{
 			throw std::logic_error("Resource handle is empty.");
 		}
-		if (d_slot->isFailed())
-		{
-			throw std::runtime_error(d_slot->getError());
-		}
-		T* value = d_slot->tryGet();
-		if (value == nullptr)
-		{
-			throw std::logic_error("Resource is not ready.");
-		}
-		return value;
+		return d_slot->get();
 	}
 
 	/**

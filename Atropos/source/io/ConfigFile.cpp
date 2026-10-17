@@ -20,6 +20,8 @@ void ConfigFile::load(const std::string& fileName)
 
 	// Parse lines with key value data
 	std::string line;
+	// Drop any values from a previous load so the result reflects this file only.
+	d_values.clear();
 	while (std::getline(ifs, line))
 	{
 		parseLine(line);

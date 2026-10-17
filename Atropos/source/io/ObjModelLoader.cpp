@@ -232,8 +232,21 @@ void ObjModelLoader::parseIndex(const std::string& line, const std::vector<float
 {
 	std::stringstream ss;
 	ss << line;
+	std::vector<std::string> tokens;
 	std::string token;
 	while (ss >> token)
+	{
+		tokens.push_back(token);
+	}
+
+	// Only fully triangulated faces are supported.
+	if (tokens.size() != 3)
+	{
+		SPDLOG_WARN("Ignoring face with {} vertices; only triangles are supported.", tokens.size());
+		return;
+	}
+
+	for (const std::string& faceToken : tokens)
 	{
 		int position = 0;
 		int texcoord = 0;
@@ -243,7 +256,7 @@ void ObjModelLoader::parseIndex(const std::string& line, const std::vector<float
 
 		// Split the token into its slash separated fields.
 		std::stringstream tokenStream;
-		tokenStream << token;
+		tokenStream << faceToken;
 		std::string field;
 		int fieldIndex = 0;
 		bool malformed = false;

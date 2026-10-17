@@ -24,6 +24,11 @@ public:
 	PlayState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSystem* soundSys);
 
 	/**
+	* \brief Destroys the world and releases the collision groups.
+	*/
+	~PlayState();
+
+	/**
 	* \brief Updates state.
 	*/
 	bool update(float dtime);

@@ -88,6 +88,22 @@ TEST_CASE("AudioDecoder decodes 8-bit PCM WAV data", "[audio]")
 	CHECK(wave.samples == samples);
 }
 
+TEST_CASE("AudioDecoder clamps an oversized WAV data chunk", "[audio]")
+{
+	const std::vector<short> samples = { 100, -100, 200 };
+	std::vector<char> wav = makeWav(1, 16000, 16, samples);
+	// Corrupt the data chunk size field to claim far more than the file holds
+	const std::size_t dataSizeOffset = 40;
+	wav[dataSizeOffset + 0] = static_cast<char>(0xFF);
+	wav[dataSizeOffset + 1] = static_cast<char>(0xFF);
+	wav[dataSizeOffset + 2] = static_cast<char>(0xFF);
+	wav[dataSizeOffset + 3] = static_cast<char>(0xFF);
+
+	AudioDecoder::WaveData wave;
+	REQUIRE(AudioDecoder::decode(wav, wave));
+	CHECK(wave.samples == samples);
+}
+
 TEST_CASE("AudioDecoder rejects data that is not audio", "[audio]")
 {
 	const std::vector<char> garbage = { 'n', 'o', 't', 'a', 'u', 'd', 'i', 'o' };

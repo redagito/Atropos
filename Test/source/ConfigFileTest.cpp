@@ -4,7 +4,18 @@
 
 #include <glm/glm.hpp>
 
+#include <filesystem>
+#include <fstream>
 #include <string>
+
+namespace
+{
+	void writeFile(const std::filesystem::path& path, const std::string& contents)
+	{
+		std::ofstream out(path);
+		out << contents;
+	}
+}
 
 TEST_CASE("ConfigFile stores and returns string values", "[config]")
 {
@@ -57,4 +68,23 @@ TEST_CASE("ConfigFile returns the default vec3 for a malformed value", "[config]
 	config.set("origin", "not a vec3");
 
 	CHECK(config.get("origin", glm::vec3(9.f)) == glm::vec3(9.f));
+}
+
+TEST_CASE("ConfigFile load replaces previously loaded values", "[config]")
+{
+	const std::filesystem::path first = std::filesystem::temp_directory_path() / "atropos_config_first.cfg";
+	const std::filesystem::path second = std::filesystem::temp_directory_path() / "atropos_config_second.cfg";
+	writeFile(first, "alpha=1\n");
+	writeFile(second, "beta=2\n");
+
+	ConfigFile config;
+	config.load(first.string());
+	REQUIRE(config.has("alpha"));
+
+	config.load(second.string());
+	CHECK_FALSE(config.has("alpha"));
+	CHECK(config.has("beta"));
+
+	std::filesystem::remove(first);
+	std::filesystem::remove(second);
 }

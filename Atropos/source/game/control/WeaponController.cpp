@@ -23,18 +23,18 @@
 WeaponController::WeaponController(RenderSystem* renderSys, SoundSystem* soundSys, CollisionSystem* collSys, GameWorld* world, const std::string& soundName, float volume, const std::string& modelName, unsigned int collisionGroup, float cooldown, float damage)
 	:
 	d_object(nullptr),
-	d_active(true),
 	d_renderSys(renderSys),
 	d_soundSys(soundSys),
 	d_collSys(collSys),
 	d_world(world),
 	d_soundName(soundName),
-	d_volume(volume),
 	d_modelName(modelName),
+	d_damage(damage),
+	d_volume(volume),
 	d_cooldown(cooldown),
 	d_currentCooldown(0.f),
-	d_damage(damage),
-	d_collisionGroup(collisionGroup)
+	d_collisionGroup(collisionGroup),
+	d_active(true)
 {
 	return;
 }

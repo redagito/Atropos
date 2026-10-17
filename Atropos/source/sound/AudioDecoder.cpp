@@ -77,8 +77,13 @@ bool AudioDecoder::decodeWav(const std::vector<char>& data, WaveData& out)
 		const char* id = data.data() + pos;
 		std::uint32_t chunkSize = readU32(data, pos + 4);
 		std::size_t body = pos + 8;
+		// Clamp the chunk to the bytes actually present. This keeps the position
+		// arithmetic below from wrapping and stops a malformed (oversized) chunk
+		// size from advancing past the buffer.
+		std::size_t remaining = data.size() - body;
+		std::size_t chunk = chunkSize < remaining ? chunkSize : remaining;
 
-		if (std::memcmp(id, "fmt ", 4) == 0 && body + 16 <= data.size())
+		if (std::memcmp(id, "fmt ", 4) == 0 && chunk >= 16)
 		{
 			audioFormat = readU16(data, body);
 			channels = readU16(data, body + 2);
@@ -89,14 +94,10 @@ bool AudioDecoder::decodeWav(const std::vector<char>& data, WaveData& out)
 		else if (std::memcmp(id, "data", 4) == 0)
 		{
 			dataChunk = data.data() + body;
-			dataSize = chunkSize;
-			if (body + dataSize > data.size())
-			{
-				dataSize = data.size() - body;
-			}
+			dataSize = chunk;
 		}
 
-		pos = body + chunkSize + (chunkSize & 1);
+		pos = body + chunk + (chunk & 1);
 	}
 
 	if (!haveFormat || dataChunk == nullptr || audioFormat != 1

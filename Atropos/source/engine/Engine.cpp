@@ -32,12 +32,13 @@
 
 Engine::Engine()
 	:
-	d_collisionSystem(nullptr),
-	d_gameSystem(nullptr),
-	d_renderSystem(nullptr),
-	d_soundSystem(nullptr),
 	d_init(false),
-	d_running(false)
+	d_running(false),
+	d_pool(nullptr),
+	d_soundSystem(nullptr),
+	d_renderSystem(nullptr),
+	d_collisionSystem(nullptr),
+	d_gameSystem(nullptr)
 {
 	return;
 }

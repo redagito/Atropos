@@ -44,3 +44,28 @@ TEST_CASE("CollisionSystem deals damage between colliding groups", "[collision]"
 	CHECK(entityB->getDamageReceived() == 5.f);
 	CHECK(entityA->getDamageReceived() == 0.f);
 }
+
+TEST_CASE("CollisionSystem reuses released group ids", "[collision]")
+{
+	CollisionSystem system;
+	const unsigned int group = system.getNewGroupId();
+	system.add(AABBox(), group);
+
+	system.releaseGroup(group);
+
+	CHECK(system.getNewGroupId() == group);
+}
+
+TEST_CASE("CollisionSystem ignores invalid or repeated group releases", "[collision]")
+{
+	CollisionSystem system;
+	const unsigned int group = system.getNewGroupId();
+
+	CHECK_NOTHROW(system.releaseGroup(999));
+	system.releaseGroup(group);
+	CHECK_NOTHROW(system.releaseGroup(group));
+
+	// The id is handed back out only once
+	CHECK(system.getNewGroupId() == group);
+	CHECK(system.getNewGroupId() == group + 1);
+}

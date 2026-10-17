@@ -35,7 +35,7 @@ public:
 
 	/**
 	* \brief Initializes engine and subsystems.
-	* \parm config Config file name with startup data.
+	* \param config Config file name with startup data.
 	* Throws std::runtime_error if the engine or a subsystem cannot be initialized.
 	*/
 	void init(const char* configFile);

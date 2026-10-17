@@ -47,6 +47,14 @@ public:
 	*/
 	unsigned int getNewGroupId();
 
+	/**
+	* \brief Frees a collision group id so it can be reused.
+	*
+	* All collidables still in the group are deleted. The caller must ensure
+	* that no references to those collidables remain.
+	*/
+	void releaseGroup(unsigned int groupId);
+
 private:
 	/**
 	* \brief Tests the entity for collision with all other entities not in the group
@@ -54,4 +62,6 @@ private:
 	void testCollision(Collidable* entity, unsigned int groupId);
 
 	std::vector<std::list<Collidable*>> d_entities; /**< Stores entities by group id (vector index) in lists. */
+	std::vector<bool> d_groupFree; /**< Whether a group id has been released and may be reused. */
+	std::vector<unsigned int> d_freeGroups; /**< Released group ids available for reuse. */
 };

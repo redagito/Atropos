@@ -78,6 +78,11 @@ void GameObject::setDrawable(Renderable* proxy)
 {
 	if (d_drawable != proxy)
 	{
+		// Release the previously attached drawable
+		if (d_drawable != nullptr)
+		{
+			d_drawable->markDeleted();
+		}
 		d_drawable = proxy;
 		// Update
 		if (d_drawable != nullptr)
@@ -99,6 +104,11 @@ void GameObject::setCollidable(Collidable* entity)
 {
 	if (d_collidable != entity)
 	{
+		// Release the previously attached collidable
+		if (d_collidable != nullptr)
+		{
+			d_collidable->markDeleted();
+		}
 		d_collidable = entity;
 		// Update
 		if (d_collidable != nullptr)

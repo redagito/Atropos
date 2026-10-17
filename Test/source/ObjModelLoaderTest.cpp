@@ -253,6 +253,36 @@ TEST_CASE("ObjModelLoader rejects a model without geometry", "[obj]")
 	CHECK_THROWS(loadFromString(contents, loader));
 }
 
+TEST_CASE("ObjModelLoader ignores a quad face", "[obj]")
+{
+	const std::string contents =
+		"v 0 0 0\n"
+		"v 1 0 0\n"
+		"v 0 1 0\n"
+		"v 1 1 0\n"
+		"f 1 2 3 4\n";
+
+	ObjModelLoader loader;
+	// The only face is a quad, so no triangle geometry is produced.
+	CHECK_THROWS(loadFromString(contents, loader));
+	CHECK(loader.getVertices().empty());
+}
+
+TEST_CASE("ObjModelLoader keeps triangles and skips quads", "[obj]")
+{
+	const std::string contents =
+		"v 0 0 0\n"
+		"v 1 0 0\n"
+		"v 0 1 0\n"
+		"v 1 1 0\n"
+		"f 1 2 3 4\n"
+		"f 1 2 3\n";
+
+	ObjModelLoader loader;
+	REQUIRE_NOTHROW(loadFromString(contents, loader));
+	CHECK(loader.getVertices().size() == 9);
+}
+
 TEST_CASE("ObjModelLoader reload replaces the previous data", "[obj]")
 {
 	const std::string triangle =

@@ -22,6 +22,11 @@ public:
 	*/
 	void addObject(GameObject* object);
 
+	/**
+	* \brief Destroys all game objects.
+	*/
+	void clear();
+
 private:
 	std::list<std::unique_ptr<GameObject>> d_objects; /**< Game objects. */
 };

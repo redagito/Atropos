@@ -42,6 +42,15 @@ PlayState::PlayState(RenderSystem* renderSys, CollisionSystem* collSys, SoundSys
 	return;
 }
 
+PlayState::~PlayState()
+{
+	// Destroy game objects first so no collidable is still referenced, then
+	// hand the collision groups back for reuse.
+	d_world.clear();
+	d_collisionSystem->releaseGroup(d_playerGroup);
+	d_collisionSystem->releaseGroup(d_enemyGroup);
+}
+
 void PlayState::init()
 {
 	// TODO: All resource loading and game object creation should be directed by a level file.

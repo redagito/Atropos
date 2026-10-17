@@ -27,3 +27,8 @@ void GameWorld::addObject(GameObject* object)
 	assert(object != nullptr);
 	d_objects.push_back(std::unique_ptr<GameObject>(object));
 }
+
+void GameWorld::clear()
+{
+	d_objects.clear();
+}

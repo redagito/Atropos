@@ -42,5 +42,5 @@ public:
 private:
 	GameObject* d_object; /**< Controlled game object. */
 	float d_health; /**< Health value. */
-	bool d_active; /**< Cative flag. */
+	bool d_active; /**< Active flag. */
 };

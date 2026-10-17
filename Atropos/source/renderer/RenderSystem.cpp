@@ -186,6 +186,12 @@ Camera& RenderSystem::getCamera()
 
 void RenderSystem::onResize(int width, int height)
 {
+	// The callback can fire after the window is created but before the renderer
+	// exists, so guard against it.
+	if (d_renderer == nullptr)
+	{
+		return;
+	}
 	d_renderer->onResize(width, height);
 
 	// A minimized window reports a zero height, which would produce an

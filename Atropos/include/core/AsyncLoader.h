@@ -113,6 +113,10 @@ public:
 	* \brief Commits all ready resources. Must run on the main thread.
 	* Repeatedly scans until no further resource can be committed, so a whole
 	* dependency chain finishes in one call.
+	*
+	* \warning The committer runs while this loader's lock is held, so it must
+	* not call back into the loader (request, getHandle, process, ...) or it
+	* will deadlock.
 	*/
 	void process()
 	{

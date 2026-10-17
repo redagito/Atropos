@@ -19,7 +19,7 @@ public:
 
 	/**
 	* \brief Attempts to read the file.
-	* \parm fileName Config file name.
+	* \param fileName Config file name.
 	* Throws std::runtime_error if the file cannot be opened or contains a
 	* malformed line.
 	*/
