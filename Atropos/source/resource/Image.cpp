@@ -1,6 +1,5 @@
 #include "resource/Image.h"
 
-#include <lodepng.h>
 #include "io/TgaLoader.h"
 #include "debug/Log.h"
 
@@ -23,13 +22,8 @@ bool Image::load(const std::string& fileName)
 		return false;
 	}
 	std::string ext = fileName.substr(pos + 1);
-	if (ext == "png")
+	if (ext == "tga")
 	{
-		return (lodepng::decode(d_data, d_width, d_height, fileName) == 0);
-	}
-	else if (ext == "tga")
-	{
-		LOG_WARNING("Deprecated tga file format used for file %s, convert to png for better performance and storage space.", fileName.c_str());
 		TGAFILE file;
 		if (!loadTGAFile(fileName, &file))
 		{

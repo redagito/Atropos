@@ -9,7 +9,7 @@
 
 /**
 * \brief Stores RGBA image data.
-* Currently supports loading from and saving to png files.
+* Currently supports loading from tga files.
 */
 class Image : public IResource
 {

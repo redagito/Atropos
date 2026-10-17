@@ -12,7 +12,6 @@ find_package(glm CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(minimp3 CONFIG REQUIRED)
-find_package(lodepng CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 
 enable_testing()

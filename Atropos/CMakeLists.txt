@@ -27,5 +27,4 @@ target_link_libraries(atropos
     PRIVATE
         OpenAL::OpenAL
         minimp3::minimp3
-        lodepng::lodepng
 )
