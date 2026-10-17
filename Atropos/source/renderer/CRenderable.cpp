@@ -34,12 +34,6 @@ CRenderable::CRenderable(CModel* model, const char* name)
 	d_box = model->getMesh()->getAABBox();
 }
 
-// Read access to the translation matrix, needed for culling
-const glm::mat4& CRenderable::getTranslationMatrix() const
-{
-	return d_translation;
-}
-
 // Set model matrix
 void CRenderable::setModelMatrix(const glm::mat4& matrix)
 {
@@ -91,12 +85,6 @@ void CRenderable::draw(const std::shared_ptr<CRenderer>& renderer, const CCamera
 					d_hasShadow);
 }
 
-// Returns entity name
-const char* CRenderable::getName() const
-{
-	return d_name.c_str();
-}
-
 // Returns model
 CModel* CRenderable::getModel() const
 {
@@ -109,26 +97,10 @@ const CAABBox& CRenderable::getAABBox() const
 	return d_box;
 }
 
-// Returns visibility of the object
-bool CRenderable::isCulled() const
-{
-	return d_isCulled;
-}
-
-bool CRenderable::isVisible() const
-{
-	return !d_isCulled && d_visible;
-}
-
 // Set to true if culled -> not visible, or false -> visible
 void CRenderable::setCullingState(bool state)
 {
 	d_isCulled = state;
-}
-
-void CRenderable::setVisibility(bool state)
-{
-	d_visible = state;
 }
 
 bool CRenderable::getVisibility() const
@@ -149,9 +121,4 @@ void CRenderable::markDeleted()
 void CRenderable::setShadow(bool hasShadow)
 {
 	d_hasShadow = hasShadow;
-}
-
-bool CRenderable::hasShadow() const
-{
-	return d_hasShadow;
 }

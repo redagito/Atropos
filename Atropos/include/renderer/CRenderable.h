@@ -41,11 +41,6 @@ public:
 	const CAABBox& getAABBox() const;
 
 	/**
-	* \brief Returns the translation matrix
-	*/
-	const glm::mat4& getTranslationMatrix() const;
-
-	/**
 	* \brief Sets model matrix
 	*/
 	void setModelMatrix(const glm::mat4& matrix);
@@ -71,11 +66,6 @@ public:
 	void draw(const std::shared_ptr<CRenderer>& renderer, const CCamera& camera) const;
 
 	/**
-	* \brief Returns the entity name
-	*/
-	const char* getName() const;
-
-	/**
 	* \brief Returns pointer to model resource
 	*/
 	CModel* getModel() const;
@@ -86,20 +76,9 @@ public:
 	void setCullingState(bool state);
 
 	/**
-	* \brief Sets the objects visibility.
-	*/
-	void setVisibility(bool state);
-
-	/**
 	* \brief Returns visibility setting of the object.
 	*/
 	bool getVisibility() const;
-
-	/**
-	* \brief Returns the culling state of the entity
-	*/
-	bool isCulled() const;
-	bool isVisible() const;
 
 	/**
 	* \brief Requests deletion of the object
@@ -116,12 +95,6 @@ public:
 	* TODO This should be in the material.
 	*/
 	void setShadow(bool);
-
-	/**
-	* \brief Returns whether the model creates shadows.
-	* TODO This should be in the material.
-	*/
-	bool hasShadow() const;
 
 protected:
 	/**
