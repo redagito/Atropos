@@ -70,6 +70,7 @@ bool CGameSystem::addState(const std::string& name, IGameState* state)
 	if (!state->init())
 	{
 		LOG_ERROR("Failed to initialize game state %s.", name.c_str());
+		delete state;
 		return false;
 	}
 	if (d_gameStates.count(name) != 0)
