@@ -83,19 +83,17 @@ void CScene::draw(const std::shared_ptr<CRenderer>& renderer, const CCamera& cam
 		}
 		else
 		{
-			if (!isCulled((*iter).get(), camera)) // Attempt object culling
+			const bool culled = culling && isCulled((*iter).get(), camera);
+			if (!culled)
 			{
 				(*iter)->setCullingState(false);
-				// Object might be set to invisible
 				if ((*iter)->getVisibility())
 				{
-					// Draw call
 					(*iter)->draw(renderer, camera);
 				}
 			}
 			else
 			{
-				// Object was culled, set state accordingly
 				(*iter)->setCullingState(true);
 			}
 			++iter;
