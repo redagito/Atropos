@@ -1,69 +1,11 @@
+file(GLOB_RECURSE ATROPOS_SOURCES CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp
+)
+
 add_library(atropos STATIC
-    source/Atropos.cpp
-    source/collision/CAABBox.cpp
-    source/collision/CCollidable.cpp
-    source/collision/CCollisionSystem.cpp
-    source/debug/CLogger.cpp
-    source/debug/CProfiler.cpp
-    source/engine/CEngine.cpp
-    source/engine/IEngine.cpp
-    source/game/CGameObject.cpp
-    source/game/CGameSystem.cpp
-    source/game/CGameWorld.cpp
-    source/game/IController.cpp
-    source/game/IGameState.cpp
-    source/game/control/CCameraController.cpp
-    source/game/control/CDespawnController.cpp
-    source/game/control/CExplodeOnDeathController.cpp
-    source/game/control/CHealthController.cpp
-    source/game/control/CLinearMovementController.cpp
-    source/game/control/CPlayerMovementController.cpp
-    source/game/control/CRemoveOnDeathController.cpp
-    source/game/control/CShiftController.cpp
-    source/game/control/CWeaponController.cpp
-    source/game/state/CLoadState.cpp
-    source/game/state/CLoseState.cpp
-    source/game/state/CPauseState.cpp
-    source/game/state/CPlayState.cpp
-    source/game/state/CWinState.cpp
-    source/io/CConfigFile.cpp
-    source/io/CFileLoader.cpp
-    source/io/CIniFile.cpp
-    source/io/CObjModelLoader.cpp
-    source/io/TgaLoader.cpp
-    source/io/lodepng/lodepng.cpp
-    source/io/tinyobj/tiny_obj_loader.cc
-    source/io/tinyxml2/tinyxml2.cpp
-    source/renderer/CRenderable.cpp
-    source/renderer/CRenderSystem.cpp
-    source/renderer/debug/CGLException.cpp
-    source/renderer/flext/flextGL.c
-    source/renderer/render/CBasicShader.cpp
-    source/renderer/render/CFramebuffer.cpp
-    source/renderer/render/CRenderbuffer.cpp
-    source/renderer/render/CRenderer.cpp
-    source/renderer/render/CShadowBuffer.cpp
-    source/renderer/resource/AMaterial.cpp
-    source/renderer/resource/CBasicMaterial.cpp
-    source/renderer/resource/CColorMaterial.cpp
-    source/renderer/resource/CMesh.cpp
-    source/renderer/resource/CModel.cpp
-    source/renderer/resource/CResourceManager.cpp
-    source/renderer/resource/CShader.cpp
-    source/renderer/resource/CTexture.cpp
-    source/renderer/resource/CVertexArrayObject.cpp
-    source/renderer/resource/CVertexBufferObject.cpp
-    source/renderer/resource/shader/CFragmentShader.cpp
-    source/renderer/resource/shader/CShaderCode.cpp
-    source/renderer/resource/shader/CVertexShader.cpp
-    source/renderer/scene/CCamera.cpp
-    source/renderer/scene/CScene.cpp
-    source/resource/CImage.cpp
-    source/resource/IResource.cpp
-    source/sound/CAudioDecoder.cpp
-    source/sound/CSoundSystem.cpp
-    source/util/CTimeStamp.cpp
-    source/util/Global.cpp
+    ${ATROPOS_SOURCES}
 )
 
 target_include_directories(atropos
