@@ -1,5 +1,5 @@
 #include "renderer/resource/Mesh.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include "io/ObjModelLoader.h"
 
@@ -21,7 +21,7 @@ bool Mesh::init(const std::vector<float>& vertices, const std::vector<float>& no
 {
 	if (vertices.empty())
 	{
-		LOG_ERROR("Cannot initialize a mesh without vertex data.");
+		SPDLOG_ERROR("Cannot initialize a mesh without vertex data.");
 		return false;
 	}
 

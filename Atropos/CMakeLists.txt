@@ -16,6 +16,7 @@ target_include_directories(atropos
 target_compile_definitions(atropos PRIVATE
     _CRT_SECURE_NO_WARNINGS
     GLFW_INCLUDE_NONE
+    SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
 )
 
 target_link_libraries(atropos
@@ -27,4 +28,5 @@ target_link_libraries(atropos
     PRIVATE
         OpenAL::OpenAL
         minimp3::minimp3
+        spdlog::spdlog
 )

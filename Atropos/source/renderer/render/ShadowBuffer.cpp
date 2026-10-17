@@ -1,6 +1,6 @@
 #include "renderer/render/ShadowBuffer.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 ShadowBuffer::ShadowBuffer()
 	:
@@ -32,7 +32,7 @@ ShadowBuffer::ShadowBuffer()
 	// Check error
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		LOG_ERROR("Framebuffer not complete");
+		SPDLOG_ERROR("Framebuffer not complete");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return;
 	}

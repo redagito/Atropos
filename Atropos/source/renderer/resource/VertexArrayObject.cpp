@@ -1,6 +1,6 @@
 #include "renderer/resource/VertexArrayObject.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 VertexArrayObject::VertexArrayObject()
 	:
@@ -11,7 +11,7 @@ VertexArrayObject::VertexArrayObject()
 
 VertexArrayObject::~VertexArrayObject()
 {
-	LOG_DEBUG("CVertexArray destructor call");
+	SPDLOG_DEBUG("CVertexArray destructor call");
 	glDeleteVertexArrays(1, &d_id);
 }
 

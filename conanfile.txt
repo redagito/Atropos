@@ -5,6 +5,7 @@ catch2/3.16.0
 openal-soft/1.24.3
 minimp3/cci.20211201
 glad/0.1.36
+spdlog/1.15.3
 
 [generators]
 CMakeDeps

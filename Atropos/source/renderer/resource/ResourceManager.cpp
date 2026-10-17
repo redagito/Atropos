@@ -7,7 +7,7 @@
 #include "renderer/resource/ColorMaterial.h"
 
 #include "resource/Image.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 
 
@@ -27,7 +27,7 @@ bool ResourceManager::loadModel(const std::string& name)
 {
 	if (d_modelMap.count(name) == 0)
 	{
-		LOG_DEBUG("Loading model: %s.", name.c_str());
+		SPDLOG_DEBUG("Loading model: {}.", name.c_str());
 		// Model file name
 		std::string modelFile(d_resourcePath + "model/" + name + ".mdl");
 		// Model config
@@ -35,18 +35,18 @@ bool ResourceManager::loadModel(const std::string& name)
 		// Load and error checking
 		if (!conf.load(((d_resourcePath + "model/" + name + ".mdl"))))
 		{
-			LOG_ERROR("Failed to load model %s from file %s.", name.c_str(), modelFile.c_str());
+			SPDLOG_ERROR("Failed to load model {} from file {}.", name.c_str(), modelFile.c_str());
 			return false;
 		}
 		// Load into map
 		if (!conf.has("mesh"))
 		{
-			LOG_ERROR("Missing mesh parameter in model file %s.", modelFile.c_str());
+			SPDLOG_ERROR("Missing mesh parameter in model file {}.", modelFile.c_str());
 			return false;
 		}
 		if (!conf.has("material"))
 		{
-			LOG_ERROR("Missing material parameter in model file %s.", modelFile.c_str());
+			SPDLOG_ERROR("Missing material parameter in model file {}.", modelFile.c_str());
 			return false;
 		}
 		if (!loadMesh(conf.get("mesh", "error")))
@@ -58,7 +58,7 @@ bool ResourceManager::loadModel(const std::string& name)
 		AMaterial* material = getMaterial(conf.get("material", "error"));
 		if (mesh == nullptr || material == nullptr)
 		{
-			LOG_ERROR("Failed to load model %s: missing mesh or material.", name.c_str());
+			SPDLOG_ERROR("Failed to load model {}: missing mesh or material.", name.c_str());
 			return false;
 		}
 
@@ -72,14 +72,14 @@ bool ResourceManager::loadMesh(const std::string& name)
 	if (d_meshMap.count(name) == 0)
 	{
 		std::string meshFile = d_resourcePath + "mesh/" + name + ".obj";
-		LOG_DEBUG("Creating new mesh %s from file %s.", name.c_str(), meshFile.c_str());
+		SPDLOG_DEBUG("Creating new mesh {} from file {}.", name.c_str(), meshFile.c_str());
 
 		// TODO Specialized for obj files, should be general purpose.
 		// Obj loader
 		ObjModelLoader loader;
 		if (!loader.load(meshFile))
 		{
-			LOG_ERROR("Failed to load mesh %s from file %s", name.c_str(), meshFile.c_str());
+			SPDLOG_ERROR("Failed to load mesh {} from file {}", name.c_str(), meshFile.c_str());
 			return false;
 		}
 
@@ -87,7 +87,7 @@ bool ResourceManager::loadMesh(const std::string& name)
 		std::unique_ptr<Mesh> mesh(new Mesh);
 		if (!mesh->init(loader.getVertices(), loader.getNormals(), loader.getUV(), loader.getAABBox()))
 		{
-			LOG_ERROR("Failed to initialize mesh object.");
+			SPDLOG_ERROR("Failed to initialize mesh object.");
 			return false;
 		}
 		d_meshMap[name] = std::move(mesh);
@@ -99,7 +99,7 @@ bool ResourceManager::loadMaterial(const std::string& name)
 {
 	if (d_materialMap.count(name) == 0)
 	{
-		LOG_DEBUG("Loading new material %s.", name.c_str());
+		SPDLOG_DEBUG("Loading new material {}.", name.c_str());
 		ConfigFile conf;
 		std::string materialFile = d_resourcePath + "material/" + name + ".mat";
 		std::unique_ptr<AMaterial> material(nullptr);
@@ -107,7 +107,7 @@ bool ResourceManager::loadMaterial(const std::string& name)
 		// Load and error checking
 		if (!conf.load(materialFile))
 		{
-			LOG_ERROR("Failed to load shader file %s.", materialFile.c_str());
+			SPDLOG_ERROR("Failed to load shader file {}.", materialFile.c_str());
 			return false;
 		}
 
@@ -116,13 +116,13 @@ bool ResourceManager::loadMaterial(const std::string& name)
 		// Requires class property
 		if (!conf.has("class"))
 		{
-			LOG_ERROR("Missing class property in material file %s.", materialFile.c_str());
+			SPDLOG_ERROR("Missing class property in material file {}.", materialFile.c_str());
 			return false;
 		}
 		// Requires shader file
 		if (!conf.has("shader"))
 		{
-			LOG_ERROR("Missing shader property in material file %s.", materialFile.c_str());
+			SPDLOG_ERROR("Missing shader property in material file {}.", materialFile.c_str());
 			return false;
 		}
 		// Material class type id
@@ -132,7 +132,7 @@ bool ResourceManager::loadMaterial(const std::string& name)
 		std::string shader = conf.get("shader", "error");
 		if (!loadShader(shader))
 		{
-			LOG_ERROR("Failed to load shader file %s.", shader.c_str());
+			SPDLOG_ERROR("Failed to load shader file {}.", shader.c_str());
 			return false;
 		}
 
@@ -142,27 +142,27 @@ bool ResourceManager::loadMaterial(const std::string& name)
 			// Requires base texture
 			if (!conf.has("texture0"))
 			{
-				LOG_ERROR("Missing texture0 property in material file %s.", materialFile.c_str());
+				SPDLOG_ERROR("Missing texture0 property in material file {}.", materialFile.c_str());
 				return false;
 			}
 
 			// Optional ambient
 			if (!conf.has("ambient"))
 			{
-				LOG_WARNING("Missing ambient property in material file %s.", materialFile.c_str());
+				SPDLOG_WARN("Missing ambient property in material file {}.", materialFile.c_str());
 			}
 
 			// Optional ambient
 			if (!conf.has("specular"))
 			{
-				LOG_WARNING("Missing specular property in material file %s.", materialFile.c_str());
+				SPDLOG_WARN("Missing specular property in material file {}.", materialFile.c_str());
 			}
 
 			// Load texture
 			std::string texture = conf.get("texture0", "error");
 			if (!loadTexture(texture))
 			{
-				LOG_ERROR("Failed to load texture file %s.", texture.c_str());
+				SPDLOG_ERROR("Failed to load texture file {}.", texture.c_str());
 				return false;
 			}
 
@@ -174,7 +174,7 @@ bool ResourceManager::loadMaterial(const std::string& name)
 			// Requires color
 			if (!conf.has("color"))
 			{
-				LOG_ERROR("Missing color property in material file %s.", materialFile.c_str());
+				SPDLOG_ERROR("Missing color property in material file {}.", materialFile.c_str());
 				return false;
 			}
 			glm::vec3 color = conf.get("color", glm::vec3(1.f, 0.f, 0.f));
@@ -182,7 +182,7 @@ bool ResourceManager::loadMaterial(const std::string& name)
 		}
 		else
 		{
-			LOG_ERROR("Unknown class name property value %s in material file %s.", materialClass.c_str(), materialFile.c_str());
+			SPDLOG_ERROR("Unknown class name property value {} in material file {}.", materialClass.c_str(), materialFile.c_str());
 			return false;
 		}
 
@@ -199,16 +199,16 @@ bool ResourceManager::loadTexture(const std::string& name)
 	{
 		Image image;
 		std::string textureFile = d_resourcePath + "texture/" + name + ".tga";
-		LOG_DEBUG("Loading texture %s from file.", textureFile.c_str());
+		SPDLOG_DEBUG("Loading texture {} from file.", textureFile.c_str());
 		if (!image.load(textureFile))
 		{
-			LOG_ERROR("Failed to load image file %s.", textureFile.c_str());
+			SPDLOG_ERROR("Failed to load image file {}.", textureFile.c_str());
 			return false;
 		}
 		std::unique_ptr<Texture> texture(new Texture);
 		if (!texture->init(image))
 		{
-			LOG_ERROR("Failed to initialize texture %s from file %s.", name.c_str(), textureFile.c_str());
+			SPDLOG_ERROR("Failed to initialize texture {} from file {}.", name.c_str(), textureFile.c_str());
 			return false;
 		}
 		d_textureMap[name] = std::move(texture);
@@ -223,26 +223,26 @@ bool ResourceManager::loadShader(const std::string& name)
 	{
 		// Shader definition files are located in the shader sub directory of the resource path
 		std::string shaderFile = d_resourcePath + "shader/" + name + ".sha";
-		LOG_DEBUG("Loading shader %s from file %s.", name.c_str(), shaderFile.c_str());
+		SPDLOG_DEBUG("Loading shader {} from file {}.", name.c_str(), shaderFile.c_str());
 
 		// Load shader config file with names of shader sources
 		ConfigFile shaderConfig;
 		if (!shaderConfig.load(shaderFile))
 		{
-			LOG_ERROR("Failed to load shader %s from file %s.", name.c_str(), shaderFile.c_str());
+			SPDLOG_ERROR("Failed to load shader {} from file {}.", name.c_str(), shaderFile.c_str());
 			return false;
 		}
 
 		// Required property vertexshader
 		if (!shaderConfig.has("vertexshader"))
 		{
-			LOG_ERROR("Missing vertexshader property in shader definition file %s.", shaderFile.c_str());
+			SPDLOG_ERROR("Missing vertexshader property in shader definition file {}.", shaderFile.c_str());
 			return false;
 		}
 		// Required property fragmentshader
 		if (!shaderConfig.has("fragmentshader"))
 		{
-			LOG_ERROR("Missing fragmentshader property in shader definition file %s.", shaderFile.c_str());
+			SPDLOG_ERROR("Missing fragmentshader property in shader definition file {}.", shaderFile.c_str());
 			return false;
 		}
 
@@ -254,7 +254,7 @@ bool ResourceManager::loadShader(const std::string& name)
 		std::unique_ptr<Shader> shader(new Shader);
 		if (!shader->init(vertexShader, fragmentShader))
 		{
-			LOG_ERROR("Failed to initialize shader object from vertex shader %s and fragment shader %s.", vertexShader.c_str(), fragmentShader.c_str());
+			SPDLOG_ERROR("Failed to initialize shader object from vertex shader {} and fragment shader {}.", vertexShader.c_str(), fragmentShader.c_str());
 			return false;
 		}
 		// Add shader to map
@@ -268,12 +268,12 @@ Shader* ResourceManager::getShader(const std::string& name)
 	const auto& shader = d_shaderMap.find(name);
 	if (shader == d_shaderMap.end())
 	{
-		LOG_INFO("The requested shader %s is currently not loaded.", name.c_str());
+		SPDLOG_INFO("The requested shader {} is currently not loaded.", name.c_str());
 		if (loadShader(name))
 		{
 			return d_shaderMap.at(name).get();
 		}
-		LOG_ERROR("The requested shader %s does not exist", name.c_str());
+		SPDLOG_ERROR("The requested shader {} does not exist", name.c_str());
 		return nullptr;
 	}
 	return shader->second.get();
@@ -284,12 +284,12 @@ Texture* ResourceManager::getTexture(const std::string& name)
 	const auto& texture = d_textureMap.find(name);
 	if (texture == d_textureMap.end())
 	{
-		LOG_WARNING("The requested texture %s is currently not loaded.", name.c_str());
+		SPDLOG_WARN("The requested texture {} is currently not loaded.", name.c_str());
 		if (loadTexture(name))
 		{
 			return d_textureMap.at(name).get();
 		}
-		LOG_ERROR("The requested texture %s does not exist", name.c_str());
+		SPDLOG_ERROR("The requested texture {} does not exist", name.c_str());
 		return nullptr;
 	}
 	return texture->second.get();
@@ -300,12 +300,12 @@ Mesh* ResourceManager::getMesh(const std::string& meshName)
 	const auto& mesh = d_meshMap.find(meshName);
 	if (mesh == d_meshMap.end())
 	{
-		LOG_WARNING("The requested mesh %s is currently not loaded.", meshName.c_str());
+		SPDLOG_WARN("The requested mesh {} is currently not loaded.", meshName.c_str());
 		if (loadMesh(meshName))
 		{
 			return d_meshMap.at(meshName).get();
 		}
-		LOG_ERROR("The requested mesh %s does not exist", meshName.c_str());
+		SPDLOG_ERROR("The requested mesh {} does not exist", meshName.c_str());
 		return nullptr;
 	}
 	return mesh->second.get();
@@ -316,12 +316,12 @@ AMaterial* ResourceManager::getMaterial(const std::string& name)
 	const auto& material = d_materialMap.find(name);
 	if (material == d_materialMap.end())
 	{
-		LOG_WARNING("The requested material %s is currently not loaded.", name.c_str());
+		SPDLOG_WARN("The requested material {} is currently not loaded.", name.c_str());
 		if (loadMaterial(name))
 		{
 			return d_materialMap.at(name).get();
 		}
-		LOG_ERROR("The requested material %s does not exist", name.c_str());
+		SPDLOG_ERROR("The requested material {} does not exist", name.c_str());
 		return nullptr;
 	}
 	return material->second.get();
@@ -332,12 +332,12 @@ Model* ResourceManager::getModel(const std::string& name)
 	const auto& model = d_modelMap.find(name);
 	if (model == d_modelMap.end())
 	{
-		LOG_WARNING("The requested model %s is currently not loaded.", name.c_str());
+		SPDLOG_WARN("The requested model {} is currently not loaded.", name.c_str());
 		if (loadModel(name))
 		{
 			return d_modelMap.at(name).get();
 		}
-		LOG_ERROR("The requested model %s does not exist", name.c_str());
+		SPDLOG_ERROR("The requested model {} does not exist", name.c_str());
 		return nullptr;
 	}
 	return model->second.get();

@@ -2,7 +2,7 @@
 #include "renderer/resource/Model.h"
 #include "renderer/render/Renderer.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 Renderable::Renderable(Model* model)
 	:
@@ -20,7 +20,7 @@ Renderable::Renderable(Model* model)
 	}
 	else
 	{
-		LOG_ERROR("Failed to create renderable: missing model or mesh.");
+		SPDLOG_ERROR("Failed to create renderable: missing model or mesh.");
 	}
 }
 

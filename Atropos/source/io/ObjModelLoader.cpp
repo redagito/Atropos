@@ -1,7 +1,7 @@
 #include "io/ObjModelLoader.h"
 #include "io/FileLoader.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <cstddef>
 #include <fstream>
@@ -47,7 +47,7 @@ bool ObjModelLoader::load(const std::string& file)
 	std::ifstream ifs(file);
 	if (!ifs.is_open())
 	{
-		LOG_ERROR("The mesh file %s could not be opened.", file.c_str());
+		SPDLOG_ERROR("The mesh file {} could not be opened.", file);
 		return false;
 	}
 
@@ -67,11 +67,11 @@ bool ObjModelLoader::load(const std::string& file)
 	{
 		parseLine(line, tempVert, tempNorm, tempUV);
 	}
-	LOG_INFO("Loaded obj model with %zu triangles.", d_vertices.size() / 3);
+	SPDLOG_INFO("Loaded obj model with {} triangles.", d_vertices.size() / 3);
 
 	if (d_vertices.empty())
 	{
-		LOG_ERROR("The mesh file %s contains no geometry.", file.c_str());
+		SPDLOG_ERROR("The mesh file {} contains no geometry.", file);
 		return false;
 	}
 
@@ -191,7 +191,7 @@ void ObjModelLoader::parseVertex(const std::string& line, std::vector<float>& ve
 	ss << line;
 	if (!(ss >> x >> y >> z))
 	{
-		LOG_WARNING("Ignoring vertex line with missing coordinates.");
+		SPDLOG_WARN("Ignoring vertex line with missing coordinates.");
 		return;
 	}
 	vert.push_back(x);
@@ -207,7 +207,7 @@ void ObjModelLoader::parseNormal(const std::string& line, std::vector<float>& no
 	ss << line;
 	if (!(ss >> x >> y >> z))
 	{
-		LOG_WARNING("Ignoring normal line with missing coordinates.");
+		SPDLOG_WARN("Ignoring normal line with missing coordinates.");
 		return;
 	}
 	norm.push_back(x);
@@ -223,7 +223,7 @@ void ObjModelLoader::parseUV(const std::string& line, std::vector<float>& uv)
 	ss << line;
 	if (!(ss >> u >> v))
 	{
-		LOG_WARNING("Ignoring texture coordinate line with missing coordinates.");
+		SPDLOG_WARN("Ignoring texture coordinate line with missing coordinates.");
 		return;
 	}
 	uv.push_back(u);
@@ -289,7 +289,7 @@ void ObjModelLoader::parseIndex(const std::string& line, const std::vector<float
 		const int positionIndex = resolveIndex(position, static_cast<int>(vert.size() / 3));
 		if (positionIndex < 0)
 		{
-			LOG_WARNING("Invalid vertex index in face definition.");
+			SPDLOG_WARN("Invalid vertex index in face definition.");
 			continue;
 		}
 		d_vertices.push_back(vert[positionIndex * 3]);

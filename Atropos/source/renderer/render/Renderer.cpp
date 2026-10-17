@@ -5,7 +5,7 @@
 #include "renderer/resource/VertexArrayObject.h"
 #include "renderer/resource/Model.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 #include "debug/Profiler.h"
 
 #include <glm/ext.hpp>
@@ -77,7 +77,7 @@ Renderer::Renderer(int width, int height, Shader* shadow)
 	d_proj(glm::mat4(1.f)), // Active projection matrix
 	d_lightPosition(0.f, 100.f, 50.f) // The sun, TODO remove from here!
 {
-	LOG_INFO("Created renderer.");
+	SPDLOG_INFO("Created renderer.");
 	
 	// Depth matrices for shadow mapping
 	d_depthProj = glm::ortho(-50.f, 50.f, -50.f, 50.f, 1.f,120.f);
@@ -108,7 +108,7 @@ Renderer::Renderer(int width, int height, Shader* shadow)
 
 Renderer::~Renderer()
 {
-	LOG_INFO("Destroyed renderer.");
+	SPDLOG_INFO("Destroyed renderer.");
 }
 
 // Pre render call for render effects
@@ -150,7 +150,7 @@ void Renderer::draw(const VertexArrayObject* vao, int size, const AMaterial* mat
 	}
 	else
 	{
-		LOG_ERROR("Called Renderer.draw while in end state");
+		SPDLOG_ERROR("Called Renderer.draw while in end state");
 		throw std::runtime_error("Renderer.draw: Invalid call to draw without calling startFrame.");
 	}
 	// Add new render request

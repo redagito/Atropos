@@ -1,6 +1,6 @@
 #include "renderer/resource/Texture.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 Texture::Texture()
 	:
@@ -14,7 +14,7 @@ bool Texture::init(const Image& image)
 {
 	if (image.getWidth() == 0 || image.getHeight() == 0)
 	{
-		LOG_ERROR("Cannot initialize a texture from an empty image.");
+		SPDLOG_ERROR("Cannot initialize a texture from an empty image.");
 		return false;
 	}
 

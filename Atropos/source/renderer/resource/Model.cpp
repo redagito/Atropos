@@ -4,7 +4,7 @@
 #include "renderer/resource/Shader.h"
 #include "renderer/resource/Mesh.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 /**
 * Initializes the model specific VAO.

@@ -1,6 +1,6 @@
 #include "io/TgaLoader.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <cstddef>
 #include <cstdio>
@@ -124,7 +124,7 @@ bool loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     }
     catch (const std::bad_alloc&)
     {
-        LOG_ERROR("Not enough memory to load TGA image %s.", filename.c_str());
+        SPDLOG_ERROR("Not enough memory to load TGA image {}.", filename);
         fclose(filePtr);
         return false;
     }

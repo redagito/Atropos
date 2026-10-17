@@ -13,14 +13,17 @@
 #include "game/state/PauseState.h"
 
 // Debug and profiling
-#include "debug/Log.h"
-#include "debug/Logger.h"
 #include "debug/Profiler.h"
 
 // IO and utility
 #include "io/ConfigFile.h"
-#include "util/TimeStamp.h"
 #include "util/Global.h"
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <memory>
 
 #include "glfw/glfw3.h"
 
@@ -40,7 +43,7 @@ Engine::~Engine()
 {
 	cleanup();
 	// Log profiler data
-	LOG_INFO("%s", Profiler::toString().c_str());
+	SPDLOG_INFO("{}", Profiler::toString());
 }
 
 bool Engine::init(const char* configFile)
@@ -55,53 +58,59 @@ bool Engine::init(const char* configFile)
 	ConfigFile config;
 	bool configLoaded = config.load(configFile);
 
-	// Init log file before checking config load state
-	Logger::initLogFile(config.get("log_filename", std::string("log/") + TimeStamp::createTimeStamp() + ".log"));
+	// Set up console and file logging before reporting any problems.
+	auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+		config.get("log_filename", std::string("log.txt")), true);
+	auto logger = std::make_shared<spdlog::logger>(
+		"atropos", spdlog::sinks_init_list{ consoleSink, fileSink });
+	logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
+	logger->set_level(spdlog::level::trace);
+	spdlog::set_default_logger(logger);
 
-	// Log file initialized, check config load state
 	if (!configLoaded)
 	{
-		LOG_ERROR("Config file %s could not be opened.", configFile);
+		SPDLOG_ERROR("Config file {} could not be opened.", configFile);
 		// TODO Just proceed with default config values?
 		cleanup();
 		return false;
 	}
 
 	// Initialize rendering system singleton
-	LOG_INFO("Create rendering system.");
+	SPDLOG_INFO("Create rendering system.");
 	d_renderSystem.reset(new RenderSystem);
 	if (!d_renderSystem->init(config))
 	{
-		LOG_ERROR("Failed to initialize rendering system.");
+		SPDLOG_ERROR("Failed to initialize rendering system.");
 		cleanup();
 		return false;
 	}
 
 	// Initialize sound system
-	LOG_INFO("Create sound system.");
+	SPDLOG_INFO("Create sound system.");
 	d_soundSystem.reset(SoundSystem::create());
 	if (!d_soundSystem->init(config))
 	{
-		LOG_ERROR("Failed to initialize sound system.");
+		SPDLOG_ERROR("Failed to initialize sound system.");
 		cleanup();
 		return false;
 	}
 
-	LOG_INFO("Create collision system.");
+	SPDLOG_INFO("Create collision system.");
 	// Initialize collision system
 	// TODO Should be physics system
 	d_collisionSystem.reset(new CollisionSystem());
 
 	// Create game system
-	LOG_INFO("Create game system.");
+	SPDLOG_INFO("Create game system.");
 	d_gameSystem.reset(GameSystem::create());
 
 	// Create game states
 	// TODO This should be data driven
-	LOG_INFO("Create game states.");
+	SPDLOG_INFO("Create game states.");
 	if (!createGameStates())
 	{
-		LOG_ERROR("Failed to create game states.");
+		SPDLOG_ERROR("Failed to create game states.");
 		cleanup();
 		return false;
 	}
@@ -109,7 +118,7 @@ bool Engine::init(const char* configFile)
 	// Init game system
 	if (!d_gameSystem->init(config)) // Init subsystem
 	{
-		LOG_ERROR("Failed to initialize game system.");
+		SPDLOG_ERROR("Failed to initialize game system.");
 		cleanup();
 		return false;
 	}
@@ -138,7 +147,7 @@ void Engine::cleanup()
 
 void Engine::run()
 {
-	LOG_INFO("Starting game engine main loop.");
+	SPDLOG_INFO("Starting game engine main loop.");
 	// Time difference
 	float dtime = 0.f;
 	float f2Reset = 0.f;

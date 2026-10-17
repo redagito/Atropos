@@ -14,7 +14,7 @@
 #include "game/control/DespawnController.h"
 
 #include "util/Global.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <glfw/glfw3.h>
 #include <glm/ext.hpp>
@@ -75,7 +75,7 @@ void WeaponController::update(float dtime)
 				Renderable* projectileDrawable = d_renderSys->add(d_modelName.c_str());
 				if (projectileDrawable == nullptr)
 				{
-					LOG_ERROR("Failed to add projectile entity: model %s could not be loaded.", d_modelName.c_str());
+					SPDLOG_ERROR("Failed to add projectile entity: model {} could not be loaded.", d_modelName.c_str());
 					delete projectile;
 				}
 				else

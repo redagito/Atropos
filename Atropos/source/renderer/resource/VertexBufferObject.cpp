@@ -1,6 +1,6 @@
 #include "renderer/resource/VertexBufferObject.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 	:
@@ -8,7 +8,7 @@ VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 	d_size(size)
 {
 	// Create GL buffer resource
-	LOG_DEBUG("Create VertexBufferObject.");
+	SPDLOG_DEBUG("Create VertexBufferObject.");
 	glGenBuffers(1, &d_id);
 	
 	// Bind to GL_ARRAY_BUFFER
@@ -20,13 +20,13 @@ VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 
 VertexBufferObject::~VertexBufferObject()
 {
-	LOG_DEBUG("Destroy VertexBufferObject.");
+	SPDLOG_DEBUG("Destroy VertexBufferObject.");
 	glDeleteBuffers(1, &d_id);
 }
 
 void VertexBufferObject::setActive() const
 {
-	LOG_DEBUG("Set active VertexBufferObject.");
+	SPDLOG_DEBUG("Set active VertexBufferObject.");
 	glBindBuffer(GL_ARRAY_BUFFER, d_id);
 	return;
 }

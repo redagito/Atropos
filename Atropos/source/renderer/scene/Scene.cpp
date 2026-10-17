@@ -4,7 +4,7 @@
 #include "renderer/resource/Model.h"
 #include "renderer/scene/Camera.h"
 #include "debug/Profiler.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <cmath>
 

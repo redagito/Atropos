@@ -1,7 +1,8 @@
 #include "resource/Image.h"
 
 #include "io/TgaLoader.h"
-#include "debug/Log.h"
+
+#include <spdlog/spdlog.h>
 
 #include <cassert>
 
@@ -27,7 +28,7 @@ bool Image::load(const std::string& fileName)
 		TGAFILE file;
 		if (!loadTGAFile(fileName, &file))
 		{
-			LOG_ERROR("Failed to load image file %s.", fileName.c_str());
+			SPDLOG_ERROR("Failed to load image file {}.", fileName);
 			return false;
 		}
 		// Assign to vector
@@ -53,7 +54,7 @@ bool Image::load(const std::string& fileName)
 		}
 		else
 		{
-			LOG_ERROR("Unsupported TGA color depth %d in file %s.", channels, fileName.c_str());
+			SPDLOG_ERROR("Unsupported TGA color depth {} in file {}.", channels, fileName);
 			deleteTGAFile(&file);
 			return false;
 		}

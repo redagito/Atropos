@@ -8,7 +8,7 @@
 #include "renderer/scene/Camera.h"
 #include "renderer/render/Renderer.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 #include "debug/Profiler.h"
 #include "util/Global.h"
 
@@ -84,7 +84,7 @@ bool RenderSystem::init(const ConfigFile& config)
 	Shader* shadowShader = d_manager->getShader("shadow");
 	if (shadowShader == nullptr)
 	{
-		LOG_ERROR("Failed to load shadow shader.");
+		SPDLOG_ERROR("Failed to load shadow shader.");
 		d_manager = nullptr;
 		glfwDestroyWindow(Global::window);
 		Global::window = nullptr;
@@ -170,7 +170,7 @@ Renderable* RenderSystem::add(const char* model)
 	Model* modelPtr = d_manager->getModel(model);
 	if (modelPtr == nullptr)
 	{
-		LOG_ERROR("Failed to add entity: model %s could not be loaded.", model);
+		SPDLOG_ERROR("Failed to add entity: model {} could not be loaded.", model);
 		return nullptr;
 	}
 	Renderable* entity = new Renderable(modelPtr);

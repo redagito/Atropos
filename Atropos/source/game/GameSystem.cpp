@@ -1,20 +1,20 @@
 #include "game/GameSystem.h"
 
 #include "io/ConfigFile.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 
 
 GameSystem::~GameSystem()
 {
-	LOG_DEBUG("Game system destroyed.");
+	SPDLOG_DEBUG("Game system destroyed.");
 }
 
 GameSystem::GameSystem()
 	:
 	d_activeState(nullptr)
 {
-	LOG_DEBUG("Game system created.");
+	SPDLOG_DEBUG("Game system created.");
 }
 
 // Updates game objects
@@ -47,17 +47,17 @@ bool GameSystem::update(float dtime)
 
 bool GameSystem::init(const ConfigFile& config)
 {
-	LOG_DEBUG("Initializing game system.");
+	SPDLOG_DEBUG("Initializing game system.");
 
 	// Get initial state property
 	std::string initialState = config.get("game_initialstate", "load");
-	LOG_DEBUG("Game system initial state set to %s.", initialState.c_str());
+	SPDLOG_DEBUG("Game system initial state set to {}.", initialState.c_str());
 
 	// Set initial state active
 	const auto it = d_gameStates.find(initialState);
 	if (it == d_gameStates.end())
 	{
-		LOG_ERROR("Initial game state %s is not registered.", initialState.c_str());
+		SPDLOG_ERROR("Initial game state {} is not registered.", initialState.c_str());
 		return false;
 	}
 	d_activeState = it->second.get();
@@ -71,7 +71,7 @@ bool GameSystem::addState(const std::string& name, IGameState* state)
 {
 	if (!state->init())
 	{
-		LOG_ERROR("Failed to initialize game state %s.", name.c_str());
+		SPDLOG_ERROR("Failed to initialize game state {}.", name.c_str());
 		delete state;
 		return false;
 	}
@@ -80,7 +80,7 @@ bool GameSystem::addState(const std::string& name, IGameState* state)
 	if (existing != d_gameStates.end())
 	{
 		// State with name already exists
-		LOG_WARNING("Overwriting game state %s.", name.c_str());
+		SPDLOG_WARN("Overwriting game state {}.", name.c_str());
 		if (wasActive)
 		{
 			existing->second->onExit();
@@ -93,7 +93,7 @@ bool GameSystem::addState(const std::string& name, IGameState* state)
 		d_activeState = state;
 		d_activeState->onEnter();
 	}
-	LOG_DEBUG("Added game state %s to game system.", name.c_str());
+	SPDLOG_DEBUG("Added game state {} to game system.", name.c_str());
 	return true;
 }
 
@@ -102,7 +102,7 @@ void GameSystem::removeState(const std::string& name)
 	const auto it = d_gameStates.find(name);
 	if (it == d_gameStates.end())
 	{
-		LOG_WARNING("Could not remove state %s, the state does not exist.", name.c_str());
+		SPDLOG_WARN("Could not remove state {}, the state does not exist.", name.c_str());
 		return;
 	}
 	if (d_activeState == it->second.get())
@@ -110,5 +110,5 @@ void GameSystem::removeState(const std::string& name)
 		d_activeState = nullptr;
 	}
 	d_gameStates.erase(it);
-	LOG_DEBUG("Removed game state %s from game system.", name.c_str());
+	SPDLOG_DEBUG("Removed game state {} from game system.", name.c_str());
 }

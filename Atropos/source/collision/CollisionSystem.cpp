@@ -1,7 +1,7 @@
 #include "collision/CollisionSystem.h"
 
 #include "collision/Collidable.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <stdexcept>
 
@@ -29,7 +29,7 @@ Collidable* CollisionSystem::add(const AABBox& box, unsigned int groupId)
 {
 	if (groupId >= d_entities.size())
 	{
-		LOG_ERROR("Group id %u does not exist", groupId);
+		SPDLOG_ERROR("Group id {} does not exist", groupId);
 		throw std::runtime_error("CollisionSystem.add: Invalid goup id");
 	}
 	// Create new entity and add to the collision group

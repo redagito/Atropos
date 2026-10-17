@@ -5,7 +5,7 @@
 #include "renderer/resource/shader/ShaderCode.h"
 
 #include "io/FileLoader.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <glm/ext.hpp>
 
@@ -25,7 +25,7 @@ Shader::Shader()
 // Removes the program from graphic memory
 Shader::~Shader()
 {
-	LOG_DEBUG("Deleting shader.");
+	SPDLOG_DEBUG("Deleting shader.");
 	glDeleteProgram(d_programId);
 	if (s_activeId == d_programId)
 	{
@@ -36,13 +36,13 @@ Shader::~Shader()
 
 bool Shader::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 {
-	LOG_DEBUG("Creating shader from vertex shader %s and fragment shader %s.", vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+	SPDLOG_DEBUG("Creating shader from vertex shader {} and fragment shader {}.", vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
 	// Load vertex shader
 	FileLoader vl(vertexShaderPath);
 	if (!vl.load())
 	{
-		LOG_ERROR("Failed to load vertex shader %s", vertexShaderPath.c_str());
+		SPDLOG_ERROR("Failed to load vertex shader {}", vertexShaderPath.c_str());
 		return false;
 	}
 
@@ -50,7 +50,7 @@ bool Shader::init(const std::string& vertexShaderPath, const std::string& fragme
 	FileLoader fl(fragmentShaderPath);
 	if (!fl.load())
 	{
-		LOG_ERROR("Failed to load fragment shader %s", fragmentShaderPath.c_str());
+		SPDLOG_ERROR("Failed to load fragment shader {}", fragmentShaderPath.c_str());
 		return false;
 	}
 
@@ -60,7 +60,7 @@ bool Shader::init(const std::string& vertexShaderPath, const std::string& fragme
 
 	// Compile
 	// TODO Remove exceptions in vertex and fragment shader classes and replace with better error handling.
-	LOG_DEBUG("Compiling shader objects.");
+	SPDLOG_DEBUG("Compiling shader objects.");
 	VertexShader vs(vc.getCode(), vc.getLineCount());
 	FragmentShader fs(fc.getCode(), fc.getLineCount());
 
@@ -72,7 +72,7 @@ bool Shader::init(const std::string& vertexShaderPath, const std::string& fragme
 	glAttachShader(d_programId, fs.getId());
 	
 	// Link the program
-	LOG_DEBUG("Linking shader objects.");
+	SPDLOG_DEBUG("Linking shader objects.");
 	glLinkProgram(d_programId);
 
     // Check the program
@@ -89,7 +89,7 @@ bool Shader::init(const std::string& vertexShaderPath, const std::string& fragme
 		
 		std::string err("Shader link error: ");
 		err.append(error, length);
-		LOG_ERROR("%s", err.c_str());
+		SPDLOG_ERROR("{}", err.c_str());
 		delete[] error;
 		return false;
     }

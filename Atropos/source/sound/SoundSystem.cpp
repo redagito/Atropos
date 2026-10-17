@@ -1,7 +1,7 @@
 #include "sound/SoundSystem.h"
 
 #include "sound/AudioDecoder.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -112,7 +112,7 @@ bool SoundSystem::load(const std::string& name, const std::string& file, float v
 
 	if (wave.channels < 1 || wave.channels > 2)
 	{
-		LOG_ERROR("Unsupported channel count %d for %s.", wave.channels, name.c_str());
+		SPDLOG_ERROR("Unsupported channel count {} for {}.", wave.channels, name.c_str());
 		return false;
 	}
 
@@ -120,7 +120,7 @@ bool SoundSystem::load(const std::string& name, const std::string& file, float v
 	alGenBuffers(1, &buffer);
 	if (buffer == 0)
 	{
-		LOG_ERROR("Failed to generate OpenAL buffer for %s.", name.c_str());
+		SPDLOG_ERROR("Failed to generate OpenAL buffer for {}.", name.c_str());
 		return false;
 	}
 	const std::size_t byteCount = wave.samples.size() * sizeof(short);
@@ -128,7 +128,7 @@ bool SoundSystem::load(const std::string& name, const std::string& file, float v
 		wave.samples.data(), static_cast<ALsizei>(byteCount), wave.sampleRate);
 	if (alGetError() != AL_NO_ERROR)
 	{
-		LOG_ERROR("Failed to upload audio data for %s.", name.c_str());
+		SPDLOG_ERROR("Failed to upload audio data for {}.", name.c_str());
 		alDeleteBuffers(1, &buffer);
 		return false;
 	}

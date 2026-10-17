@@ -1,6 +1,6 @@
 #include "renderer/resource/shader/FragmentShader.h"
 
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 #include <stdexcept>
 #include <vector>
@@ -36,7 +36,7 @@ FragmentShader::FragmentShader(const char** code, std::size_t lines)
 		// Create error string
 		std::string err("FragmentShader: Compile error: ");
 		err.append(&error[0]);
-		LOG_ERROR("%s", err.c_str());
+		SPDLOG_ERROR("{}", err.c_str());
 		glDeleteShader(d_shaderId);
 		d_shaderId = 0;
 		throw std::runtime_error(err);

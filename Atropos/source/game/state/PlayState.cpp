@@ -22,7 +22,7 @@
 #include "game/control/RemoveOnDeathController.h"
 
 #include "util/Global.h"
-#include "debug/Log.h"
+#include <spdlog/spdlog.h>
 
 // GLFW
 #include <glfw/glfw3.h>
@@ -88,7 +88,7 @@ bool PlayState::init()
 	Renderable* playerDrawable = d_renderSystem->add("player");
 	if (playerDrawable == nullptr)
 	{
-		LOG_ERROR("Failed to add player entity: model could not be loaded.");
+		SPDLOG_ERROR("Failed to add player entity: model could not be loaded.");
 		return false;
 	}
 	// Player object controls camera
@@ -127,7 +127,7 @@ bool PlayState::init()
 			Renderable* tileDrawable = d_renderSystem->add("watertile");
 			if (tileDrawable == nullptr)
 			{
-				LOG_ERROR("Failed to add water tile entity: model could not be loaded.");
+				SPDLOG_ERROR("Failed to add water tile entity: model could not be loaded.");
 				delete tile;
 				continue;
 			}
@@ -180,7 +180,7 @@ bool PlayState::update(float dtime)
 		Renderable* enemyDrawable = d_renderSystem->add("enemy");
 		if (enemyDrawable == nullptr)
 		{
-			LOG_ERROR("Failed to add enemy entity: model could not be loaded.");
+			SPDLOG_ERROR("Failed to add enemy entity: model could not be loaded.");
 			delete enemy;
 		}
 		else
