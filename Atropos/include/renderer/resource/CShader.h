@@ -40,11 +40,6 @@ public:
 	*/
 	void setActive() const;
 
-	/** 
-	* \brief Returns shader id.
-	*/
-	GLuint getId() const;
-	
 	/**
 	* \brief Sets uniform 4x4 matrix value by name.
 	*/

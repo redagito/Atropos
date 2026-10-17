@@ -103,12 +103,6 @@ void CShader::setActive() const
 	return;
 }
 
-// Returns id
-GLuint CShader::getId() const
-{
-	return d_programId;
-}
-
 // Set 4x4 matrix uniform
 void CShader::setShaderValueMat4(const std::string& name, const glm::mat4& mat) const
 {
