@@ -1,7 +1,6 @@
 #include "game/state/CLoadState.h"
 
 #include "renderer/CRenderSystem.h"
-#include "renderer/CRenderable.h"
 #include "collision/CCollisionSystem.h"
 #include "sound/CSoundSystem.h"
 #include "game/CGameSystem.h"
@@ -11,7 +10,6 @@
 #include "util/Global.h"
 
 #include <glfw/glfw3.h>
-#include <glm/ext.hpp>
 
 
 

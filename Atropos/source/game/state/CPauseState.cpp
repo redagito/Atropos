@@ -1,14 +1,12 @@
 #include "game/state/CPauseState.h"
 
 #include "renderer/CRenderSystem.h"
-#include "renderer/CRenderable.h"
 #include "collision/CCollisionSystem.h"
 #include "sound/CSoundSystem.h"
 
 #include "util/Global.h"
 
 #include <glfw/glfw3.h>
-#include <glm/ext.hpp>
 
 
 
