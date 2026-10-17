@@ -105,24 +105,6 @@ void CConfigFile::set(const std::string& key, const std::string& value)
 	d_values[key] = value;
 }
 
-bool CConfigFile::save(const std::string& fileName) const
-{
-	// Open file
-	std::ofstream ofs(fileName);
-	if (!ofs.is_open())
-	{
-		return false;
-	}
-	
-	// Write values to file
-	for (const auto& entry : d_values)
-	{
-		ofs << entry.first << "=" << entry.second << std::endl;
-	}
-	ofs.close();
-	return true ;
-}
-
 bool CConfigFile::parseLine(const std::string& line)
 {
 	// Comments and empty lines

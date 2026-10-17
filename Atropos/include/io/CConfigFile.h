@@ -25,11 +25,6 @@ public:
 	bool load(const std::string& fileName);
 
 	/**
-	* \brief Saves config data to file.
-	*/
-	bool save(const std::string& fileName) const;
-
-	/**
 	* \brief Checks existence of a key.
 	* \return True if the key exists and false if not.
 	*/
