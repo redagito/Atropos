@@ -25,46 +25,6 @@ public:
 	bool load(const std::string& fileName);
 	
 	/**
-	* \brief Initializes image to specified size and sets color.
-	*/
-	void init(unsigned int width, unsigned int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-	
-	/**
-	* \brief Initialize image from data.
-	*/
-	void init(unsigned int width, unsigned int height, unsigned char* data);
-	
-	/**
-	* \brief Sets pixel to specified value.
-	*/
-	void set(unsigned int width, unsigned int height, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-	
-	/**
-	* \brief Save image to file.
-	*/
-	bool save(const std::string& fileName) const;
-	
-	/**
-	* \brief Get red color value at position.
-	*/
-	unsigned char getRed(unsigned int width, unsigned int height) const;
-	
-	/**
-	* \brief Get green color value at position.
-	*/
-	unsigned char getGreen(unsigned int width, unsigned int height) const;
-	
-	/**
-	* \brief Get blue color value at position.
-	*/
-	unsigned char getBlue(unsigned int width, unsigned int height) const;
-	
-	/**
-	* \brief Get alpha value at position.
-	*/
-	unsigned char getAlpha(unsigned int width, unsigned int height) const;
-
-	/**
 	* \brief Returns image width.
 	*/
 	unsigned int getWidth() const;
