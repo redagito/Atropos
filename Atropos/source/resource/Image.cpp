@@ -1,6 +1,6 @@
 #include "resource/Image.h"
 
-#include "io/lodepng/lodepng.h"
+#include <lodepng.h>
 #include "io/TgaLoader.h"
 #include "debug/Log.h"
 
