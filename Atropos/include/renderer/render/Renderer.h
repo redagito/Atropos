@@ -9,7 +9,7 @@ class Mesh;
 #include "renderer/resource/VertexArrayObject.h"
 #include "renderer/render/ShadowBuffer.h"
 
-#include "renderer/flext/flextGL.h"
+#include <glad/glad.h>
 #include "glm/glm.hpp"
 
 #include <vector>

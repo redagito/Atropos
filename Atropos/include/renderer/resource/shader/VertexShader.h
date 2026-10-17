@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/flext/flextGL.h"
+#include <glad/glad.h>
 
 /*
 * \brief Represents a compiled vertex shader

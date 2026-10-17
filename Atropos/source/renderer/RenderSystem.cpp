@@ -12,7 +12,7 @@
 #include "debug/Profiler.h"
 #include "util/Global.h"
 
-#include "renderer/flext/flextGL.h"
+#include <glad/glad.h>
 
 #include <glfw/glfw3.h>
 
@@ -48,8 +48,8 @@ bool RenderSystem::init(const ConfigFile& config)
 	}
 	// GL core context creation
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, FLEXT_MAJOR_VERSION);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, FLEXT_MINOR_VERSION);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_REFRESH_RATE, 30);
 	glfwSwapInterval(30);
@@ -62,8 +62,8 @@ bool RenderSystem::init(const ConfigFile& config)
 	}
 	glfwMakeContextCurrent(Global::window);
 
-	// Load GL extensions
-	if (!flextInit())
+	// Load OpenGL function pointers
+	if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0)
 	{
 		return false;
 	}
