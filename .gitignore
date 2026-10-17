@@ -39,3 +39,8 @@ Atropos/Debug/
 *.pdb
 *.ilk
 .vs/
+
+# CMake / Conan
+/build/
+/CMakeUserPresets.json
+/.scratch/
