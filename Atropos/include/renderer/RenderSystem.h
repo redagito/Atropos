@@ -4,6 +4,7 @@ class Renderable; /**< Drawable entity forward declare. */
 class ResourceManager; /**< Resource manager for shared rendering resources forward declare. */
 class Renderer; /**< Renderer forward declare. */
 class ConfigFile; /**< Config file forward declare. */
+class ThreadPool; /**< Worker pool forward declare. */
 struct GLFWwindow; /**< GLFW window forwrad declare. */
 
 #include "renderer/scene/Scene.h"
@@ -33,10 +34,10 @@ public:
 	~RenderSystem();
 
 	/**
-	* \brief Initialize render system.
+	* \brief Initialize render system using the given pool for resource parsing.
 	* Throws std::runtime_error if the render system cannot be initialized.
 	*/
-	void init(const ConfigFile& config);
+	void init(const ConfigFile& config, ThreadPool& pool);
 
 	/**
 	* \brief Enables or disables culling functionality
@@ -68,6 +69,21 @@ public:
 	* Loads model resource. Throws std::runtime_error on failure.
 	*/
 	void loadModel(const std::string& modelName);
+
+	/**
+	* \brief Commits finished resources. Must run on the main thread.
+	*/
+	void process();
+
+	/**
+	* \brief True when all requested resources are loaded or failed.
+	*/
+	bool isIdle() const;
+
+	/**
+	* \brief True if any requested resource failed to load.
+	*/
+	bool hasError() const;
 
 	/**
 	* \brief Add a new drawable entity to the scene.

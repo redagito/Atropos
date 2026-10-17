@@ -4,6 +4,7 @@ class RenderSystem; /**< Rendering subsystem forward delcare. */
 class CollisionSystem; /**< Collision subsystem forward delcare. */
 class GameSystem; /**< Game subsystem forward delcare. */
 class SoundSystem; /**< Sound system forward declare. */
+class ThreadPool; /**< Worker pool forward declare. */
 
 class ConfigFile; /**< Config file forward declare. */
 
@@ -67,6 +68,11 @@ protected:
 	void updateCollision();
 
 	/**
+	* \brief Commits finished resources on the main thread.
+	*/
+	void updateResources();
+
+	/**
 	* \brief Renderer update.
 	*/
 	void updateRenderer();
@@ -81,6 +87,7 @@ private:
 	bool d_init; /**< Initialization flag. */
 	bool d_running; /**< Running flag. */
 
+	std::unique_ptr<ThreadPool> d_pool; /**< Worker pool for resource loading. */
 	std::shared_ptr<SoundSystem> d_soundSystem; /**< Sound system. */
 	std::shared_ptr<RenderSystem> d_renderSystem; /**< Rendering system. */
 	std::shared_ptr<CollisionSystem> d_collisionSystem; /**< Collision system. */

@@ -15,6 +15,9 @@
 // Debug and profiling
 #include "debug/Profiler.h"
 
+// Worker pool
+#include "core/ThreadPool.h"
+
 // IO and utility
 #include "io/ConfigFile.h"
 #include "util/Global.h"
@@ -68,15 +71,21 @@ void Engine::init(const char* configFile)
 	logger->set_level(spdlog::level::trace);
 	spdlog::set_default_logger(logger);
 
+	// Worker pool used by the resource loaders. It must outlive every system
+	// that owns a loader.
+	const int workerCount = config.get("engine_workerthreads", 4);
+	d_pool = std::make_unique<ThreadPool>(static_cast<unsigned int>(workerCount < 1 ? 1 : workerCount));
+	SPDLOG_INFO("Created worker pool with {} threads.", d_pool->getWorkerCount());
+
 	// Initialize rendering system singleton
 	SPDLOG_INFO("Create rendering system.");
 	d_renderSystem.reset(new RenderSystem);
-	d_renderSystem->init(config);
+	d_renderSystem->init(config, *d_pool);
 
 	// Initialize sound system
 	SPDLOG_INFO("Create sound system.");
 	d_soundSystem.reset(SoundSystem::create());
-	d_soundSystem->init(config);
+	d_soundSystem->init(config, *d_pool);
 
 	SPDLOG_INFO("Create collision system.");
 	// Initialize collision system
@@ -105,6 +114,10 @@ void Engine::cleanup()
 
 	// Delete game system first
 	d_gameSystem = nullptr;
+
+	// Stop the workers before destroying the systems that own the loaders,
+	// so no in flight parse can touch a destroyed loader.
+	d_pool = nullptr;
 
 	// Delete sound system.
 	d_soundSystem = nullptr;
@@ -151,6 +164,7 @@ void Engine::run()
 		
 		f2Reset += dtime;
 
+		updateResources();
 		updateRenderer();
 		updateGame(dtime);
 		updateCollision();
@@ -186,6 +200,14 @@ void Engine::updateCollision()
 	// Update collisions
 	Profiler profiler("update_collision");
 	d_collisionSystem->update();
+}
+
+void Engine::updateResources()
+{
+	// Commit finished resources on the main thread
+	Profiler profiler("update_resources");
+	d_renderSystem->process();
+	d_soundSystem->process();
 }
 
 void Engine::updateRenderer()

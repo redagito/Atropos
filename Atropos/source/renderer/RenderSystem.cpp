@@ -36,7 +36,7 @@ RenderSystem::RenderSystem()
 
 }
 
-void RenderSystem::init(const ConfigFile& config)
+void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 {
 	const unsigned int width = config.get("render_windowwidth", 800);
 	const unsigned int height = config.get("render_windowheight", 600);
@@ -78,7 +78,7 @@ void RenderSystem::init(const ConfigFile& config)
 	glfwSetFramebufferSizeCallback(Global::window, RenderSystem::resizeCallback);
 
 	// Create resource manager width resource path
-	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/")));
+	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/"), pool));
 
 	// Create render device with window size and shadow mapping shader.
 	// Loading the shadow shader throws if the resource is unavailable.
@@ -152,6 +152,21 @@ void RenderSystem::swapBuffer()
 void RenderSystem::loadModel(const std::string& modelName)
 {
 	d_manager->loadModel(modelName);
+}
+
+void RenderSystem::process()
+{
+	d_manager->process();
+}
+
+bool RenderSystem::isIdle() const
+{
+	return d_manager->isIdle();
+}
+
+bool RenderSystem::hasError() const
+{
+	return d_manager->hasError();
 }
 
 // Add entity
