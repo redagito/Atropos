@@ -144,7 +144,6 @@ void Engine::run()
 	float accumTime = 0.f;
 	unsigned int frameCount = 0;
 	float f2Reset = 0.f;
-	float lastShot = 0.f;
 
 	// Main loop
 	d_running = true;

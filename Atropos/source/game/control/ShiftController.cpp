@@ -37,7 +37,7 @@ void ShiftController::setActive(bool state)
 	d_active = state;
 }
 
-void ShiftController::update(float dtime)
+void ShiftController::update(float)
 {
 	if (d_active)
 	{

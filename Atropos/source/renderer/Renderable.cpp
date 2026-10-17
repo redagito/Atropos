@@ -65,10 +65,10 @@ void Renderable::setScaleMatrix(const glm::mat4& matrix)
 }
 
 // Draw with renderer
-void Renderable::draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera) const
+void Renderable::draw(const std::shared_ptr<Renderer>& renderer, const Camera&) const
 {
 	renderer->draw(	getModel()->getVertexArrayObject(), 
-					getModel()->getMesh()->getVertexBuffer()->getSize() / 3, 
+					static_cast<int>(getModel()->getMesh()->getVertexBuffer()->getSize() / 3), 
 					getModel()->getMaterial(), 
 					d_model,
 					d_rotation,

@@ -1,6 +1,6 @@
 #include "Atropos.h"
 
-int main(int argc, char** argv)
+int main()
 {
 	// Create engine interface
 	IEngine* engine = createEngine();

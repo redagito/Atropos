@@ -31,7 +31,7 @@ void ExplodeOnDeathController::detach()
 	d_object = nullptr;
 }
 
-void ExplodeOnDeathController::update(float dtime)
+void ExplodeOnDeathController::update(float)
 {
 	if (d_object != nullptr && d_active && d_object->isDead() && !d_exploded)
 	{

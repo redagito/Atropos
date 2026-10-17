@@ -10,7 +10,7 @@ unsigned int CollisionSystem::getNewGroupId()
 	// Add new collision group
 	d_entities.push_back(std::list<Collidable*>());
 	// Return the group id
-	return d_entities.size() - 1;
+	return static_cast<unsigned int>(d_entities.size() - 1);
 }
 
 // Cleanup

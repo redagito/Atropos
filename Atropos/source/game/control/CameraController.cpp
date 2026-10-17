@@ -30,7 +30,7 @@ void CameraController::detach()
 	d_camera = nullptr;
 }
 
-void CameraController::update(float dtime)
+void CameraController::update(float)
 {
 	if (d_active && d_object != nullptr && d_camera != nullptr)
 	{

@@ -29,7 +29,7 @@ void HealthController::detach()
 	d_object = nullptr;
 }
 
-void HealthController::update(float dtime)
+void HealthController::update(float)
 {
 	if (d_active && d_object != nullptr)
 	{

@@ -117,7 +117,7 @@ bool ConfigFile::parseLine(const std::string& line)
 		return true;
 	}
 
-	int pos = line.find("=");
+	std::size_t pos = line.find("=");
 	if (pos == std::string::npos)
 	{
 		return false;

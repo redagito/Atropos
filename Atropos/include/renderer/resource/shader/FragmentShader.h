@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <cstddef>
+
 /*
 * Class FragmentShader
 * Represents a compiled fragment shader
@@ -10,7 +12,7 @@
 class FragmentShader
 {
 public:
-	FragmentShader(const char** shaderCode, int shaderLineCount);
+	FragmentShader(const char** shaderCode, std::size_t shaderLineCount);
 	~FragmentShader();
 	GLuint getId() const;
 private:

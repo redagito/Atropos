@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <cstddef>
+
 /*
 * \brief Manages an OpenGL VBO in VRAM.
 * Stores float triples (x, y, z) and uses static draw modifier.
@@ -12,7 +14,7 @@ public:
 	/**
 	 * \brief Creates buffer object from float data.
 	 */
-	VertexBufferObject(const float* data, int size);
+	VertexBufferObject(const float* data, std::size_t size);
 
 	/**
 	 * \brief Frees all GPU resources.
@@ -27,11 +29,10 @@ public:
 
 	/**
 	 * \brief Returns buffer size.
-	 * TODO Why not unsigned?
 	 */
-	int getSize() const;
+	std::size_t getSize() const;
 
 private:
 	GLuint d_id; /**< GL buffer object id. */
-	int d_size; /**< Number of floats in the buffer. */
+	std::size_t d_size; /**< Number of floats in the buffer. */
 };

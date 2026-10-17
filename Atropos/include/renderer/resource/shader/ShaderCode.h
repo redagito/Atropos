@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
 
 /*
@@ -17,8 +18,8 @@ public:
 	// Returns array of null terminated character arrays
 	const char** getCode() const;
 	// Returns number of code lines
-	int getLineCount() const;
+	std::size_t getLineCount() const;
 private:
 	char** d_code;
-	unsigned int d_lines;
+	std::size_t d_lines;
 };

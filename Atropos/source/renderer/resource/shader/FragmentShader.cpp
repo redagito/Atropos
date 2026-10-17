@@ -6,13 +6,13 @@
 #include <vector>
 
 // Constructor, compiles shader from code
-FragmentShader::FragmentShader(const char** code, int lines)
+FragmentShader::FragmentShader(const char** code, std::size_t lines)
 {
 	// Create new id
 	d_shaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
     // Set source code
-	glShaderSource(d_shaderId, lines, code , NULL);
+	glShaderSource(d_shaderId, static_cast<GLsizei>(lines), code , NULL);
 
     // Compile the shader
 	glCompileShader(d_shaderId);
@@ -45,7 +45,7 @@ FragmentShader::~FragmentShader()
 }
 
 // Private copy constructor
-FragmentShader::FragmentShader(const FragmentShader& fs)
+FragmentShader::FragmentShader(const FragmentShader&)
 {
 	// Never use this
 	throw std::runtime_error("FragmentShader: Never copy FragmentShader objects");

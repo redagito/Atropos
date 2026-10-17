@@ -16,6 +16,14 @@ find_package(glad CONFIG REQUIRED)
 
 enable_testing()
 
+# Treat warnings as errors for every target in every build, and raise the
+# warning level as high as the compiler goes.
+if(MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Werror)
+endif()
+
 add_subdirectory(Atropos)
 add_subdirectory(App)
 add_subdirectory(Test)

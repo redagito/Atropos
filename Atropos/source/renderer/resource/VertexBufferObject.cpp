@@ -2,7 +2,7 @@
 
 #include "debug/Log.h"
 
-VertexBufferObject::VertexBufferObject(const float* data, int size)
+VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 	:
 	d_size(size)
 {
@@ -30,7 +30,7 @@ void VertexBufferObject::setActive() const
 	return;
 }
 
-int VertexBufferObject::getSize() const
+std::size_t VertexBufferObject::getSize() const
 {
 	return d_size;
 }

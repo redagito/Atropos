@@ -27,7 +27,7 @@ void RemoveOnDeathController::detach()
 	d_object = nullptr;
 }
 
-void RemoveOnDeathController::update(float dtime)
+void RemoveOnDeathController::update(float)
 {
 	if (d_object != nullptr && d_active && d_object->isDead())
 	{

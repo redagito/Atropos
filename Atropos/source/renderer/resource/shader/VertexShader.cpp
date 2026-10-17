@@ -6,13 +6,13 @@
 #include <vector>
 
 // Constructor, compiles shader from code
-VertexShader::VertexShader(const char** code, int lines)
+VertexShader::VertexShader(const char** code, std::size_t lines)
 {
 	// Create new id
 	d_shaderId = glCreateShader(GL_VERTEX_SHADER);
 
     // Set source code
-	glShaderSource(d_shaderId, lines, code , NULL);
+	glShaderSource(d_shaderId, static_cast<GLsizei>(lines), code , NULL);
 	
 	// Compile the shader
 	glCompileShader(d_shaderId);
@@ -45,7 +45,7 @@ VertexShader::~VertexShader()
 }
 
 // Private copy constructor
-VertexShader::VertexShader(const VertexShader& vs)
+VertexShader::VertexShader(const VertexShader&)
 {
 	// Blow up if used
 	throw std::runtime_error("VertexShader: Never copy VertexShader objects");

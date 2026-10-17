@@ -57,7 +57,7 @@ const char** ShaderCode::getCode() const
 }
 
 // returns number of code lines
-int ShaderCode::getLineCount() const
+std::size_t ShaderCode::getLineCount() const
 {
 	return d_lines;
 }
