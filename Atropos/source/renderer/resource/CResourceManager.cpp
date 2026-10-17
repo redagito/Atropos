@@ -55,7 +55,15 @@ bool CResourceManager::loadModel(const std::string& name)
 			return false;
 		}
 
-		d_modelMap[name].reset(new CModel(getMesh(conf.get("mesh", "error")), getMaterial(conf.get("material", "error"))));
+		CMesh* mesh = getMesh(conf.get("mesh", "error"));
+		AMaterial* material = getMaterial(conf.get("material", "error"));
+		if (mesh == nullptr || material == nullptr)
+		{
+			LOG_ERROR("Failed to load model %s: missing mesh or material.", name.c_str());
+			return false;
+		}
+
+		d_modelMap[name].reset(new CModel(mesh, material));
 	}
 	return true;
 }
