@@ -64,12 +64,6 @@ void CCollidable::setTranslation(const glm::mat4& translate)
 	return;
 }
 
-// Sets collidable state
-void CCollidable::setCollidable(bool state)
-{
-	d_collidable = state;
-}
-
 // Returns collidable state
 bool CCollidable::isCollidable() const
 {

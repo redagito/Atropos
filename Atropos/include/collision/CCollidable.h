@@ -62,13 +62,6 @@ public:
 	void setScale(const glm::mat4& scale);
 
 	/**
-	* \brief Sets the collision status.
-	*
-	* If this is set to false, the entity will get ignored while collision testing
-	*/
-	void setCollidable(bool);
-
-	/**
 	* \brief Returns whether or not the entity should be used for collision testinG
 	*/
 	bool isCollidable() const;
