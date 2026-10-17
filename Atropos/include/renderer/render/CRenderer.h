@@ -117,11 +117,6 @@ public:
 	void onResize(int width, int height);
 
 	/**
-	* \brief Enables or disables wireframe mode.
-	*/
-	void setWireframe(bool state);
-
-	/**
 	* \brief Signals start of new frame.
 	*
 	* This should be called at the start of a new frame and before
@@ -163,11 +158,6 @@ public:
 	* Quick workaround for shadow mapping. The renderer should not store the lights or have any knowledge of light movement.
 	*/
 	void setLightPosition(const glm::vec3& position);
-
-	/**
-	* \brief Returns per frame render statistics.
-	*/
-	const SFrameStats& getFrameStats() const;
 
 private:
 	/**

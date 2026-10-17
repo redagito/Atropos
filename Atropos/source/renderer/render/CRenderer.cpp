@@ -111,19 +111,6 @@ CRenderer::~CRenderer()
 	LOG_INFO("Destroyed renderer.");
 }
 
-void CRenderer::setWireframe(bool state)
-{
-	d_useWireframe = state;
-	if (d_useWireframe)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	else
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-}
-
 // Pre render call for render effects
 void CRenderer::startFrame()
 {
@@ -348,9 +335,4 @@ void CRenderer::shadowPass()
 void CRenderer::setLightPosition(const glm::vec3& position) 
 {
 	d_lightPosition = position;
-}
-
-const SFrameStats& CRenderer::getFrameStats() const
-{
-	return d_frameStats;
 }
