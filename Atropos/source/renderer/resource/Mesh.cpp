@@ -19,6 +19,12 @@ Mesh::~Mesh()
 
 bool Mesh::init(const std::vector<float>& vertices, const std::vector<float>& normals, const std::vector<float>& uv, const AABBox& box)
 {
+	if (vertices.empty())
+	{
+		LOG_ERROR("Cannot initialize a mesh without vertex data.");
+		return false;
+	}
+
 	// Load into VRAM
 	d_vertices.reset(new VertexBufferObject(vertices.data(), vertices.size()));
 	d_normals.reset(new VertexBufferObject(normals.data(), normals.size()));

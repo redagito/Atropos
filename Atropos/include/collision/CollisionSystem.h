@@ -31,7 +31,9 @@ public:
 	Collidable* add(const AABBox& box, unsigned int group);
 
 	/**
-	* \brief Remove collidable entity
+	* \brief Marks a collidable entity for removal.
+	*
+	* The entity is freed on the next call to update().
 	*/
 	void remove(Collidable* entity);
 

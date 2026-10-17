@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-// Custom memory manager
 
 
 FileLoader::FileLoader(const std::string&path)

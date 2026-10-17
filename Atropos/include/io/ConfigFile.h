@@ -37,22 +37,20 @@ public:
 
 	/**
 	* \brief Returns float value to key or, if not found, the default float value.
-	* If the value found could not be converted to float, triggers assert in debug and returns
-	* default value in release.
+	* If the value found could not be converted to float, the default value is returned.
 	*/
 	float get(const std::string& key, float defaultValue) const;
 
 	/**
 	* \brief Returns int value to key or, if not found, the default int value.
-	* If the value found could not be converted to int, triggers assert in debug and returns
-	* default value in release.
+	* If the value found could not be converted to int, the default value is returned.
 	*/
 	int get(const std::string& key, int defaultValue) const;
 
 	/**
 	* \brief Returns vec3 value to key or, if not found, the default vec3 value.
-	* If the value found could not be converted to vec3, triggers assert in debug and returns
-	* default value in release.
+	* If the value found could not be converted to vec3, the default value is returned.
+	* Missing components are set to zero.
 	*/
 	glm::vec3 get(const std::string& key, const glm::vec3& defaultValue) const;
 	

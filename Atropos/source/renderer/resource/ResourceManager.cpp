@@ -9,7 +9,6 @@
 #include "resource/Image.h"
 #include "debug/Log.h"
 
-// Custom memory manager
 
 
 ResourceManager::ResourceManager(const std::string& resourceBasePath)

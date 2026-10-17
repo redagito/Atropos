@@ -9,8 +9,6 @@
 #include <sstream>
 #include <stdexcept>
 
-// Custom memory manager
-
 namespace
 {
 	int resolveIndex(int index, int count)
@@ -53,6 +51,11 @@ bool ObjModelLoader::load(const std::string& file)
 		return false;
 	}
 
+	// Reset any data from a previous load.
+	d_vertices.clear();
+	d_normals.clear();
+	d_uv.clear();
+
 	// Temp data
 	std::vector<float> tempVert;
 	std::vector<float> tempUV;
@@ -65,6 +68,12 @@ bool ObjModelLoader::load(const std::string& file)
 		parseLine(line, tempVert, tempNorm, tempUV);
 	}
 	LOG_INFO("Loaded obj model with %zu triangles.", d_vertices.size() / 3);
+
+	if (d_vertices.empty())
+	{
+		LOG_ERROR("The mesh file %s contains no geometry.", file.c_str());
+		return false;
+	}
 
 	// Calculate bounding volume
 	calculateAABBox();

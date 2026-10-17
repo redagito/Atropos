@@ -10,7 +10,7 @@ class SoundSystem;
 #include <vector>
 
 /**
-* \brief Represents the loading state.
+* \brief Represents the lose state.
 */
 class LoseState : public IGameState
 {

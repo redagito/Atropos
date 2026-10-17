@@ -3,7 +3,6 @@
 #include <sstream>
 #include <cmath>
 
-// Custom memory manager
 
 
 AABBox::AABBox()

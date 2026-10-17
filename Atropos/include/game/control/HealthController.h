@@ -3,7 +3,7 @@
 #include "game/IController.h"
 
 /**
-* \brief Stores health state and marks object for deletion on death.
+* \brief Stores health state and sets the object into the death state on death.
 * TODO This should actually send an onDeath event to the object.
 */
 class HealthController : public IController

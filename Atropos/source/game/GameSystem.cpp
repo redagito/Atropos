@@ -3,7 +3,6 @@
 #include "io/ConfigFile.h"
 #include "debug/Log.h"
 
-// Custom memory manager
 
 
 GameSystem::~GameSystem()

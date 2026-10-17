@@ -1,6 +1,5 @@
 #include "collision/Collidable.h"
 
-// Custom memory manager
 
 
 Collidable::Collidable(unsigned int group, const AABBox& box)

@@ -26,6 +26,9 @@ public:
 	*/
 	~GameObject();
 
+	GameObject(const GameObject&) = delete;
+	GameObject& operator=(const GameObject&) = delete;
+
 	/**
 	* \brief Updates object and returns state
 	*

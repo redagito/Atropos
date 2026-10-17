@@ -12,13 +12,19 @@ Texture::Texture()
 
 bool Texture::init(const Image& image)
 {
+	if (image.getWidth() == 0 || image.getHeight() == 0)
+	{
+		LOG_ERROR("Cannot initialize a texture from an empty image.");
+		return false;
+	}
+
 	// Bind texture
 	glBindTexture(GL_TEXTURE_2D, d_texId);
 	
 	// Texture filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	
 	// Load data to vram

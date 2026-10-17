@@ -45,12 +45,9 @@ void CollisionSystem::remove(Collidable* entity)
 	{
 		return;
 	}
-	const unsigned int groupId = entity->getGroupId();
-	if (groupId < d_entities.size())
-	{
-		d_entities[groupId].remove(entity);
-	}
-	delete entity;
+	// Defer the deletion to update() so the entity is never freed while it may
+	// still be referenced, and removing twice is harmless.
+	entity->markDeleted();
 }
 
 // Test all entities for collision

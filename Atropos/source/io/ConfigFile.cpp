@@ -4,8 +4,6 @@
 #include <fstream>
 #include <sstream>
 
-// Custom memory manager
-
 
 ConfigFile::ConfigFile()
 {
@@ -90,7 +88,10 @@ glm::vec3 ConfigFile::get(const std::string& key, const glm::vec3& defaultValue)
 	{
 		std::stringstream ss(d_values.at(key));
 		glm::vec3 res(0.f);
-		ss >> res.x;
+		if (!(ss >> res.x))
+		{
+			return defaultValue;
+		}
 		ss >> res.y;
 		ss >> res.z;
 		return res;
@@ -120,6 +121,12 @@ bool ConfigFile::parseLine(const std::string& line)
 	{
 		return false;
 	}
-	d_values[line.substr(0, pos)] = line.substr(pos + 1);
+	std::string value = line.substr(pos + 1);
+	// Strip the carriage return of CRLF line endings.
+	if (!value.empty() && value.back() == '\r')
+	{
+		value.pop_back();
+	}
+	d_values[line.substr(0, pos)] = value;
 	return true;
 }

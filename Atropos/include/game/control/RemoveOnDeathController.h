@@ -5,7 +5,7 @@
 #include <string>
 
 /**
-* \brief Checks the object state for death state and trigger explosion effect.
+* \brief Removes the object when it enters the death state.
 * TODO This should actually react to an onDeath event.
 * TODO This actually can play any sound on death.
 */
