@@ -4,6 +4,11 @@ add_executable(atropos_tests
     source/ObjModelLoaderTest.cpp
     source/ImageTest.cpp
     source/FileLoaderTest.cpp
+    source/AABBoxTest.cpp
+    source/GameObjectTest.cpp
+    source/CollisionSystemTest.cpp
+    source/HealthControllerTest.cpp
+    source/GameSystemTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE

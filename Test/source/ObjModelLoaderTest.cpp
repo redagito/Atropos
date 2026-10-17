@@ -189,6 +189,23 @@ TEST_CASE("ObjModelLoader skips out-of-range face indices", "[obj]")
 	CHECK(loader.getVertices().empty());
 }
 
+TEST_CASE("ObjModelLoader ignores malformed declaration lines", "[obj]")
+{
+	const std::string contents =
+		"v 0 0 0\n"
+		"v 1 0 0\n"
+		"v 0 1 0\n"
+		"v\n"
+		"vt\n"
+		"vn\n"
+		"f\n"
+		"f 1 2 3\n";
+
+	ObjModelLoader loader;
+	CHECK(loadFromString(contents, loader));
+	CHECK(loader.getVertices().size() == 9);
+}
+
 TEST_CASE("ObjModelLoader handles a vertex-less model", "[obj]")
 {
 	const std::string contents = "# empty model\n";

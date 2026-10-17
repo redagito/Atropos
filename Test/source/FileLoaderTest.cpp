@@ -34,5 +34,7 @@ TEST_CASE("FileLoader reload does not duplicate content", "[fileloader]")
 
 	std::filesystem::remove(path);
 
+	REQUIRE_FALSE(first.empty());
+	CHECK(first == "line one\nline two\nline three\n");
 	CHECK(first == second);
 }
