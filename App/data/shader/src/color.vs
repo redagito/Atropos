@@ -13,9 +13,15 @@ uniform mat4 scale;
 uniform mat4 view;
 uniform mat4 proj;
 
+// Distance from the camera, used to fade into the horizon colour.
+out float _fogDepth;
+
 void main()
 {
 	mat4 model = translation * scale * rotation;
+	vec4 viewPosition = view * model * vec4(vertex, 1.f);
 
-	gl_Position = proj * view * model * vec4(vertex, 1.f);
+	_fogDepth = -viewPosition.z;
+
+	gl_Position = proj * viewPosition;
 }

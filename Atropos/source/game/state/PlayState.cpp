@@ -56,6 +56,8 @@ void PlayState::init()
 	// TODO: All resource loading and game object creation should be directed by a level file.
 
 	d_renderSystem->createScene("play");
+	// The other scenes set a background; gameplay was missing one and fell back to white.
+	d_renderSystem->setSceneBackgroundColor("play", glm::vec3(0.55f, 0.72f, 0.88f));
 	d_renderSystem->setActiveScene("play");
 
 	// TODO: Sound loading should be data driven, not hard coded.

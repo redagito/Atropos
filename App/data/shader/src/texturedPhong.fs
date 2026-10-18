@@ -10,6 +10,13 @@ in vec3 _normal;
 in vec4 _shadowCoord;
 uniform sampler2DShadow shadow;
 
+// Set by renderer
+uniform vec3 fogColor;
+uniform float fogStart;
+uniform float fogEnd;
+
+in float _fogDepth;
+
 out vec4 color;
 
 // Shadow sampling
@@ -59,4 +66,8 @@ void main()
 	float diffuseFactor = max(0.0, dot(surfaceNormal, -lightDir));
 	color = baseColor * vec4(lightColor * (0.3 + diffuseFactor), 1.0)  * visible;
 	color.a = 1;
+
+	// Faded last, so the horizon colour sits in front of everything the scene drew.
+	float fog = clamp((_fogDepth - fogStart) / max(fogEnd - fogStart, 0.001), 0.0, 1.0);
+	color = mix(color, vec4(fogColor, color.a), fog);
 }

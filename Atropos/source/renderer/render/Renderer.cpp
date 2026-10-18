@@ -72,6 +72,9 @@ Renderer::Renderer(int width, int height, Shader* shadow, const std::string& res
 	d_width(width),
 	d_height(height),
 	d_clearColor(1.f),
+	d_fogColor(0.70f, 0.82f, 0.90f),
+	d_fogStart(200.f),
+	d_fogEnd(900.f),
 	d_view(glm::mat4(1.f)),
 	d_proj(glm::mat4(1.f)),
 	d_lightPosition(0.f, 100.f, 50.f)
@@ -160,6 +163,13 @@ void Renderer::setClearColor(const glm::vec3& color)
 	}
 }
 
+void Renderer::setFog(const glm::vec3& color, float start, float end)
+{
+	d_fogColor = color;
+	d_fogStart = start;
+	d_fogEnd = end;
+}
+
 void Renderer::onResize(int width, int height)
 {
 	d_width = width;
@@ -210,6 +220,11 @@ void Renderer::geometryPass()
 		material->getShader()->setShaderValueMat4("bias", depthBias * request.getModel());
 		
 		material->getShader()->setShaderValueVec3("lightInvDir", d_lightPosition);
+		
+		// Absent from the depth only shadow shader, where it would be skipped.
+		material->getShader()->setShaderValueVec3("fogColor", d_fogColor);
+		material->getShader()->setShaderValueFloat("fogStart", d_fogStart);
+		material->getShader()->setShaderValueFloat("fogEnd", d_fogEnd);
 		
 		// Texture unit 1 carries the depth texture
 		// TODO: rework the texture binding for multitexturing.

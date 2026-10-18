@@ -86,6 +86,12 @@ public:
 	void setClearColor(const glm::vec3& color);
 
 	/**
+	* \brief Distance fog. Geometry fades to the horizon colour between the two
+	* distances so a large flat plane recedes instead of ending in a hard edge.
+	*/
+	void setFog(const glm::vec3& color, float start, float end);
+
+	/**
 	* \brief Adds the object to the render requests.
 	*/
 	void draw(const VertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool hasShadow);
@@ -119,6 +125,10 @@ private:
 	int d_height;
 
 	glm::vec3 d_clearColor;
+
+	glm::vec3 d_fogColor;
+	float d_fogStart;
+	float d_fogEnd;
 
 	glm::mat4 d_view;
 	glm::mat4 d_proj;

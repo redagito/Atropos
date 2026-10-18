@@ -21,11 +21,17 @@ out vec3 _normal;
 // For shadow mapping
 out vec4 _shadowCoord;
 
+// Distance from the camera, used to fade into the horizon colour.
+out float _fogDepth;
+
 void main()
 {
 	_shadowCoord = bias * vec4(vertex, 1.f);
 
-	gl_Position = proj * view * model * vec4(vertex, 1.f);
+	vec4 viewPosition = view * model * vec4(vertex, 1.f);
+	_fogDepth = -viewPosition.z;
+
+	gl_Position = proj * viewPosition;
 
 	_normal = (rotation * vec4(normal, 0.f)).xyz;
 	_uv = uv;
