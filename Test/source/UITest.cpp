@@ -2,6 +2,9 @@
 #include "renderer/ui/Font.h"
 #include "renderer/ui/UI.h"
 #include "game/HUD.h"
+#include "renderer/render/Renderer.h"
+#include "renderer/resource/Shader.h"
+#include "io/FileLoader.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -259,4 +262,48 @@ TEST_CASE("The frame rate readout tracks the frame time it is given", "[ui][hud]
 	ui.setFrameTime(0.f);
 	ui.setFrameTime(-1.f);
 	CHECK(ui.getFps() == 60);
+}
+
+TEST_CASE("Interface queued after the scene draw reaches the next frame", "[ui][frame]")
+{
+	GLTestContext context;
+
+	FileLoader vertexLoader(std::string(ATROPOS_SHADER_SRC_DIR) + "/shadow.vs");
+	vertexLoader.load();
+	FileLoader fragmentLoader(std::string(ATROPOS_SHADER_SRC_DIR) + "/shadow.fs");
+	fragmentLoader.load();
+
+	ShaderSources shadowSources;
+	shadowSources.vertex = vertexLoader.getContent();
+	shadowSources.fragment = fragmentLoader.getContent();
+
+	Shader shadowShader;
+	shadowShader.init(shadowSources);
+
+	Renderer renderer(64, 64, &shadowShader, std::string(ATROPOS_DATA_DIR) + "/");
+
+	UICanvas canvas(64);
+	glBindFramebuffer(GL_FRAMEBUFFER, canvas.framebuffer);
+	glViewport(0, 0, 64, 64);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+
+	// The engine draws the scene first and runs the game state afterwards, so
+	// anything the state queues lands after the flush and must survive to the
+	// next frame rather than being cleared at the start of one.
+	renderer.startFrame();
+	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.endFrame();
+
+	renderer.ui().drawRect(glm::vec2(16.f, 16.f), glm::vec2(32.f, 16.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
+
+	renderer.startFrame();
+	glClear(GL_COLOR_BUFFER_BIT);
+	renderer.endFrame();
+
+	CHECK(context.sink().errors == 0);
+
+	const std::vector<unsigned char> pixels = canvas.read();
+	CHECK(isRed(pixels, 32, flipped(24, 64), 64));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

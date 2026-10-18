@@ -126,6 +126,12 @@ void UI::flush()
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBindVertexArray(0);
+
+	// Consumed here rather than at the frame's start: the engine draws the scene
+	// before the game state runs, so anything queued by a state after that must
+	// survive until this flush instead of being cleared before it.
+	d_solid.clear();
+	d_text.clear();
 }
 
 void UI::drawRect(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)

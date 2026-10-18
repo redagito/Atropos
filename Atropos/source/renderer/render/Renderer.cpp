@@ -112,7 +112,6 @@ void Renderer::startFrame()
 d_frameStats.drawCalls = 0;
 	d_frameStats.vertexCount = 0;
 
-	d_ui.beginFrame();
 	d_stage = Renderer::Start;
 }
 
