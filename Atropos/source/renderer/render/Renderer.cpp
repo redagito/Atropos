@@ -65,8 +65,8 @@ bool RenderRequest::hasShadow() const
 	return d_shadow;
 }
 
-Renderer::Renderer(int width, int height, Shader* shadow)
-	:	
+Renderer::Renderer(int width, int height, Shader* shadow, const std::string& resourcePath)
+	:
 	d_shadowShader(shadow),
 	d_stage(Renderer::End),
 	d_width(width),
@@ -77,9 +77,12 @@ Renderer::Renderer(int width, int height, Shader* shadow)
 	d_lightPosition(0.f, 100.f, 50.f)
 {
 	SPDLOG_INFO("Created renderer.");
-	
+
 	d_depthProj = glm::ortho(-50.f, 50.f, -50.f, 50.f, 1.f,120.f);
 	d_depthView = glm::lookAt(d_lightPosition, glm::vec3(0.f, 0.f, 50.f), glm::vec3(0.f, 0.f, 1.f));
+
+	d_ui.init(resourcePath);
+	d_ui.onResize(width, height);
 
 	glClearColor(d_clearColor.r, d_clearColor.g, d_clearColor.b, 0.f);
 	
@@ -106,9 +109,10 @@ void Renderer::startFrame()
 {
 	d_renderRequests.clear();
 
-	d_frameStats.drawCalls = 0;
+d_frameStats.drawCalls = 0;
 	d_frameStats.vertexCount = 0;
 
+	d_ui.beginFrame();
 	d_stage = Renderer::Start;
 }
 
@@ -117,11 +121,12 @@ void Renderer::endFrame()
 	Profiler profiler("end_frame");
 	d_stage = Renderer::End;
 	
-	shadowPass();
+shadowPass();
 
 	geometryPass();
 
-	// TODO User interface 2D drawing
+	// Drawn last so it lands on top of the scene with its own depth state.
+	d_ui.flush();
 }
 
 void Renderer::draw(const VertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool hasShadow)
@@ -161,6 +166,12 @@ void Renderer::onResize(int width, int height)
 	d_width = width;
 	d_height = height;
 	glViewport(0, 0, d_width, d_height);
+	d_ui.onResize(d_width, d_height);
+}
+
+UI& Renderer::ui()
+{
+	return d_ui;
 }
 
 void Renderer::geometryPass()

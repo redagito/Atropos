@@ -7,10 +7,12 @@ class Mesh;
 
 #include "renderer/resource/VertexArrayObject.h"
 #include "renderer/render/ShadowBuffer.h"
+#include "renderer/ui/UI.h"
 
 #include <glad/gl.h>
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
+#include <string>
 #include <vector>
 
 class RenderRequest
@@ -58,7 +60,7 @@ class Renderer
 public:
 	enum Stage { Start, Draw, End };
 
-	Renderer(int width, int height, Shader* shadow);
+	Renderer(int width, int height, Shader* shadow, const std::string& resourcePath);
 
 	~Renderer();
 
@@ -93,6 +95,11 @@ public:
 	*/
 	void setLightPosition(const glm::vec3& position);
 
+/**
+	* \brief Screen space drawing queue for the current frame.
+	*/
+	UI& ui();
+
 private:
 	void geometryPass();
 
@@ -121,4 +128,6 @@ private:
 	glm::mat4 d_depthProj;
 
 	FrameStats d_frameStats;
+
+	UI d_ui;
 };

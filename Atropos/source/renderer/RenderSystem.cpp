@@ -88,11 +88,12 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 
 	glfwSetFramebufferSizeCallback(d_window, RenderSystem::resizeCallback);
 
-	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/"), pool));
+	const std::string resourcePath = config.get("render_resourcepath", "data/");
+	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(resourcePath, pool));
 
 	// getShader throws if the "shadow" resource is missing.
 	Shader* shadowShader = d_manager->getShader("shadow");
-	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, shadowShader));
+	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, shadowShader, resourcePath));
 
 	glfwShowWindow(d_window);
 
