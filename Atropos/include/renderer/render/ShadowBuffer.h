@@ -13,6 +13,8 @@ public:
 
 	void setActive();
 	GLuint getDepthTexture() const;
+
+	GLuint getFramebufferId() const;
 	
 private:
 	GLuint d_shadowFramebuffer;

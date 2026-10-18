@@ -11,6 +11,7 @@
 #include "renderer/resource/Model.h"
 #include "renderer/resource/Shader.h"
 #include "renderer/resource/Texture.h"
+#include "renderer/render/ShadowBuffer.h"
 #include "resource/Image.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -284,4 +285,40 @@ TEST_CASE("Models set up their vertex array through direct state access", "[shad
 	GLint size = 0;
 	glGetNamedBufferParameteriv(vertexBuffer, GL_BUFFER_SIZE, &size);
 	CHECK(size == static_cast<GLint>(data.vertices.size() * sizeof(float)));
+}
+
+TEST_CASE("The shadow framebuffer is complete through named state access", "[shader][shadow]")
+{
+	GLContext context;
+
+	ShadowBuffer shadowBuffer;
+
+	CHECK(context.sink().errors == 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	GLint status = 0;
+	glGetNamedFramebufferAttachmentParameteriv(shadowBuffer.getFramebufferId(), GL_DEPTH_ATTACHMENT,
+		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &status);
+	CHECK(status == GL_TEXTURE);
+
+	GLint textureName = 0;
+	glGetNamedFramebufferAttachmentParameteriv(shadowBuffer.getFramebufferId(), GL_DEPTH_ATTACHMENT,
+		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &textureName);
+	CHECK(static_cast<GLuint>(textureName) == shadowBuffer.getDepthTexture());
+
+	// A depth-only target has no colour attachment, which is what glDrawBuffer(GL_NONE) means.
+	shadowBuffer.setActive();
+
+	GLint drawBuffer = 0;
+	glGetIntegerv(GL_DRAW_BUFFER, &drawBuffer);
+	CHECK(drawBuffer == GL_NONE);
+
+	GLint readBuffer = 0;
+	glGetIntegerv(GL_READ_BUFFER, &readBuffer);
+	CHECK(readBuffer == GL_NONE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	CHECK(context.sink().errors == 0);
 }
