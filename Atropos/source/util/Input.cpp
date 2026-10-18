@@ -7,8 +7,8 @@
 
 namespace
 {
-	std::unordered_map<int, bool> d_held; /**< Keys that are currently down. */
-	std::unordered_set<int> d_pressed; /**< Keys that went down this frame. */
+	std::unordered_map<int, bool> d_held;
+	std::unordered_set<int> d_pressed;
 }
 
 void Input::poll(GLFWwindow* window)

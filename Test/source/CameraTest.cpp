@@ -15,9 +15,7 @@ TEST_CASE("Camera resets its view to the default", "[camera]")
 
 	camera.resetView();
 
-	// A menu screen shows a model at a fixed place in the world, so the camera
-	// has to be able to go back to the default framing after a run left it
-	// thousands of units away with the player.
+	// The menu screen needs the default framing back after a run moved the camera.
 	CHECK(camera.getViewMatrix() == defaultView);
 	CHECK(camera.getPosition() == defaultPosition);
 }

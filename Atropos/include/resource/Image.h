@@ -8,15 +8,11 @@
 #include <string>
 
 /**
-* \brief Stores RGBA image data.
-* Currently supports loading from tga files.
+* \brief Stores RGBA image data, 4 bytes per pixel.
 */
 class Image : public IResource
 {
 public:
-	/**
-	* \brief Default constructor.
-	*/
 	Image();
 
 	/**
@@ -25,23 +21,14 @@ public:
 	*/
 	void load(const std::string& fileName);
 	
-	/**
-	* \brief Returns image width.
-	*/
 	unsigned int getWidth() const;
 
-	/**
-	* \brief Returns image height.
-	*/
 	unsigned int getHeight() const;
 
-	/**
-	* \brief Returns image data.
-	*/
 	const unsigned char* getData() const;
 	
 protected:
-	unsigned int d_width; /**< Image width. */
-	unsigned int d_height; /**< Image height. */
-	std::vector<unsigned char> d_data; /**< Image data. */
+	unsigned int d_width;
+	unsigned int d_height;
+	std::vector<unsigned char> d_data;
 };

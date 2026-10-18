@@ -18,9 +18,8 @@ BasicMaterial::BasicMaterial(Shader* shader, float ambient, float specular, Text
 void BasicMaterial::setActive() const
 {
 	d_shader->setActive();
-	// Set texture to unit 0
 	d_texture->setActive(0);
-	// Set sampler to texture unit 0
+	// Sampler uniform must stay bound to the unit passed to setActive above.
 	d_shader->setShaderTexture("texture0", 0);
 	return;
 }

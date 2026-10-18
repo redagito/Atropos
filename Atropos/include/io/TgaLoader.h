@@ -4,9 +4,6 @@
 #include <string>
 #include <vector>
 
-/**
-* \brief TGA image structure
-*/
 typedef struct
 {
     unsigned char imageTypeCode;
@@ -17,10 +14,5 @@ typedef struct
     std::unique_ptr<unsigned char[]> imageData; /**< Owned RGB pixel data. */
 } TGAFILE;
 
-/**
-* \brief TGA loader function
-*
-* Throws std::runtime_error if the file cannot be loaded. On a throw the pixel
-* data of tgaFile is left empty, so nothing has to be released by the caller.
-*/
+/** \brief Throws std::runtime_error on failure; on a throw tgaFile holds no pixel data. */
 void loadTGAFile(const std::string& fileName, TGAFILE *tgaFile);

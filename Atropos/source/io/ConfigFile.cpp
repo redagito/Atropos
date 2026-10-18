@@ -20,7 +20,6 @@ void ConfigFile::load(const std::string& fileName)
 		throw std::runtime_error("Failed to open config file: " + fileName);
 	}
 
-	// Parse lines with key value data
 	std::string line;
 	// Drop any values from a previous load so the result reflects this file only.
 	d_values.clear();
@@ -51,9 +50,7 @@ float ConfigFile::get(const std::string& key, float defaultValue) const
 		const std::string& value = d_values.at(key);
 		try
 		{
-			// std::stof stops at the first character it cannot parse, so a value
-			// such as "800x" would silently become 800. Requiring the whole value
-			// to be consumed makes a typo fall back to the default.
+			// std::stof stops at the first unparsable char ("800x" would yield 800), so require full consumption.
 			std::size_t consumed = 0;
 			const float result = std::stof(value, &consumed);
 			if (consumed == value.size())
@@ -96,8 +93,7 @@ int ConfigFile::get(const std::string& key, int defaultValue) const
 }
 
 /*
-* Parses vec3 value, 3 float values separated by spaces or returns default value.
-* Example: position=3.1020 2.05 1.3
+* Parses a vec3 as 3 space separated floats, e.g. position=3.1020 2.05 1.3
 */
 glm::vec3 ConfigFile::get(const std::string& key, const glm::vec3& defaultValue) const
 {
@@ -123,8 +119,7 @@ void ConfigFile::set(const std::string& key, const std::string& value)
 
 void ConfigFile::parseLine(const std::string& line)
 {
-	// Strip the newline characters of CRLF and LF line endings first, so an
-	// empty or comment line is recognised the same way on every platform.
+	// Strip CR/LF first so empty and comment lines are recognised the same on every platform.
 	std::string text = line;
 	while (!text.empty() && (text.back() == '\r' || text.back() == '\n'))
 	{

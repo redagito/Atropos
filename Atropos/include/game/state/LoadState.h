@@ -11,40 +11,19 @@ class GameSystem;
 #include <memory>
 #include <vector>
 
-/**
- * \brief Represents the loading state.
- */
 class LoadState : public IGameState
 {
 public:
-	/**
-	 * \brief Sets sub systems for access.
-	 */
 	LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys);
 
-	/**
-	 * \brief Updates state.
-	 */
 	bool update(float dtime);
 
-	/**
-	 * \brief Initializes state.
-	 */
 	void init();
 
-	/**
-	 * \brief Called on entering state.
-	 */
 	void onEnter();
 
-	/**
-	 * \brief Called on exiting state.
-	 */
 	void onExit();
 
-	/**
-	 * \brief Returns string identifier of next state.
-	 */
 	const std::string& getNextState() const;
 
 private:

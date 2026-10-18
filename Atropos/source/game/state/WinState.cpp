@@ -28,7 +28,6 @@ void WinState::init()
 	d_renderSystem->setActiveScene("win");
 	d_renderSystem->setSceneBackgroundColor("win", glm::vec3(0.05f, 0.18f, 0.10f));
 
-	// Load background music
 	d_soundSystem->loadBGM("win", "song1.mp3", 0.5f);
 }
 
@@ -36,13 +35,11 @@ bool WinState::update(float dtime)
 {
 	d_ship.update(dtime);
 
-	// Start game on enter
 	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		d_nextState = "load";
 		return false;
 	}
-	// End game on escape
 	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;
@@ -58,10 +55,8 @@ void WinState::onEnter()
 	d_renderSystem->setActiveScene("win");
 	// The camera followed the player to the end of the run.
 	d_renderSystem->getCamera().resetView();
-	// The models are committed long before the player can win, so showing one
-	// here does not block.
+	// Models are loaded long before a win, so showing one does not block.
 	d_ship.show(d_renderSystem, "player");
-	// Start sound playback
 	d_soundSystem->playBGM("win");
 }
 

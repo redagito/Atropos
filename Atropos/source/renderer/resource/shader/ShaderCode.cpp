@@ -40,7 +40,6 @@ ShaderCode::ShaderCode(const char* data)
 	return;
 }
 
-// Clean memory
 ShaderCode::~ShaderCode()
 {
 	for (unsigned int i = 0; i < d_lines; ++i)
@@ -52,11 +51,10 @@ ShaderCode::~ShaderCode()
 
 const char** ShaderCode::getCode() const
 {
-	// Figure out how to get rid of the cast without using -fpermissive
+	// TODO drop the cast without needing -fpermissive.
 	return (const char**) d_code;
 }
 
-// returns number of code lines
 std::size_t ShaderCode::getLineCount() const
 {
 	return d_lines;

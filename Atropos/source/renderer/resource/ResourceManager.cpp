@@ -33,10 +33,8 @@ ResourceManager::~ResourceManager()
 
 ShaderSources ResourceManager::parseShader(const std::string& name) const
 {
-	// Shader definition files are located in the shader sub directory of the resource path
 	const std::string shaderFile = d_resourcePath + "shader/" + name + ".sha";
 
-	// Load shader config file with names of shader sources
 	ConfigFile shaderConfig;
 	shaderConfig.load(shaderFile);
 
@@ -49,7 +47,6 @@ ShaderSources ResourceManager::parseShader(const std::string& name) const
 		throw std::runtime_error("Missing fragmentshader property in shader definition file: " + shaderFile);
 	}
 
-	// Shader source files are located at the src/ directory in the shader path
 	const std::string vertexShader(d_resourcePath + "shader/src/" + shaderConfig.get("vertexshader", "error"));
 	const std::string fragmentShader(d_resourcePath + "shader/src/" + shaderConfig.get("fragmentshader", "error"));
 
@@ -273,8 +270,7 @@ AMaterial* ResourceManager::lookupMaterial(const std::string& name) const
 
 void ResourceManager::process()
 {
-	// Dependencies are committed before their dependents, so a chain finishes
-	// within a single call.
+	// Dependencies are committed before their dependents.
 	d_shaders.process();
 	d_textures.process();
 	d_meshes.process();

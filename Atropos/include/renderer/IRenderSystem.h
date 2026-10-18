@@ -1,6 +1,5 @@
 #pragma once
 
-// Forward declares
 class Renderable;
 class Camera;
 
@@ -13,9 +12,7 @@ struct GLFWwindow;
 /**
  * \brief Interface to the rendering system.
  *
- * Covers the scene and resource handling the game asks for. Creating the window
- * and the OpenGL device itself stays outside the interface, because those need
- * a real context.
+ * Window and OpenGL device creation stay outside: they need a real context.
  */
 class IRenderSystem
 {
@@ -27,14 +24,8 @@ public:
 	*/
 	virtual void createScene(const std::string& name) = 0;
 
-	/**
-	* \brief Sets the active scene by name.
-	*/
 	virtual void setActiveScene(const std::string& name) = 0;
 
-	/**
-	* \brief True if a scene with the specified name exists.
-	*/
 	virtual bool hasScene(const std::string& name) const = 0;
 
 	/**
@@ -57,9 +48,6 @@ public:
 	*/
 	virtual bool isIdle() const = 0;
 
-	/**
-	* \brief True if any requested resource failed to load.
-	*/
 	virtual bool hasError() const = 0;
 
 	/**
@@ -82,24 +70,12 @@ public:
 	*/
 	virtual void swapBuffer() = 0;
 
-	/**
-	* \brief Enables or disables culling.
-	*/
 	virtual void setCulling(bool cullingStatus) = 0;
 
-	/**
-	* \brief Returns the culling state.
-	*/
 	virtual bool getCulling() const = 0;
 
-	/**
-	* \brief Returns the render window.
-	*/
 	virtual GLFWwindow* window() const = 0;
 
-	/**
-	* \brief True once the window has been asked to close.
-	*/
 	virtual bool shouldClose() const = 0;
 
 	/**

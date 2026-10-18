@@ -32,9 +32,7 @@ SoundSystem::SoundSystem()
 
 SoundSystem::~SoundSystem()
 {
-	// Delete the decoded and uploaded buffers while the context is still
-	// current. The thread pool has to outlive the sound system, because a queued
-	// decode task holds a raw pointer to a loader that is destroyed here.
+	// Release buffers while the context is current; the thread pool must outlive this object.
 	d_bgm = nullptr;
 	d_sfx = nullptr;
 
@@ -164,8 +162,7 @@ void SoundSystem::loadSFX(const std::string& name, const std::string& file, floa
 void SoundSystem::playBGM(const std::string& name)
 {
 	const ResourceHandle<SoundBuffer> sound = d_bgm->getHandle(name);
-	// A missing, still loading or failed track must not end the game, so the
-	// request is skipped instead of letting the slot throw.
+	// Skip a missing, loading or failed track instead of letting the slot throw.
 	if (!sound.isReady())
 	{
 		SPDLOG_ERROR("Background music {} is not ready to play.", name);

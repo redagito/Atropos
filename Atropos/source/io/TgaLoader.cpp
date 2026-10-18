@@ -14,13 +14,11 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
     unsigned char ucharBad;
     short int sintBad;
 
-    // Open the TGA file.
     FILE *filePtr = fopen(filename.c_str(), "rb");
     if (filePtr == NULL)
     {
         throw std::runtime_error("Failed to open TGA image: " + filename);
     }
-    // Closing the file is tied to this scope so no throw below can leak it.
     const std::unique_ptr<FILE, int (*)(FILE*)> fileGuard(filePtr, &fclose);
 
     tgaFile->imageData = nullptr;
@@ -34,14 +32,12 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
-    // Which type of image gets stored in imageTypeCode.
     if (fread(&tgaFile->imageTypeCode, sizeof(unsigned char), 1, filePtr) != 1)
     {
         throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
-    // For our purposes, the type code should be 2 (uncompressed RGB image)
-    // or 3 (uncompressed black-and-white images).
+    // Only type 2 (uncompressed RGB) and 3 (uncompressed grayscale) are supported.
     if (tgaFile->imageTypeCode != 2 && tgaFile->imageTypeCode != 3)
     {
         throw std::runtime_error("Unsupported TGA image type: " + filename);
@@ -57,20 +53,17 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         throw std::runtime_error("Failed to read TGA header: " + filename);
     }
 
-    // Read the image's width and height.
     if (fread(&tgaFile->imageWidth, sizeof(short int), 1, filePtr) != 1
         || fread(&tgaFile->imageHeight, sizeof(short int), 1, filePtr) != 1)
     {
         throw std::runtime_error("Failed to read TGA dimensions: " + filename);
     }
 
-    // Read the bit depth.
     if (fread(&tgaFile->bitCount, sizeof(unsigned char), 1, filePtr) != 1)
     {
         throw std::runtime_error("Failed to read TGA bit depth: " + filename);
     }
 
-    // Read the image descriptor.
     if (fread(&tgaFile->imageDescriptor, sizeof(unsigned char), 1, filePtr) != 1)
     {
         throw std::runtime_error("Failed to read TGA header: " + filename);
@@ -82,8 +75,7 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         throw std::runtime_error("Color-mapped TGA images are not supported: " + filename);
     }
 
-    // Skip the image identification field so the pixel data is read at the
-    // correct offset.
+    // Skip the image identification field so pixel data starts at the right offset.
     if (fseek(filePtr, idLength, SEEK_CUR) != 0)
     {
         throw std::runtime_error("Failed to read TGA image identification field: " + filename);
@@ -94,12 +86,8 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         throw std::runtime_error("Invalid TGA image dimensions: " + filename);
     }
 
-    // Only 24 and 32 bit images are supported, which is 3 or 4 bytes per pixel.
-    // The bit depth itself has to be checked, a quotient would also accept
-    // depths such as 26 or 33 and read them with the wrong stride.
-    // Only 24 and 32 bit images are supported, which is 3 or 4 bytes per pixel.
-    // The bit depth itself has to be checked, a quotient would also accept
-    // depths such as 26 or 33 and read them with the wrong stride.
+    // Bit depth is checked directly; a quotient would also accept depths such
+    // as 26 or 33 and read them with the wrong stride.
     if (tgaFile->bitCount != 24 && tgaFile->bitCount != 32)
     {
         throw std::runtime_error("Unsupported TGA color depth: " + filename);
@@ -116,9 +104,8 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         * static_cast<std::size_t>(tgaFile->imageHeight)
         * colorMode;
 
-    // The pixel data starts at the current position, so the bytes that are left
-    // in the file bound the size the header is allowed to declare. Without this
-    // a header alone could make the loader allocate for gigabytes of pixels.
+    // The bytes left in the file bound what the header may declare, otherwise a
+    // header alone could make the loader allocate for gigabytes of pixels.
     const long dataStart = ftell(filePtr);
     if (dataStart < 0)
     {
@@ -142,11 +129,8 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         throw std::runtime_error("TGA pixel data exceeds the file size: " + filename);
     }
 
-    // Allocate memory for the image data. It is owned by this scope until the
-    // conversion is complete, so a throw cannot leak it.
     std::unique_ptr<unsigned char[]> imageData(new unsigned char[imageSize]());
 
-    // Read the image data.
     if (fread(imageData.get(), sizeof(unsigned char), imageSize, filePtr) != imageSize)
     {
         throw std::runtime_error("Failed to read TGA pixel data: " + filename);
@@ -160,9 +144,8 @@ void loadTGAFile(const std::string& filename, TGAFILE *tgaFile)
         imageData[imageIdx + 2] = colorSwap;
     }
 
-    // Bit 5 of the image descriptor is clear for a bottom-left origin, which
-    // means data row 0 is the bottom row of the image. The rows are reversed
-    // here so the image is stored top row first.
+    // Descriptor bit 5 clear means a bottom-left origin, so data row 0 is the
+    // bottom row; rows are reversed to store the image top row first.
     if ((tgaFile->imageDescriptor & 0x20) == 0)
     {
         const std::size_t rowSize = static_cast<std::size_t>(tgaFile->imageWidth) * colorMode;

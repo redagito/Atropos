@@ -1,11 +1,11 @@
 #pragma once
 
-class Renderable; /**< Drawable entity forward declare. */
-class ResourceManager; /**< Resource manager for shared rendering resources forward declare. */
-class Renderer; /**< Renderer forward declare. */
-class ConfigFile; /**< Config file forward declare. */
-class ThreadPool; /**< Worker pool forward declare. */
-struct GLFWwindow; /**< GLFW window forwrad declare. */
+class Renderable;
+class ResourceManager;
+class Renderer;
+class ConfigFile;
+class ThreadPool;
+struct GLFWwindow;
 
 #include "renderer/scene/Scene.h"
 #include "renderer/scene/Camera.h"
@@ -20,20 +20,14 @@ struct GLFWwindow; /**< GLFW window forwrad declare. */
 #include <memory>
 
 /**
-* \brief The rendering system manages window creation, scenes and rendering.
-* The rendering system is implemented as a singleton.
-*/
+ * \brief The rendering system manages window creation, scenes and rendering.
+ * Implements IRenderSystem as a singleton.
+ */
 class RenderSystem : public TSingletonMixin<RenderSystem>, public IRenderSystem
 {
 public:
-	/**
-	* \brief Contructor sets the resource path and screen size for resource management and rendering.
-	*/
 	RenderSystem();
 
-	/**
-	* \brief Deletes all resources and entities
-	*/
 	~RenderSystem();
 
 	/**
@@ -42,41 +36,28 @@ public:
 	*/
 	void init(const ConfigFile& config, ThreadPool& pool);
 
-	/**
-	* \brief Enables or disables culling functionality
-	*/
 	void setCulling(bool cullingStatus) override;
 
-	/**
-	* \brief Returns culling state.
-	*/
 	bool getCulling() const override;
 
 	/**
-	* \brief Creates new scene object.
+	* \brief Creates a scene, replacing and destroying any existing one of that name.
 	*/
 	void createScene(const std::string& name) override;
 
-	/**
-	* \brief Sets the active scene by name.
-	*/
 	void setActiveScene(const std::string& name) override;
 
-	/**
-	* \brief True if a scene with the specified name exists and false otherwise.
-	*/
 	bool hasScene(const std::string& name) const override;
 
 	/**
 	* \brief Sets the color a scene is cleared to.
-	*
 	* Throws std::runtime_error if the scene does not exist.
 	*/
 	void setSceneBackgroundColor(const std::string& name, const glm::vec3& color) override;
 
 	/**
-	* \brief Loads model into resource cache.
-	* Loads model resource. Throws std::runtime_error on failure.
+	* \brief Requests a model resource.
+	* Throws std::runtime_error on failure.
 	*/
 	void loadModel(const std::string& modelName) override;
 
@@ -90,16 +71,11 @@ public:
 	*/
 	bool isIdle() const override;
 
-	/**
-	* \brief True if any requested resource failed to load.
-	*/
 	bool hasError() const override;
 
 	/**
-	* \brief Add a new drawable entity to the scene.
-	* The requested model is loaded if necessary and a new instance of the model
-	* is created as an entity in the scene and a proxy of that entity
-	* is returned.
+	* \brief Adds a drawable to the active scene, loading its model if needed.
+	* Returns a proxy for the created entity.
 	*/
 	Renderable* add(const char* modelName) override;
 
@@ -108,9 +84,6 @@ public:
 	*/
 	Camera& getCamera() override;
 
-	/**
-	* \brief Draw the specified scene.
-	*/
 	void draw() override;
 
 	/**
@@ -118,14 +91,8 @@ public:
 	*/
 	void swapBuffer() override;
 
-	/**
-	* \brief Returns the render window.
-	*/
 	GLFWwindow* window() const override;
 
-	/**
-	* \brief True once the window has been asked to close.
-	*/
 	bool shouldClose() const override;
 
 	/**
@@ -134,9 +101,6 @@ public:
 	void requestClose() override;
 
 private:
-	/**
-	* \brief Resize callback for glfw.
-	*/
 	static void resizeCallback(GLFWwindow* window, int width, int height);
 
 	/**
@@ -146,19 +110,14 @@ private:
 	static void GLAD_API_PTR debugCallback(GLenum source, GLenum type, GLuint id,
 		GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
-	/**
-	* \brief Resize window callback
-	*/
 	void onResize(int width, int height);
 
-	Camera d_camera; /**< Camera object. */
-	// A node based map keeps the address of an existing scene valid when another
-	// scene is added, which the active scene pointer relies on. An unordered_map
-	// can rehash and invalidate it.
+	Camera d_camera;
+	// Must stay a node-based map: rehashing would invalidate d_activeScene.
 	std::map<std::string, Scene> d_scenes; /**< Available scenes. */
 	Scene* d_activeScene; /**< Active scene. */
 	std::unique_ptr<ResourceManager> d_manager; /**< Rendering resource manager. */
 	std::shared_ptr<Renderer> d_renderer; /**< Active rendering device. */
 	GLFWwindow* d_window; /**< The render window this system owns. */
-	bool d_culling; /**< Culling mode. */
+	bool d_culling;
 };

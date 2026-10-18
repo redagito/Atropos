@@ -13,25 +13,21 @@ AABBox::AABBox()
 	return;
 }
 
-// Returns mid point
 const glm::vec3& AABBox::getMid() const
 {
 	return d_middlePoint;
 }
 
-// Returns halfwidth vector
 const glm::vec3& AABBox::getHalfWidths() const
 {
 	return d_halfWidth;
 }
 
-// Sets middle
 void AABBox::setMid(const glm::vec3& mid)
 {
 	d_middlePoint = mid;
 }
 
-// Sets half width
 void AABBox::setHalfWidths(const glm::vec3& halfWidth)
 {
 	d_halfWidth = halfWidth;

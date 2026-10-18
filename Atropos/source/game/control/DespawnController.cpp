@@ -32,11 +32,9 @@ void DespawnController::update(float dtime)
 {
 	if (d_object != nullptr && d_active)
 	{
-		// Update timer
 		d_despawnTime -= dtime;
 		if (d_despawnTime <= 0.f)
 		{
-			// Mark for deletion
 			d_object->markDeleted();
 		}
 	}

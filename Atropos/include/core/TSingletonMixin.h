@@ -3,11 +3,6 @@
 #include <cassert>
 #include <type_traits>
 
-/**
-* \brief Singleton mixin class.
-* Based on CRT Pattern.
-* Usage: class Foo : public TSingleton<Foo>
-*/
 template <typename T>
 class TSingletonMixin
 {
@@ -30,7 +25,7 @@ public:
 	}
 
 private:
-	static T* d_instance; /**< Singleton instance. */
+	static T* d_instance;
 };
 
 template <typename T>

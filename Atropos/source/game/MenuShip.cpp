@@ -36,8 +36,7 @@ void MenuShip::update(float dtime)
 
 void MenuShip::apply(const float& rotationDegrees)
 {
-	// The camera looks at the middle of the play area, so the model is centred
-	// there and enlarged to read as a display rather than a game object.
+	// Centred on the play area midpoint and enlarged to read as a display model.
 	const glm::mat4 translation = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 5.f, 0.f));
 	const glm::mat4 rotation = glm::rotate(glm::mat4(1.f), glm::radians(rotationDegrees), glm::vec3(0.f, 1.f, 0.f));
 	const glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(1.6f));

@@ -33,11 +33,9 @@ void HealthController::update(float)
 {
 	if (d_active && d_object != nullptr && d_object->getCollidable() != nullptr)
 	{
-		// Set health
 		d_health -= d_object->getCollidable()->getDamageReceived();
 		if (d_health <= 0.f)
 		{
-			// Set object into death state
 			d_object->setDead();
 		}
 	}

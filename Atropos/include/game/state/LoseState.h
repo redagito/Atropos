@@ -10,40 +10,19 @@ class ISoundSystem;
 #include <memory>
 #include <vector>
 
-/**
-* \brief Represents the lose state.
-*/
 class LoseState : public IGameState
 {
 public:
-	/**
-	* \brief Sets sub systems for access.
-	*/
 	LoseState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys);
 
-	/**
-	* \brief Updates state.
-	*/
 	bool update(float dtime);
 
-	/**
-	* \brief Initializes state.
-	*/
 	void init();
 
-	/**
-	* \brief Called on entering state.
-	*/
 	void onEnter();
 
-	/**
-	* \brief Called on exiting state.
-	*/
 	void onExit();
 
-	/**
-	* \brief Returns string identifier of next state.
-	*/
 	const std::string& getNextState() const;
 
 private:

@@ -28,7 +28,6 @@ void LoseState::init()
 	d_renderSystem->setActiveScene("lose");
 	d_renderSystem->setSceneBackgroundColor("lose", glm::vec3(0.20f, 0.05f, 0.05f));
 
-	// Load background music
 	d_soundSystem->loadBGM("lose", "song4.mp3", 0.5f);
 }
 
@@ -36,13 +35,11 @@ bool LoseState::update(float dtime)
 {
 	d_ship.update(dtime);
 
-	// Start game on enter
 	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		d_nextState = "load";
 		return false;
 	}
-	// End game on escape
 	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;
@@ -58,10 +55,8 @@ void LoseState::onEnter()
 	d_renderSystem->setActiveScene("lose");
 	// The camera followed the player to where the run ended.
 	d_renderSystem->getCamera().resetView();
-	// The models are committed long before the player can lose, so showing one
-	// here does not block.
+	// Models are loaded long before a loss, so showing one does not block.
 	d_ship.show(d_renderSystem, "enemy");
-	// Start sound playback
 	d_soundSystem->playBGM("lose");
 }
 

@@ -23,8 +23,7 @@ TEST_CASE("GameObject can clear its collidable", "[gameobject]")
 
 TEST_CASE("GameObject moves its collidable along with its controllers", "[gameobject]")
 {
-	// The collidable must outlive the GameObject, whose destructor marks the
-	// attached one as deleted, so it is declared first.
+	// Must outlive the GameObject, whose destructor marks the attached one as deleted.
 	AABBox box;
 	box.setHalfWidths(glm::vec3(1.f));
 	Collidable collidable(0, box);
@@ -37,16 +36,13 @@ TEST_CASE("GameObject moves its collidable along with its controllers", "[gameob
 
 	object.update(1.f);
 
-	// The box has to describe where the object ended the frame. Flushing the
-	// transformation before the controllers run leaves every collision box one
-	// full step behind its owner, which lets fast objects pass through others.
+	// The box has to describe where the object ended the frame, not one step behind.
 	CHECK(glm::vec3(collidable.getAABBox().getMid()) == glm::vec3(0.f, 0.f, 10.f));
 }
 
 TEST_CASE("GameObject marks a replaced collidable for deletion", "[gameobject]")
 {
-	// The collidables must outlive the GameObject, whose destructor marks the
-	// attached one as deleted, so they are declared first.
+	// They must outlive the GameObject, whose destructor marks the attached one as deleted.
 	Collidable first(0, AABBox());
 	Collidable second(0, AABBox());
 	GameObject object;
@@ -60,8 +56,7 @@ TEST_CASE("GameObject marks a replaced collidable for deletion", "[gameobject]")
 
 TEST_CASE("GameObject marks a replaced drawable for deletion", "[gameobject]")
 {
-	// The renderables must outlive the GameObject, whose destructor marks the
-	// attached one as deleted, so they are declared first.
+	// They must outlive the GameObject, whose destructor marks the attached one as deleted.
 	Renderable first(nullptr);
 	Renderable second(nullptr);
 	GameObject object;

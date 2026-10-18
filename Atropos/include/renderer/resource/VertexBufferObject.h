@@ -4,39 +4,28 @@
 
 #include <cstddef>
 
-/*
-* \brief Manages an OpenGL VBO in VRAM.
-* Stores a float buffer (e.g. positions, normals or texture coordinates)
-* and uses the static draw modifier.
+/**
+* \brief VBO of float data uploaded with GL_STATIC_DRAW.
 */
 class VertexBufferObject
 {
 public:
-	/**
-	 * \brief Creates buffer object from float data.
-	 */
 	VertexBufferObject(const float* data, std::size_t size);
 
 	VertexBufferObject(const VertexBufferObject&) = delete;
 	VertexBufferObject& operator=(const VertexBufferObject&) = delete;
 
-	/**
-	 * \brief Frees all GPU resources.
-	 */
 	~VertexBufferObject();
 	
 	/**
-	 * \brief Sets the VBO as active object.
-	 * Binds the VBO to GL_ARRAY_BUFFER.
+	 * \brief Binds the VBO to GL_ARRAY_BUFFER.
 	 */
 	void setActive() const;
 
-	/**
-	 * \brief Returns buffer size.
-	 */
 	std::size_t getSize() const;
 
 private:
-	GLuint d_id; /**< GL buffer object id. */
-	std::size_t d_size; /**< Number of floats in the buffer. */
+	GLuint d_id;
+	/**< Number of floats in the buffer. */
+	std::size_t d_size;
 };

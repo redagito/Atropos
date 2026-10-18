@@ -20,7 +20,6 @@ float Collidable::getDamage() const
 	return d_damageDealt;
 }
 
-// Returns accumuated damage and resets damage counter
 float Collidable::getDamageReceived()
 {
 	float temp = d_damageReceived;
@@ -28,19 +27,16 @@ float Collidable::getDamageReceived()
 	return temp;
 }
 
-// Returns group id
 unsigned int Collidable::getGroupId() const
 {
 	return d_groupId;
 }
 
-// Add damage to the internal counter
 void Collidable::receiveDamage(float damage)
 {
 	d_damageReceived += damage;
 }
 
-// Sets the damage dealt by this entity
 void Collidable::setDamage(float damage)
 {
 	d_damageDealt = damage;
@@ -63,7 +59,6 @@ void Collidable::setTranslation(const glm::mat4& translate)
 	return;
 }
 
-// Returns collidable state
 bool Collidable::isCollidable() const
 {
 	return d_collidable;

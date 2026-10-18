@@ -19,7 +19,7 @@ class ThreadPool;
 struct SoundBuffer
 {
 	unsigned int id = 0; /**< OpenAL buffer handle. */
-	float volume = 0.f; /**< Playback volume. */
+	float volume = 0.f;
 
 	SoundBuffer() = default;
 	SoundBuffer(const SoundBuffer&) = delete;
@@ -28,22 +28,13 @@ struct SoundBuffer
 };
 
 /**
-* \brief Sound system class.
-* Wraps and manages the OpenAL sound device and sound buffers.
-* Files are decoded on a worker thread, the OpenAL upload runs on the main
-* thread during process().
+* \brief OpenAL sound system: decoding runs on a worker thread, the upload on the main thread in process().
 */
 class SoundSystem : public TCreatorMixin<SoundSystem>, public ISoundSystem
 {
 public:
-	/**
-	* \brief Constructer.
-	*/
 	SoundSystem();
 
-	/**
-	* \brief Destructor.
-	*/
 	~SoundSystem();
 
 	SoundSystem(const SoundSystem&) = delete;
@@ -67,21 +58,14 @@ public:
 
 	/**
 	* \brief Play background music in loop.
-	* Throws std::runtime_error if the sound failed to load and std::logic_error
-	* if it is not ready yet.
 	*/
 		void playBGM(const std::string& name) override;
 
 	/**
 	* \brief Play sound effect once.
-	* Throws std::runtime_error if the sound failed to load and std::logic_error
-	* if it is not ready yet.
 	*/
 		void playSFX(const std::string& name) override;
 
-	/**
-	* \brief Stops all sound playback.
-	*/
 		void stopAll() override;
 
 	/**
@@ -89,14 +73,8 @@ public:
 	*/
 		void process() override;
 
-	/**
-	* \brief True when all requested sounds are loaded or failed.
-	*/
 		bool isIdle() const override;
 
-	/**
-	* \brief True if any requested sound failed to load.
-	*/
 		bool hasError() const override;
 
 private:
@@ -115,12 +93,12 @@ private:
 	*/
 	static std::unique_ptr<SoundBuffer> createBuffer(const AudioDecoder::WaveData& wave, float volume);
 
-	std::string d_bgmPath; /**< Background music path. */
-	std::string d_sfxPath; /**< Sound effects path. */
+	std::string d_bgmPath;
+	std::string d_sfxPath;
 	void* d_device; /**< OpenAL device (ALCdevice). */
 	void* d_context; /**< OpenAL context (ALCcontext). */
 	unsigned int d_bgmSource; /**< Looping OpenAL source for background music. */
 	std::vector<unsigned int> d_sfxSources; /**< Active OpenAL sources for sound effects. */
-	std::unique_ptr<Loader> d_bgm; /**< Background music buffers. */
-	std::unique_ptr<Loader> d_sfx; /**< Sound effect buffers. */
+	std::unique_ptr<Loader> d_bgm;
+	std::unique_ptr<Loader> d_sfx;
 };

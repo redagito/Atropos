@@ -4,38 +4,19 @@
 
 #include <glm/glm.hpp>
 
-/**
-* \brief Linear movement controller.
-* Updates object position with linear movement.
-*/
 class LinearMovementController : public IController
 {
 public:
 	LinearMovementController(const glm::vec3& velocity);
 
-	/**
-	* \brief Destructor for cleanup.
-	*/
 	~LinearMovementController();
 
-	/**
-	* \brief On attach to object.
-	*/
 	void attach(GameObject* object);
 
-	/**
-	* \brief On dettaching from game object.
-	*/
 	void detach();
 
-	/**
-	* \brief Updates controller.
-	*/
 	void update(float dtime);
 
-	/**
-	* \brief Sets active state.
-	*/
 	void setActive(bool state);
 
 private:

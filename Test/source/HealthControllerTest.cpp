@@ -22,8 +22,7 @@ TEST_CASE("HealthController ignores objects without a collidable", "[health]")
 
 TEST_CASE("HealthController keeps an object alive while damage is sub-lethal", "[health]")
 {
-	// The collidable must outlive the GameObject, whose destructor marks the
-	// attached one as deleted, so it is declared first.
+	// Must outlive the GameObject, whose destructor marks the attached one as deleted.
 	Collidable collidable(0, AABBox());
 	GameObject object;
 	object.setCollidable(&collidable);
@@ -42,8 +41,7 @@ TEST_CASE("HealthController keeps an object alive while damage is sub-lethal", "
 
 TEST_CASE("HealthController kills an object once damage reaches its health", "[health]")
 {
-	// The collidable must outlive the GameObject, whose destructor marks the
-	// attached one as deleted, so it is declared first.
+	// Must outlive the GameObject, whose destructor marks the attached one as deleted.
 	Collidable collidable(0, AABBox());
 	GameObject object;
 	object.setCollidable(&collidable);
@@ -58,8 +56,7 @@ TEST_CASE("HealthController kills an object once damage reaches its health", "[h
 
 TEST_CASE("HealthController consumes accumulated damage only once", "[health]")
 {
-	// The collidable must outlive the GameObject, whose destructor marks the
-	// attached one as deleted, so it is declared first.
+	// Must outlive the GameObject, whose destructor marks the attached one as deleted.
 	Collidable collidable(0, AABBox());
 	GameObject object;
 	object.setCollidable(&collidable);
@@ -71,18 +68,14 @@ TEST_CASE("HealthController consumes accumulated damage only once", "[health]")
 	controller.update(1.f);
 	REQUIRE_FALSE(object.isDead());
 
-	// The accumulator was drained by the first update, so this update only
-	// sees the 3 points just received and 10 - 6 - 3 leaves the object alive.
-	// A controller that did not drain it would subtract 9 and kill the object.
+	// Only the 3 points just received count; one that did not drain would subtract 9 and kill.
 	collidable.receiveDamage(3.f);
 	controller.update(1.f);
 	CHECK_FALSE(object.isDead());
 }
 TEST_CASE("A single contact kills a target whose health is below the damage", "[health]")
 {
-	// These are the numbers the game ships with: the player deals 30 damage and
-	// an enemy has 25 health, so ramming one kills it on contact. A projectile
-	// deals 40, which also kills in one hit.
+	// Shipped numbers: player deals 30 against 25 health, projectiles 40.
 	CollisionSystem system;
 	const unsigned int playerGroup = system.getNewGroupId();
 	const unsigned int enemyGroup = system.getNewGroupId();

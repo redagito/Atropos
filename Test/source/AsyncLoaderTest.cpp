@@ -26,8 +26,7 @@ namespace
 		}
 	}
 
-	// Parsed data that reports when it is destroyed, standing in for the large
-	// CPU side buffers a real resource loader produces.
+	// Parsed data that reports destruction, standing in for the large CPU side buffers a real loader produces.
 	struct TrackedParsed
 	{
 		explicit TrackedParsed(std::atomic<bool>* releasedFlag)
@@ -219,9 +218,7 @@ TEST_CASE("AsyncLoader releases parsed data once a resource is committed", "[asy
 
 	settle(loader);
 
-	// The parsed data is only needed until the committer has run. Keeping it
-	// afterwards retains a full copy of every parsed buffer, such as the decoded
-	// PCM of a soundtrack.
+	// The parsed data is only needed until the committer has run; keeping it afterwards retains a copy of every parsed buffer.
 	REQUIRE(handle.isReady());
 	CHECK(released.load());
 }

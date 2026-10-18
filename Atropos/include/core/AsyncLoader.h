@@ -15,10 +15,10 @@
 /**
 * \brief Loads resources of a single type asynchronously.
 *
-* Parsing runs on the thread pool and must not touch OpenGL or OpenAL. The
-* finished resource is created on the main thread by the committer during
-* process(). A resource is only committed once all of its dependencies are
-* ready. If a dependency fails, the resource fails with the same reason.
+* Parsing runs on the thread pool and must not touch OpenGL or OpenAL; the
+* finished resource is created on the main thread by the committer in process().
+* A resource commits only once all dependencies are ready; a failed dependency
+* fails the resource with the same reason.
 *
 * \tparam T Finished resource type.
 * \tparam Parsed CPU side data produced by the parser and consumed by the committer.
@@ -31,9 +31,6 @@ public:
 	using Committer = std::function<std::unique_ptr<T>(const Parsed&)>;
 	using DependencyFn = std::function<std::vector<std::shared_ptr<ResourceSlotBase>>(const Parsed&)>;
 
-	/**
-	* \brief Creates a loader using the given pool for parsing.
-	*/
 	explicit AsyncLoader(ThreadPool& pool)
 		:
 		d_pool(pool)
@@ -43,9 +40,7 @@ public:
 	/**
 	* \brief Requests a resource by key, scheduling a parse on a worker.
 	* Repeated requests for the same key share one load.
-	* \param deps Dependencies known up front.
-	* \param depsFn Resolves dependencies that are only known after parsing,
-	* runs on the worker thread.
+	* \param depsFn Resolves dependencies only known after parsing; runs on the worker thread.
 	*/
 	ResourceHandle<T> request(const std::string& key, Parser parser, Committer committer,
 		std::vector<std::shared_ptr<ResourceSlotBase>> deps = {}, DependencyFn depsFn = {})
@@ -86,18 +81,12 @@ public:
 		return handle;
 	}
 
-	/**
-	* \brief True if a resource with the given key has been requested.
-	*/
 	bool contains(const std::string& key) const
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 		return d_entries.count(key) != 0;
 	}
 
-	/**
-	* \brief Returns the handle of an already requested resource, empty otherwise.
-	*/
 	ResourceHandle<T> getHandle(const std::string& key) const
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -111,12 +100,10 @@ public:
 
 	/**
 	* \brief Commits all ready resources. Must run on the main thread.
-	* Repeatedly scans until no further resource can be committed, so a whole
-	* dependency chain finishes in one call.
+	* Rescans until nothing more can commit, so a whole dependency chain lands in one call.
 	*
-	* \warning The committer runs while this loader's lock is held, so it must
-	* not call back into the loader (request, getHandle, process, ...) or it
-	* will deadlock.
+	* \warning The committer runs under this loader's lock: it must not call back
+	* into the loader or it deadlocks.
 	*/
 	void process()
 	{
@@ -148,9 +135,7 @@ public:
 					entry.resource = entry.committer(*entry.parsed);
 					entry.slot->setValue(entry.resource.get());
 					entry.committed = true;
-					// The parsed data is only needed until the committer has
-					// run. Keeping it would retain a full copy of every parsed
-					// buffer, such as the decoded PCM of a soundtrack.
+					// Dropping Parsed keeps a decoded buffer (e.g. soundtrack PCM) from staying resident.
 					entry.parsed.reset();
 					progress = true;
 				}
@@ -162,9 +147,7 @@ public:
 		}
 	}
 
-	/**
-	* \brief True when all requested resources are ready or failed.
-	*/
+	/** \brief True when all requested resources are ready or failed. */
 	bool isIdle() const
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -178,9 +161,6 @@ public:
 		return true;
 	}
 
-	/**
-	* \brief True if any requested resource failed.
-	*/
 	bool hasError() const
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -200,10 +180,10 @@ private:
 		std::shared_ptr<ResourceSlot<T>> slot; /**< Shared state with the handle. */
 		Committer committer; /**< Creates the resource on the main thread. */
 		std::vector<std::shared_ptr<ResourceSlotBase>> deps; /**< Must be ready before commit. */
-		std::unique_ptr<Parsed> parsed; /**< Parsed data from the worker. */
-		std::unique_ptr<T> resource; /**< Committed resource. */
-		bool parseDone = false; /**< Parsing finished successfully. */
-		bool committed = false; /**< Resource committed. */
+		std::unique_ptr<Parsed> parsed;
+		std::unique_ptr<T> resource;
+		bool parseDone = false;
+		bool committed = false;
 	};
 
 	static bool dependenciesReady(const Entry& entry)
@@ -260,6 +240,6 @@ private:
 	}
 
 	mutable std::mutex d_mutex; /**< Guards entries and state. */
-	ThreadPool& d_pool; /**< Pool used to run parsers. */
-	std::unordered_map<std::string, std::unique_ptr<Entry>> d_entries; /**< Requested resources. */
+	ThreadPool& d_pool;
+	std::unordered_map<std::string, std::unique_ptr<Entry>> d_entries;
 };

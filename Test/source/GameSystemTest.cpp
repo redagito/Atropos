@@ -113,11 +113,9 @@ TEST_CASE("GameSystem reports whether the active state wants collisions", "[game
 	config.set("game_initialstate", "play");
 	REQUIRE_NOTHROW(system.init(config));
 
-	// A state that leaves collisions running, such as the play state.
 	CHECK(system.collisionsEnabled());
 
-	// A state such as pause must be able to stop them, otherwise damage keeps
-	// accumulating in the collidables while the world itself is not updated.
+	// Pause must stop collisions, or damage keeps accumulating in a frozen world.
 	pauseLog.collisions = false;
 	playLog.updateResult = false;
 	playLog.nextState = "pause";
@@ -141,8 +139,7 @@ TEST_CASE("GameSystem takes ownership of a state whose init throws", "[gamesyste
 
 	CHECK_THROWS(system.addState("play", new FakeState(&log)));
 
-	// The state must be owned before init runs, otherwise a throwing init
-	// leaks it and its onExit never happens.
+	// The state must be owned before init runs, or a throwing init leaks it.
 	CHECK(log.destructions == 1);
 }
 

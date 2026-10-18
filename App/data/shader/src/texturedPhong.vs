@@ -39,9 +39,7 @@ out float _height; // Object height
 
 void main()
 {
-	// Shadow coordinate
 	_shadowCoord = bias * vec4(vertex, 1.f);
-	// Vertex in world space
 	_vertexWorld = (model * vec4(vertex, 1.f)).xyz;
 	_cameraDir = vec3(0.f, 0.f, 0.f) - (view * model * vec4(vertex, 1.f)).xyz;
 	_lightDir = (view * vec4(lightInvDir, 0.f)).xyz;

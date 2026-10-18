@@ -7,7 +7,6 @@
 
 #include <stdexcept>
 
-// Constructor initializes drawable and matrices
 GameObject::GameObject()
 	:
 	d_translation(glm::mat4(1.f)), // Transformation matrices
@@ -24,20 +23,17 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-	// Send detach event to controllers
 	for (const auto& controller : d_controllers)
 	{
 		controller->detach();
 	}
 
-	// Delete drawable
 	if (d_drawable != nullptr)
 	{
 		d_drawable->markDeleted();
 		d_drawable = nullptr;
 	}
 	
-	// Delete collidable
 	if (d_collidable != nullptr)
 	{
 		d_collidable->markDeleted();
@@ -47,10 +43,7 @@ GameObject::~GameObject()
 
 void GameObject::update(float dtime)
 {
-	// Update state with attached controllers first, so the collidable and
-	// drawable below describe the position the object ends this frame at. Doing
-	// it the other way round leaves every collision box one full step behind
-	// its owner.
+	// Controllers first, or the collidable lags a frame behind its owner.
 	for (const auto& controller : d_controllers)
 	{
 		controller->update(dtime);
@@ -59,14 +52,12 @@ void GameObject::update(float dtime)
 	if (d_transformationChanged)
 	{
 		d_transformationChanged = false;
-		// Update collidable
 		if (d_collidable != nullptr)
 		{
 			d_collidable->setScale(d_scale);
 			d_collidable->setTranslation(d_translation);
 		}
 
-		// Update drawable
 		if (d_drawable)
 		{
 			d_drawable->setRotationMatrix(d_rotation);
@@ -81,13 +72,11 @@ void GameObject::setDrawable(Renderable* proxy)
 {
 	if (d_drawable != proxy)
 	{
-		// Release the previously attached drawable
 		if (d_drawable != nullptr)
 		{
 			d_drawable->markDeleted();
 		}
 		d_drawable = proxy;
-		// Update
 		if (d_drawable != nullptr)
 		{
 			d_drawable->setRotationMatrix(d_rotation);
@@ -107,13 +96,11 @@ void GameObject::setCollidable(Collidable* entity)
 {
 	if (d_collidable != entity)
 	{
-		// Release the previously attached collidable
 		if (d_collidable != nullptr)
 		{
 			d_collidable->markDeleted();
 		}
 		d_collidable = entity;
-		// Update
 		if (d_collidable != nullptr)
 		{
 			d_collidable->setScale(d_scale);
@@ -129,8 +116,7 @@ Collidable* GameObject::getCollidable() const
 
 void GameObject::addController(const std::shared_ptr<IController>& controller)
 {
-	// A real check rather than an assert, because Release builds compile the
-	// assert away and would go on to dereference the null controller.
+	// Not an assert: Release builds compile it away and would dereference null.
 	if (controller == nullptr)
 	{
 		throw std::runtime_error("Cannot add a null controller to a game object.");

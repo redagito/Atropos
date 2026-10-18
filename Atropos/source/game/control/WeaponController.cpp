@@ -9,7 +9,6 @@
 #include "collision/CollisionSystem.h"
 #include "collision/Collidable.h"
 
-// Controller
 #include "game/control/LinearMovementController.h"
 #include "game/control/HealthController.h"
 #include "game/control/RemoveOnDeathController.h"
@@ -58,18 +57,14 @@ void WeaponController::update(float dtime)
 {
 	if (d_active && d_object != nullptr)
 	{
-		// Update timer
 		d_currentCooldown -= dtime;
 		// TODO: Input management should be done in separate system.
 		if (Input::held(GLFW_KEY_SPACE))
 		{
-			// Check cooldown
 			if (d_currentCooldown <= 0.f)
 			{
-				// Reset timer
 				d_currentCooldown = d_cooldown;
 
-				// Create new projectile
 				Renderable* projectileDrawable = d_renderSys->add(d_modelName.c_str());
 				GameObject* projectile = new GameObject;
 				projectile->setDrawable(projectileDrawable);
@@ -77,21 +72,17 @@ void WeaponController::update(float dtime)
 				projectile->setCollidable(d_collSys->add(projectile->getDrawable()->getAABBox(), d_collisionGroup));
 				projectile->getCollidable()->setDamage(d_damage);
 
-				// Controller
 				projectile->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, 100.f))));
 				projectile->addController(std::shared_ptr<IController>(new HealthController(0.1f)));
 				projectile->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
 				projectile->addController(std::shared_ptr<IController>(new DespawnController(1.5f)));
 
-				// Transformation
 				projectile->setTranslation(glm::translate(d_object->getTranslation(), glm::vec3(0.f, 0.f, 2.f)));
 				projectile->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
 				projectile->setScale(glm::scale(glm::mat4(1.f), glm::vec3(3.f, 3.f, 3.f)));
 
-				// Add to world
 				d_world->addObject(projectile);
 
-				// Play shot sound
 				d_soundSys->playSFX(d_soundName);
 			}
 		}

@@ -31,7 +31,6 @@ void RemoveOnDeathController::update(float)
 {
 	if (d_object != nullptr && d_active && d_object->isDead())
 	{
-		// Mark for deletion
 		d_object->markDeleted();
 	}
 }

@@ -12,9 +12,7 @@ namespace
 {
 	std::filesystem::path tempTextPath()
 	{
-		// ctest gives every test case its own process, so the counter restarts
-		// at zero everywhere and would collide across concurrent runs. The
-		// process id makes the name unique among simultaneously running tests.
+		// Process id keeps the temp file name unique across concurrent ctest runs.
 		static int counter = 0;
 		return std::filesystem::temp_directory_path()
 			/ ("atropos_file_" + std::to_string(_getpid()) + "_" + std::to_string(counter++) + ".txt");

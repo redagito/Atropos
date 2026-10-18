@@ -2,36 +2,22 @@
 
 #include "glm/glm.hpp"
 
-/**
-* \brief Represents active camera.
-*
-* Stores view matrix.
-*/
 class Camera
 {
 public:
 	/**
-	* \brief Sets the view matrix.
+	* \brief Sets the view and projection matrices.
 	*/
 	Camera();
 
-	/**
-	* \brief Deletes resources
-	*/
 	~Camera();
 
-	/** 
-	* \brief Read access to the view matrix.
-	*/
 	const glm::mat4& getViewMatrix() const;
 
-	/**
-	* \brief Sets view matrix
-	*/
 	void setViewMatrix(const glm::vec3& position, const glm::vec3& center, const glm::vec3& up);
 
 	/**
-	* \brief Sets projection matrix
+	* \brief Also updates zNear/zFar, which the scene culling test reads.
 	*/
 	void setProjectionMatrix(float fieldOfView, float aspectRatio, float zNear, float zFar);
 
@@ -40,42 +26,27 @@ public:
 	*/
 	float getFieldOfView() const;
 	
-	/**
-	* \brief Returns current z near
-	*/
 	float getZNear() const;
 
-	/**
-	* \brief Returns current z far
-	*/
 	float getZFar() const;
 
-	/**
-	* \brief Returns the camera position
-	*/
 	const glm::vec3& getPosition() const;
 
-	/**
-	* \brief Returns projection matrix
-	*/
 	const glm::mat4& getProjectionMatrix() const;
 
 	/**
-	* \brief Restores the default view.
-	*
-	* The camera is moved around by the game, so this puts it back to the
-	* framing the constructor starts with. The projection is left alone, because
+	* \brief Restores the constructor framing. Leaves the projection alone,
 	* it belongs to the window rather than to the view.
 	*/
 	void resetView();
 
 private:
-	glm::vec3 d_position; /**< Camera position. */
-	glm::mat4 d_view; /**< View matrix. */
-	glm::mat4 d_proj; /**< Projection matrix. */
+	glm::vec3 d_position;
+	glm::mat4 d_view;
+	glm::mat4 d_proj;
 
-	float d_fieldOfView; /**< Current field of view. */
-	float d_aspectRatio; /**< Current aspect ratio. */
-	float d_zNear; /**< Current z near. */
-	float d_zFar; /**< Current z far. */
+	float d_fieldOfView;
+	float d_aspectRatio;
+	float d_zNear;
+	float d_zFar;
 };

@@ -8,11 +8,9 @@ void GameWorld::update(float dtime)
 {
 	for (auto iter = d_objects.begin(); iter != d_objects.end();)
 	{
-		// Update single game object
 		(*iter)->update(dtime);
 		if ((*iter)->isDeleteRequested())
 		{
-			// Delete object
 			iter = d_objects.erase(iter);
 		}
 		else
@@ -24,8 +22,7 @@ void GameWorld::update(float dtime)
 
 void GameWorld::addObject(GameObject* object)
 {
-	// A real check rather than an assert, because Release builds compile the
-	// assert away and would take ownership of nothing.
+	// Not an assert: Release builds compile it away and would store a null unique_ptr.
 	if (object == nullptr)
 	{
 		throw std::runtime_error("Cannot add a null game object.");

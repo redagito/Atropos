@@ -7,21 +7,18 @@
 FileLoader::FileLoader(const std::string& path)
 	:	d_path(path)
 {
-	// Initialization
 }
 
 void FileLoader::load()
 {
 	std::ifstream fileStream(d_path, std::ios::in);
 
-	// Read in file
 	if (!fileStream.is_open())
 	{
 		throw std::runtime_error("Failed to open file: " + d_path);
 	}
 
-	// Drop any content from a previous load only once the file is known to be
-	// readable, so a failed load leaves the last good content in place.
+	// Cleared only after the file opened, so a failed load keeps the last good content.
 	d_content.assign("");
 
 	std::string line;
@@ -31,7 +28,6 @@ void FileLoader::load()
 	}
 }
 
-// Returns contents of the file
 const char* FileLoader::getContent() const
 {
 	return d_content.c_str();

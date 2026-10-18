@@ -24,19 +24,16 @@ Renderable::Renderable(Model* model)
 	}
 }
 
-// Set model matrix
 void Renderable::setModelMatrix(const glm::mat4& matrix)
 {
 	d_model = matrix;
 }
 
-// Set rotation matrix
 void Renderable::setRotationMatrix(const glm::mat4& matrix)
 {
 	d_rotation = matrix;
 }
 
-// Set translation matrix
 void Renderable::setTranslationMatrix(const glm::mat4& matrix)
 {
 	d_translation = matrix;
@@ -49,7 +46,6 @@ void Renderable::updateAABBoxPosition()
 	{
 		return;
 	}
-	// Translate box centre
 	d_box.setMid(glm::vec3(d_translation * glm::vec4(d_modelPtr->getMesh()->getAABBox().getMid(), 1.f)));
 }
 
@@ -59,18 +55,15 @@ void Renderable::updateAABBoxSize()
 	{
 		return;
 	}
-	// Scale box halfwidths
 	d_box.setHalfWidths(glm::vec3(d_scale * glm::vec4(d_modelPtr->getMesh()->getAABBox().getHalfWidths(), 1.f)));
 }
 
-// Set scale matrix
 void Renderable::setScaleMatrix(const glm::mat4& matrix)
 {
 	d_scale = matrix;
 	updateAABBoxSize();
 }
 
-// Draw with renderer
 void Renderable::draw(const std::shared_ptr<Renderer>& renderer, const Camera&) const
 {
 	if (d_modelPtr == nullptr || d_modelPtr->getMesh() == nullptr)
@@ -87,13 +80,11 @@ void Renderable::draw(const std::shared_ptr<Renderer>& renderer, const Camera&) 
 					d_hasShadow);
 }
 
-// Returns model
 Model* Renderable::getModel() const
 {
 	return d_modelPtr;
 }
 
-// Returns transformed bounding volume
 const AABBox& Renderable::getAABBox() const
 {
 	return d_box;

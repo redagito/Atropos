@@ -49,9 +49,7 @@ float random(vec3 seed, int i){
 
 void main()
 {
-	// Shadow
-	// A face without normals loads as a zero vector, and normalize would turn
-	// that into a NaN that spreads through the whole lighting calculation.
+	// A face without normals loads as zero; normalize would turn that into a NaN.
 	vec3 n = dot(_normalCamera, _normalCamera) > 0.0 ? normalize(_normalCamera) : vec3(0.0, 0.0, 1.0);
 	vec3 l = normalize(_lightDir);
 	vec3 e = normalize(_cameraDir);
@@ -61,7 +59,6 @@ void main()
 	float visible = 1.f;
 	float bias = 0.005f;
 
-	// Poisson sampling
 	for (int i = 0; i < 2; ++i)
 	{
 		int index = int(2.f * random(gl_FragCoord.xyy, i)) % 2;

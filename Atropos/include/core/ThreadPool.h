@@ -9,46 +9,31 @@
 
 /**
 * \brief Fixed size pool of worker threads executing queued tasks.
-*
-* Used to run CPU only work (file parsing, decoding) off the main thread.
-* Tasks must not touch OpenGL or OpenAL. Unhandled exceptions thrown by a task
-* are logged and do not terminate the pool.
+* Tasks must not touch OpenGL or OpenAL; thrown exceptions are logged, not fatal.
 */
 class ThreadPool
 {
 public:
-	/**
-	* \brief Creates the pool with the requested number of workers.
-	* At least one worker is always started.
-	*/
+	/** \brief At least one worker is always started. */
 	explicit ThreadPool(unsigned int workerCount);
 
-	/**
-	* \brief Signals all workers to stop and joins them.
-	* Tasks already queued are still executed before the workers exit.
-	*/
+	/** \brief Stops and joins all workers; tasks queued before shutdown still run. */
 	~ThreadPool();
 
 	ThreadPool(const ThreadPool&) = delete;
 	ThreadPool& operator=(const ThreadPool&) = delete;
 
-	/**
-	* \brief Queues a task for execution on a worker thread.
-	* Tasks submitted after shutdown are ignored.
-	*/
+	/** \brief Queues a task; submissions after shutdown are silently ignored. */
 	void submit(std::function<void()> task);
 
-	/**
-	* \brief Returns the number of worker threads.
-	*/
 	unsigned int getWorkerCount() const;
 
 private:
 	void workerLoop();
 
-	std::vector<std::thread> d_workers; /**< Worker threads. */
+	std::vector<std::thread> d_workers;
 	std::mutex d_mutex; /**< Guards the task queue and stop flag. */
 	std::condition_variable d_condition; /**< Signals queued work and shutdown. */
-	std::queue<std::function<void()>> d_tasks; /**< Pending tasks. */
-	bool d_stopping; /**< Set when the pool is shutting down. */
+	std::queue<std::function<void()>> d_tasks;
+	bool d_stopping;
 };

@@ -43,14 +43,12 @@ TEST_CASE("ShiftController ignores updates while detached", "[controller]")
 	controller.setActive(true);
 
 	GameObject object;
-	// ShiftController only shifts the object while it sits behind the camera
-	// plane, so the object starts far back to make that guard hold.
+	// ShiftController only shifts objects sitting behind the camera plane.
 	object.setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -100.f)));
 	const glm::mat4 start = object.getTranslation();
 	controller.attach(&object);
 
-	// One update while attached moves the object, which proves the guard is
-	// live and that the assertion below is not vacuously true.
+	// Attached, this must move the object, or the check below passes vacuously.
 	controller.update(1.f);
 	const glm::mat4 shifted = object.getTranslation();
 	REQUIRE(shifted != start);

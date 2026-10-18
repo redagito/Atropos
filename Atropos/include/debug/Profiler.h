@@ -5,7 +5,6 @@
 #include <cstdint>
 
 /**
- * \brief Simple profiler class.
  * TODO Make thread safe?
  */
 class Profiler
@@ -20,18 +19,15 @@ public:
 	static std::string toString();
 
 private:
-	/**
-	* \brief Profile data.
-	*/
 	struct Data
 	{
-		uint64_t callCount = 0; /**< Total number of calls. */
-		double totalCallTime = 0.f; /**< Total time of calls. */
-		double minCallTime = 9999999.f; /**< Min call time. */
-		double maxCallTime = 0.f; /**< Max call time. */
+		uint64_t callCount = 0;
+		double totalCallTime = 0.f;
+		double minCallTime = 9999999.f;
+		double maxCallTime = 0.f;
 	};
 
-	double d_time; /**< Start time. */
-	std::string d_name; /**< Profile name. */
-	static std::unordered_map<std::string, Data> s_profileData; /**< Profile data. */
+	double d_time;
+	std::string d_name;
+	static std::unordered_map<std::string, Data> s_profileData;
 };

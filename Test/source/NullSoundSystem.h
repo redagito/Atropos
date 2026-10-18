@@ -6,10 +6,8 @@
 #include <vector>
 
 /**
- * \brief Sound system test double that records what the game asked for.
- *
- * Mirrors the public API of ISoundSystem. There is no audio device behind it,
- * so playback is a no-op and the calls are recorded instead.
+ * \brief Sound system test double: no audio device behind it, so playback is a
+ * no-op and the calls are recorded instead.
  */
 class NullSoundSystem : public ISoundSystem
 {

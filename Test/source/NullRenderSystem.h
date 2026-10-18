@@ -9,11 +9,8 @@
 #include <vector>
 
 /**
- * \brief Render system test double that records what the game asked for.
- *
- * Mirrors the public API of IRenderSystem. There is no window or OpenGL device
- * behind it, so nothing is drawn and add() returns no drawable, which the menu
- * display handles.
+ * \brief Render system test double: no window or GL device behind it, so nothing
+ * is drawn and add() returns nullptr, which the menu display handles.
  */
 class NullRenderSystem : public IRenderSystem
 {

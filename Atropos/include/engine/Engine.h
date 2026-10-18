@@ -1,103 +1,55 @@
 #pragma once
 
-class RenderSystem; /**< Rendering subsystem forward delcare. */
-class CollisionSystem; /**< Collision subsystem forward delcare. */
-class GameSystem; /**< Game subsystem forward delcare. */
-class ISoundSystem; /**< Sound system interface forward declare. */
-class IRenderSystem; /**< Rendering system interface forward declare. */
-class ThreadPool; /**< Worker pool forward declare. */
+class RenderSystem;
+class CollisionSystem;
+class GameSystem;
+class ISoundSystem;
+class IRenderSystem;
+class ThreadPool;
 
-class ConfigFile; /**< Config file forward declare. */
+class ConfigFile;
 
 #include "engine/IEngine.h"
 #include "core/TCreatorMixin.h"
 
 #include <memory>
 
-/**
-* \brief Game engine class.
-* Provides high level initialization, game loop and cleanup.
-*/
 class Engine
 	:
 	public IEngine,
 	public TCreatorMixin<Engine, IEngine>
 {
 public:
-	/** 
-	* \brief Largest frame delta the simulation is allowed to use, in seconds.
-	* A longer frame would move objects far enough to pass through each other
-	* before their bounding boxes are compared.
-	*/
+	/** \brief Frame delta cap in seconds; a longer frame can step objects through each other. */
 	static constexpr float MAX_DTIME = 0.1f;
 
-	/**
-	* \brief Constructor.
-	*/
 	Engine();
-
-	/** 
-	* \brief Engine destructor.
-	*/
 	~Engine();
 
-	/**
-	* \brief Initializes engine and subsystems.
-	* \param config Config file name with startup data.
-	* Throws std::runtime_error if the engine or a subsystem cannot be initialized.
-	*/
+	/** \brief Initializes engine and subsystems; throws std::runtime_error on failure. */
 	void init(const char* configFile);
 
-	/**
-	* \brief Starts game loop.
-	* The function returns after the game loop ends.
-	*/
 	void run();
 
-	/**
-	* \brief Explicit cleanup of resources.
-	*/
 	void cleanup();
 
 protected:
-	/**
-	 * \brief Helper function for initializing the game system. Creates and adds game states.
-	 */
 	void createGameStates();
-
-	/**
-	* \brief Update game state.
-	*/
 	void updateGame(float dtime);
-
-	/**
-	* \brief Collision update.
-	*/
 	void updateCollision();
-
-	/**
-	* \brief Commits finished resources on the main thread.
-	*/
 	void updateResources();
-
-	/**
-	* \brief Renderer update.
-	*/
 	void updateRenderer();
 
-	/**
-	* \brief Swaps display buffers.
-	* TODO: Put this into renderer?
-	*/
+	/** \brief Swaps display buffers. TODO: Put this into renderer? */
 	void swapBuffer();
 
 private:
-	bool d_init; /**< Initialization flag. */
-	bool d_running; /**< Running flag. */
+	bool d_init;
+	bool d_running;
 
-	std::unique_ptr<ThreadPool> d_pool; /**< Worker pool for resource loading. */
-	std::shared_ptr<ISoundSystem> d_soundSystem; /**< Sound system. */
-	std::shared_ptr<IRenderSystem> d_renderSystem; /**< Rendering system. */
-	std::shared_ptr<CollisionSystem> d_collisionSystem; /**< Collision system. */
-	std::shared_ptr<GameSystem> d_gameSystem; /**< Game system. */
+	std::unique_ptr<ThreadPool> d_pool;
+	std::shared_ptr<ISoundSystem> d_soundSystem;
+	std::shared_ptr<IRenderSystem> d_renderSystem;
+	std::shared_ptr<CollisionSystem> d_collisionSystem;
+	std::shared_ptr<GameSystem> d_gameSystem;
 };

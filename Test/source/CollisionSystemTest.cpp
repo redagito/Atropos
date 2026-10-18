@@ -62,9 +62,7 @@ TEST_CASE("CollisionSystem deals damage once per contact", "[collision]")
 	system.update();
 	REQUIRE(entityB->getDamageReceived() == 5.f);
 
-	// The two still overlap, so this is the same contact and must not deal
-	// damage again. Applying it every frame would make the damage dealt depend
-	// on the frame rate.
+	// Still overlapping, so this is the same contact: damage must not apply again.
 	system.update();
 	CHECK(entityB->getDamageReceived() == 0.f);
 	system.update();
@@ -87,12 +85,10 @@ TEST_CASE("CollisionSystem deals damage again after a contact ends", "[collision
 	system.update();
 	REQUIRE(entityB->getDamageReceived() == 5.f);
 
-	// Separate, the contact closes and no further damage is dealt.
 	entityB->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 100.f)));
 	system.update();
 	CHECK(entityB->getDamageReceived() == 0.f);
 
-	// Touching again is a new contact, so the damage applies once more.
 	entityB->setTranslation(glm::mat4(1.f));
 	system.update();
 	CHECK(entityB->getDamageReceived() == 5.f);
@@ -114,9 +110,7 @@ TEST_CASE("CollisionSystem deals damage to a collidable that reuses a freed addr
 	system.update();
 	REQUIRE(target->getDamageReceived() == 5.f);
 
-	// The dealer is freed while still touching the target. A new collidable
-	// allocated at the same address must open a fresh contact instead of
-	// inheriting the old one and skipping its damage.
+	// A new collidable at the freed address must open a fresh contact, not inherit the old one.
 	system.remove(dealer);
 	system.update();
 	CHECK(target->getDamageReceived() == 0.f);

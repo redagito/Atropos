@@ -14,9 +14,7 @@ namespace
 {
 	std::filesystem::path tempImagePath()
 	{
-		// ctest gives every test case its own process, so the counter restarts
-		// at zero everywhere and would collide across concurrent runs. The
-		// process id makes the name unique among simultaneously running tests.
+		// Process id keeps the temp file name unique across concurrent ctest runs.
 		static int counter = 0;
 		return std::filesystem::temp_directory_path()
 			/ ("atropos_img_" + std::to_string(_getpid()) + "_" + std::to_string(counter++) + ".tga");
@@ -67,8 +65,7 @@ TEST_CASE("Image loads a 24-bit TGA as RGBA", "[image]")
 
 TEST_CASE("Image skips the TGA image identification field", "[image]")
 {
-	// The image ID field is 4 bytes long and must be skipped before the
-	// pixel data, otherwise every pixel is read at the wrong offset.
+	// The header declares 4 image ID bytes that must be skipped before the pixels.
 	const std::vector<unsigned char> header = {
 		4, 0, 2,
 		0, 0, 0, 0, 0,
@@ -133,8 +130,7 @@ TEST_CASE("Image orients a TGA by its origin bit", "[image]")
 		32
 	};
 
-	// Bit 5 of the descriptor is clear, so data row 0 is the bottom row of
-	// the image and the rows must end up reversed.
+	// Descriptor bit 5 clear: data row 0 is the bottom row, so the rows reverse.
 	std::vector<unsigned char> bottomLeftBytes = bottomLeftHeader;
 	bottomLeftBytes.insert(bottomLeftBytes.end(), pixels.begin(), pixels.end());
 	const std::filesystem::path bottomLeftPath = tempImagePath();
@@ -219,8 +215,7 @@ TEST_CASE("Image rejects a TGA with a truncated pixel block", "[image]")
 
 TEST_CASE("Image rejects a TGA whose declared size exceeds the file", "[image]")
 {
-	// A 2048x2048 32-bit image needs 16 MiB of pixel data while the file holds
-	// 3 bytes, so the header is lying about the size of the pixel block.
+	// 2048x2048 at 32 bits needs 16 MiB of pixels; the header says 3 bytes follow.
 	const std::vector<unsigned char> header = {
 		0, 0, 2,
 		0, 0, 0, 0, 0,
@@ -253,8 +248,7 @@ TEST_CASE("Image rejects a TGA whose declared size exceeds the file", "[image]")
 	}
 	std::filesystem::remove(path);
 	REQUIRE(threw);
-	// The declared size is compared against the bytes left in the file, so the
-	// pixel buffer is never allocated for data that is not there.
+	// The message must name the declared size: nothing is allocated for absent pixels.
 	const bool reportsDeclaredSize = message.find("exceeds") != std::string::npos;
 	CHECK(reportsDeclaredSize);
 }
@@ -271,9 +265,7 @@ TEST_CASE("Image rejects a TGA bit depth that is not 24 or 32", "[image]")
 		26,
 		0
 	};
-	// 26 bits per pixel is not a valid TGA depth. Dividing by 8 turns it into
-	// 3 bytes per pixel, which would read the image with the wrong stride and
-	// silently produce garbage pixels.
+	// 26 bits per pixel is invalid; /8 would give a 3 byte stride and garbage pixels.
 	const std::vector<unsigned char> pixels = { 10, 20, 30, 40, 50, 60 };
 
 	std::vector<unsigned char> bytes = header;

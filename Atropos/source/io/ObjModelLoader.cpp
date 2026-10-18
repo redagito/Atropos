@@ -36,7 +36,6 @@ namespace
 }
 
 
-// Parse obj file
 ObjModelLoader::ObjModelLoader()
 {
 	
@@ -50,17 +49,14 @@ void ObjModelLoader::load(const std::string& file)
 		throw std::runtime_error("The mesh file could not be opened: " + file);
 	}
 
-	// Reset any data from a previous load.
 	d_vertices.clear();
 	d_normals.clear();
 	d_uv.clear();
 
-	// Temp data
 	std::vector<float> tempVert;
 	std::vector<float> tempUV;
 	std::vector<float> tempNorm;
 
-	// Parse lines
 	std::string line;
 	while (std::getline(ifs, line))
 	{
@@ -73,11 +69,9 @@ void ObjModelLoader::load(const std::string& file)
 		throw std::runtime_error("The mesh file contains no geometry: " + file);
 	}
 
-	// Calculate bounding volume
 	calculateAABBox();
 }
 
-// Access model data
 const std::vector<float>& ObjModelLoader::getVertices() const
 {
 	return d_vertices;
@@ -114,7 +108,6 @@ void ObjModelLoader::calculateAABBox()
 
 	for (std::size_t i = 0; i < d_vertices.size(); i += 3)
 	{
-		// X coord
 		if (d_vertices[i] < xmin)
 		{
 			xmin = d_vertices[i];
@@ -123,7 +116,6 @@ void ObjModelLoader::calculateAABBox()
 		{
 			xmax = d_vertices[i];
 		}
-		// Y coord
 		if (d_vertices[i + 1] < ymin)
 		{
 			ymin = d_vertices[i + 1];
@@ -132,7 +124,6 @@ void ObjModelLoader::calculateAABBox()
 		{
 			ymax = d_vertices[i + 1];
 		}
-		// Z coord
 		if (d_vertices[i + 2] < zmin)
 		{
 			zmin = d_vertices[i + 2];
@@ -148,7 +139,6 @@ void ObjModelLoader::calculateAABBox()
 	d_box.setHalfWidths(glm::vec3(xmax - d_box.getMid().x, ymax - d_box.getMid().y, zmax - d_box.getMid().z));
 }
 
-// Parsing logic
 void ObjModelLoader::parseLine(const std::string& line, std::vector<float>& tempVert, std::vector<float>& tempNorm, std::vector<float>& tempUV)
 {
 	if (line[0] == '#')
@@ -159,24 +149,20 @@ void ObjModelLoader::parseLine(const std::string& line, std::vector<float>& temp
 	{
 		if (line[1] == ' ' && line.size() > 2)
 		{
-			// Parse as vertex
 			parseVertex(line.substr(2), tempVert);
 		}
 		else if (line[1] == 't' && line.size() > 3 && line[2] == ' ')
 		{
-			// Parse as texture coord
 			parseUV(line.substr(3), tempUV);
 		}
 		else if (line[1] == 'n' && line.size() > 3 && line[2] == ' ')
 		{
-			// Parse as normal
 			parseNormal(line.substr(3), tempNorm);
 		}
 		// Lines like a bare "v", "vt" or "vn" without data are ignored.
 	}
 	else if (line[0] == 'f' && line.size() > 2 && line[1] == ' ')
 	{
-		// Parse as indices
 		parseIndex(line.substr(2), tempVert, tempNorm, tempUV);
 	}
 }
@@ -254,7 +240,6 @@ void ObjModelLoader::parseIndex(const std::string& line, const std::vector<float
 		bool hasTexcoord = false;
 		bool hasNormal = false;
 
-		// Split the token into its slash separated fields.
 		std::stringstream tokenStream;
 		tokenStream << faceToken;
 		std::string field;

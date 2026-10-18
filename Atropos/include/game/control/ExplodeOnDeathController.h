@@ -6,37 +6,19 @@ class ISoundSystem;
 
 #include <string>
 
-/**
-* \brief Checks the object state for death state and trigger explosion effect.
-* TODO This should actually react to an onDeath event.
-* TODO This actually can play any sound on death.
-*/
+// Despite the name, this plays a sound and creates no explosion effect.
+// TODO: Should react to an onDeath event.
 class ExplodeOnDeathController : public IController
 {
 public:
-	/**
-	* \brief Sets sound system and sound name.
-	*/
 	ExplodeOnDeathController(ISoundSystem* soundSystem, const std::string& soundName);
 
-	/**
-	* \brief Destructor for cleanup.
-	*/
 	~ExplodeOnDeathController();
 
-	/**
-	* \brief On attach to object.
-	*/
 	void attach(GameObject* object);
 
-	/**
-	* \brief On detaching from game object.
-	*/
 	void detach();
 
-	/**
-	* \brief Updates controller.
-	*/
 	void update(float dtime);
 
 	void setActive(bool active);

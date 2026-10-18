@@ -20,14 +20,11 @@ Profiler::~Profiler()
 {
 	d_time = (glfwGetTime() - d_time) * 1000.0;
 
-	// Get entry
 	Profiler::Data& data = s_profileData[d_name];
 
-	// Update call count and call time
 	data.callCount++;
 	data.totalCallTime += d_time;
 	
-	// Update max and min times
 	if (data.maxCallTime < d_time)
 	{
 		data.maxCallTime = d_time;
@@ -43,7 +40,6 @@ std::string Profiler::toString()
 	std::stringstream ss;
 	ss << "[Profile data]" << std::endl;
 
-	// Write profiling statistics
 	for (const auto& data : s_profileData)
 	{
 		ss << "Name: " << data.first << std::endl;

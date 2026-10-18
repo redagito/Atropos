@@ -16,7 +16,6 @@ Image::Image()
 
 void Image::load(const std::string& fileName)
 {
-	// File extension
 	const auto pos = fileName.find_last_of(".");
 	if (pos == std::string::npos)
 	{
@@ -31,8 +30,7 @@ void Image::load(const std::string& fileName)
 	TGAFILE file;
 	loadTGAFile(fileName, &file);
 
-	// Assign to vector
-	// RGBA data
+	// d_data is always RGBA; 3-channel TGA gets an opaque alpha.
 	const int channels = file.bitCount / 8;
 	const std::size_t pixelCount =
 		static_cast<std::size_t>(file.imageWidth) * static_cast<std::size_t>(file.imageHeight);
@@ -56,7 +54,6 @@ void Image::load(const std::string& fileName)
 	{
 		throw std::runtime_error("Unsupported TGA color depth in file: " + fileName);
 	}
-	// Set size
 	d_width = file.imageWidth;
 	d_height = file.imageHeight;
 }

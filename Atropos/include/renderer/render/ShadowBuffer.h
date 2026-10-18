@@ -15,6 +15,6 @@ public:
 	GLuint getDepthTexture() const;
 	
 private:
-	GLuint d_shadowFramebuffer; /**< Shadow buffer id. */
-	GLuint d_depthTexture; /**< Depth texture id. */
+	GLuint d_shadowFramebuffer;
+	GLuint d_depthTexture;
 };

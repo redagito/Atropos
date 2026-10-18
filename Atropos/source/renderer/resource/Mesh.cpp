@@ -24,12 +24,10 @@ void Mesh::init(const MeshData& data)
 		throw std::runtime_error("Cannot initialize a mesh without vertex data.");
 	}
 
-	// Load into VRAM
 	d_vertices.reset(new VertexBufferObject(data.vertices.data(), data.vertices.size()));
 	d_normals.reset(new VertexBufferObject(data.normals.data(), data.normals.size()));
 	d_texCoords.reset(new VertexBufferObject(data.uv.data(), data.uv.size()));
 
-	// Store bounding box
 	d_box = data.box;
 }
 

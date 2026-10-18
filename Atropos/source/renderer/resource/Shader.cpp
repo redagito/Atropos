@@ -21,7 +21,6 @@ Shader::Shader()
 }
 
 
-// Removes the program from graphic memory
 Shader::~Shader()
 {
 	SPDLOG_DEBUG("Deleting shader.");
@@ -37,31 +36,24 @@ void Shader::init(const ShaderSources& sources)
 {
 	SPDLOG_DEBUG("Creating shader program from source.");
 
-	// Convert to code
 	ShaderCode vc(sources.vertex.c_str());
 	ShaderCode fc(sources.fragment.c_str());
 
-	// Compile
 	SPDLOG_DEBUG("Compiling shader objects.");
 	VertexShader vs(vc.getCode(), vc.getLineCount());
 	FragmentShader fs(fc.getCode(), fc.getLineCount());
 
-	// Create a new program id
     d_programId = glCreateProgram();
 
-	// Add the shaders
 	glAttachShader(d_programId, vs.getId());
 	glAttachShader(d_programId, fs.getId());
 	
-	// Link the program
 	SPDLOG_DEBUG("Linking shader objects.");
 	glLinkProgram(d_programId);
 
-    // Check the program
 	GLint result;
     glGetProgramiv(d_programId, GL_LINK_STATUS, &result);
 
-	// Check result
 	if (result == GL_FALSE)
 	{
 		int length = 0;
@@ -77,7 +69,6 @@ void Shader::init(const ShaderSources& sources)
     }
 }
 
-// Set the shader program active
 void Shader::setActive() const
 {
 	if (d_programId != s_activeId)
@@ -88,14 +79,12 @@ void Shader::setActive() const
 	return;
 }
 
-// Set 4x4 matrix uniform
 void Shader::setShaderValueMat4(const std::string& name, const glm::mat4& mat) const
 {
 	GLint loc = getUniformLocation(name);
 	setShaderValueMat4(loc, mat);
 }
 
-// Set 4x4 matrix uniform
 void Shader::setShaderValueMat4(GLint loc, const glm::mat4& mat) const
 {
 	if (loc != -1)
@@ -104,14 +93,12 @@ void Shader::setShaderValueMat4(GLint loc, const glm::mat4& mat) const
 	}
 }
 
-// Set 3D vector uniform
 void Shader::setShaderValueVec3(const std::string& name, const glm::vec3& value) const
 {
 	GLint loc = getUniformLocation(name);
 	setShaderValueVec3(loc, value);
 }
 
-// Set 3D vector uniform
 void Shader::setShaderValueVec3(GLint loc, const glm::vec3& value) const
 {
 	if (loc != -1)
@@ -120,14 +107,12 @@ void Shader::setShaderValueVec3(GLint loc, const glm::vec3& value) const
 	}
 }
 
-// Set float uniform
 void Shader::setShaderValueFloat(const std::string& name, float value) const
 {
 	GLint loc = getUniformLocation(name);
 	setShaderValueFloat(loc, value);
 }
 
-// Set float uniform
 void Shader::setShaderValueFloat(GLint loc, float value) const
 {
 	if (loc != -1)
@@ -136,7 +121,6 @@ void Shader::setShaderValueFloat(GLint loc, float value) const
 	}
 }
 
-// Set shader texture, needs reworking
 void Shader::setShaderTexture(const std::string& name, GLint textureUnit) const
 {
 	GLint loc = getUniformLocation(name);
@@ -146,7 +130,6 @@ void Shader::setShaderTexture(const std::string& name, GLint textureUnit) const
 	}
 }
 
-// Set shader texture, needs reworking
 void Shader::setShaderTexture(GLint loc, GLint textureUnit) const
 {
 	if (loc != -1)
@@ -155,13 +138,11 @@ void Shader::setShaderTexture(GLint loc, GLint textureUnit) const
 	}
 }
 
-// Returns attribute location
 GLint Shader::getAttributeLocation(const std::string& attrib) const
 {
 	return glGetAttribLocation(d_programId, attrib.c_str());
 }
 
-// Returns attribute location
 GLint Shader::getUniformLocation(const std::string& uniform) const
 {
 	auto iter = d_uniforms.find(uniform);

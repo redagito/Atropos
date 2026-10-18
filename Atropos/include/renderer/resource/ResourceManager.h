@@ -20,76 +20,52 @@
 class ThreadPool;
 
 /**
-* \brief Parsed material definition, CPU side data for a material resource.
+* \brief CPU side material definition.
 */
 struct MaterialDesc
 {
-	std::string materialClass; /**< Material class name. */
-	std::string shader; /**< Shader resource name. */
-	std::string texture; /**< Texture resource name, empty for color materials. */
-	float ambient = 0.1f; /**< Ambient term. */
-	float specular = 0.2f; /**< Specular term. */
-	glm::vec3 color{ 0.f }; /**< Color for color materials. */
+	std::string materialClass;
+	std::string shader;
+	/**< Empty for color materials. */
+	std::string texture;
+	float ambient = 0.1f;
+	float specular = 0.2f;
+	/**< Only for color materials. */
+	glm::vec3 color{ 0.f };
 };
 
 /**
-* \brief Parsed model definition, CPU side data for a model resource.
+* \brief CPU side model definition.
 */
 struct ModelDesc
 {
-	std::string mesh; /**< Mesh resource name. */
-	std::string material; /**< Material resource name. */
+	std::string mesh;
+	std::string material;
 };
 
 /**
 * \brief Loads and manages game resources asynchronously.
 *
-* Parsing runs on the thread pool, the OpenGL upload runs on the main thread
-* during process(). The resource lifetimes are managed by this class.
 * The thread pool must outlive the resource manager, because a queued parse
- * task holds a raw pointer to it and the pool drains its queue when it stops.
+* task holds a raw pointer to it and the pool drains its queue when it stops.
 */
 class ResourceManager
 {
 public:
-	/**
-	* \brief Sets the resource path and the pool used for parsing.
-	*/
 	ResourceManager(const std::string& resourceBasePath, ThreadPool& pool);
 
-	/**
-	* \brief Deletes all loaded resources.
-	*/
 	~ResourceManager();
 
-	/**
-	* \brief Requests a model resource, loading happens asynchronously.
-	*/
 	void loadModel(const std::string& name);
 
-	/**
-	* \brief Requests a mesh resource, loading happens asynchronously.
-	*/
 	void loadMesh(const std::string& name);
 
-	/**
-	* \brief Requests a material resource, loading happens asynchronously.
-	*/
 	void loadMaterial(const std::string& name);
 
-	/**
-	* \brief Requests a texture resource, loading happens asynchronously.
-	*/
 	void loadTexture(const std::string& name);
 
-	/**
-	* \brief Requests a shader resource, loading happens asynchronously.
-	*/
 	void loadShader(const std::string& name);
 
-	/**
-	* \brief Commits finished resources on the main thread.
-	*/
 	void process();
 
 	/**
@@ -97,37 +73,34 @@ public:
 	*/
 	bool isIdle() const;
 
-	/**
-	* \brief True if any requested resource failed to load.
-	*/
 	bool hasError() const;
 
 	/**
-	* \brief Returns the material, loading it if necessary.
+	* \brief Loads on demand.
 	* Throws std::runtime_error if the material cannot be loaded.
 	*/
 	AMaterial* getMaterial(const std::string& name);
 
 	/**
-	* \brief Returns the model, loading it if necessary.
+	* \brief Loads on demand.
 	* Throws std::runtime_error if the model cannot be loaded.
 	*/
 	Model* getModel(const std::string& name);
 
 	/**
-	* \brief Returns the texture, loading it if necessary.
+	* \brief Loads on demand.
 	* Throws std::runtime_error if the texture cannot be loaded.
 	*/
 	Texture* getTexture(const std::string& name);
 
 	/**
-	* \brief Returns the shader, loading it if necessary.
+	* \brief Loads on demand.
 	* Throws std::runtime_error if the shader cannot be loaded.
 	*/
 	Shader* getShader(const std::string& name);
 
 	/**
-	* \brief Returns the mesh, loading it if necessary.
+	* \brief Loads on demand.
 	* Throws std::runtime_error if the mesh cannot be loaded.
 	*/
 	Mesh* getMesh(const std::string& name);
@@ -147,11 +120,11 @@ private:
 	template <typename T, typename Parsed>
 	T* waitFor(AsyncLoader<T, Parsed>& loader, const std::string& name);
 
-	std::string d_resourcePath; /**< Base resource path. */
+	std::string d_resourcePath;
 
-	AsyncLoader<Shader, ShaderSources> d_shaders; /**< Shader resources. */
-	AsyncLoader<Texture, Image> d_textures; /**< Texture resources. */
-	AsyncLoader<Mesh, MeshData> d_meshes; /**< Mesh resources. */
-	AsyncLoader<AMaterial, MaterialDesc> d_materials; /**< Material resources. */
-	AsyncLoader<Model, ModelDesc> d_models; /**< Model resources. */
+	AsyncLoader<Shader, ShaderSources> d_shaders;
+	AsyncLoader<Texture, Image> d_textures;
+	AsyncLoader<Mesh, MeshData> d_meshes;
+	AsyncLoader<AMaterial, MaterialDesc> d_materials;
+	AsyncLoader<Model, ModelDesc> d_models;
 };

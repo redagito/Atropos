@@ -7,13 +7,10 @@ VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 	d_id(0),
 	d_size(size)
 {
-	// Create GL buffer resource
 	SPDLOG_DEBUG("Create VertexBufferObject.");
 	glGenBuffers(1, &d_id);
 	
-	// Bind to GL_ARRAY_BUFFER
 	setActive();
-	// Set data
 	glBufferData(GL_ARRAY_BUFFER, size*sizeof(float), data, GL_STATIC_DRAW);
 	return;
 }

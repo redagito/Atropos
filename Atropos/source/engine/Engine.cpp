@@ -1,28 +1,23 @@
 #include "engine/Engine.h"
 
-// Sub systems
 #include "renderer/RenderSystem.h"
 #include "collision/CollisionSystem.h"
 #include "sound/SoundSystem.h"
 #include "game/GameSystem.h"
 
-// Game states
 #include "game/state/LoadState.h"
 #include "game/state/LoseState.h"
 #include "game/state/WinState.h"
 #include "game/state/PauseState.h"
 
-// Debug and profiling
 #include "debug/Profiler.h"
 
-// Worker pool
 #include "core/ThreadPool.h"
 
 #include "util/Input.h"
 
 #include <algorithm>
 
-// IO and utility
 #include "io/ConfigFile.h"
 
 #include <spdlog/spdlog.h>
@@ -49,23 +44,20 @@ Engine::Engine()
 Engine::~Engine()
 {
 	cleanup();
-	// Log profiler data
 	SPDLOG_INFO("{}", Profiler::toString());
 }
 
 void Engine::init(const char* configFile)
 {
-	// Prevent multiple init calls
 	if (d_init)
 	{
 		return;
 	}
 
-	// Configuration file with startup config
 	ConfigFile config;
 	config.load(configFile);
 
-	// Set up console and file logging before creating any subsystem.
+	// Logging is set up before any subsystem is created, so their constructors can log.
 	auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
 		config.get("log_filename", std::string("log.txt")), true);
@@ -75,42 +67,34 @@ void Engine::init(const char* configFile)
 	logger->set_level(spdlog::level::trace);
 	spdlog::set_default_logger(logger);
 
-	// Worker pool used by the resource loaders. It must outlive every system
-	// that owns a loader.
+	// Must outlive every system that owns a loader.
 	const int workerCount = config.get("engine_workerthreads", 4);
 	d_pool = std::make_unique<ThreadPool>(static_cast<unsigned int>(workerCount < 1 ? 1 : workerCount));
 	SPDLOG_INFO("Created worker pool with {} threads.", d_pool->getWorkerCount());
 
-	// Initialize rendering system singleton
 	SPDLOG_INFO("Create rendering system.");
 	std::shared_ptr<RenderSystem> renderSystem(new RenderSystem);
 	renderSystem->init(config, *d_pool);
 	d_renderSystem = renderSystem;
 
-	// Initialize sound system
 	SPDLOG_INFO("Create sound system.");
 	std::shared_ptr<SoundSystem> soundSystem(SoundSystem::create());
 	soundSystem->init(config, *d_pool);
 	d_soundSystem = soundSystem;
 
 	SPDLOG_INFO("Create collision system.");
-	// Initialize collision system
 	// TODO Should be physics system
 	d_collisionSystem.reset(new CollisionSystem());
 
-	// Create game system
 	SPDLOG_INFO("Create game system.");
 	d_gameSystem.reset(GameSystem::create());
 
-	// Create game states
 	// TODO This should be data driven
 	SPDLOG_INFO("Create game states.");
 	createGameStates();
 
-	// Init game system
-	d_gameSystem->init(config); // Init subsystem
+	d_gameSystem->init(config);
 
-	// Init successful
 	d_init = true;
 }
 
@@ -118,54 +102,41 @@ void Engine::cleanup()
 {
 	d_init = false;
 
-	// Delete game system first
 	d_gameSystem = nullptr;
 
-	// Stop the workers before destroying the systems that own the loaders,
-	// so no in flight parse can touch a destroyed loader.
+	// Stop the workers first so no in flight parse can touch a destroyed loader.
 	d_pool = nullptr;
 
-	// Delete sound system.
 	d_soundSystem = nullptr;
 		
-	// Delete render system
 	d_renderSystem = nullptr;
 
-	// Collision system deleted last
 	d_collisionSystem = nullptr;
 }
 
 void Engine::run()
 {
 	SPDLOG_INFO("Starting game engine main loop.");
-	// Time difference
 	float dtime = 0.f;
 
-	// Main loop
 	d_running = true;
 
 	while (!d_renderSystem->shouldClose() && d_running)
 	{
 		Profiler loopProfiler("engine_loop");
-		// Set start time
 		float startTime = (float)glfwGetTime();
 
-		// Process user input
 		glfwPollEvents();
-		// Sample the keys so the states can tell a fresh press from a held key.
 		Input::poll(d_renderSystem->window());
 
-		// F2 swaps culling. The press is edge triggered, so holding the key
-		// toggles once per press instead of twice a second.
+		// F2 swaps culling; the press is edge triggered, so holding it does not repeat.
 		if (Input::pressed(GLFW_KEY_F2))
 		{
 			d_renderSystem->setCulling(!d_renderSystem->getCulling());
 		}
 
-		// ESC quits application
 		if (Input::pressed(GLFW_KEY_ESCAPE))
 		{
-			// Termination
 			d_renderSystem->requestClose();
 		}
 
@@ -175,49 +146,39 @@ void Engine::run()
 		updateCollision();
 		swapBuffer();
 
-		// Update time diff. The delta is capped so a hitch cannot make the
-		// simulation step so far that objects pass through each other.
+		// Capped so a hitch cannot step objects through each other.
 		dtime = std::min((float) glfwGetTime() - startTime, MAX_DTIME);
 	}
 }
 
 void Engine::createGameStates()
 {
-	// Add game states
 	// Load state, is initial state
 	d_gameSystem->addState("load", new LoadState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_gameSystem.get()));
-	// Win state
 	d_gameSystem->addState("win", new WinState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
-	// Lose state
 	d_gameSystem->addState("lose", new LoseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
-	// Pause state
 	d_gameSystem->addState("pause", new PauseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
 }
 
 void Engine::updateGame(float dtime)
 {
-	// Update game logic
 	Profiler profiler("update_game");
 	d_running = d_gameSystem->update(dtime);
 }
 
 void Engine::updateCollision()
 {
-	// A frozen state must stop collision as well, otherwise damage keeps
-	// accumulating in the collidables while nothing consumes it and is applied
-	// all at once when the game resumes.
+	// A frozen state must stop collision too, or damage accumulates until resume.
 	if (!d_gameSystem->collisionsEnabled())
 	{
 		return;
 	}
-	// Update collisions
 	Profiler profiler("update_collision");
 	d_collisionSystem->update();
 }
 
 void Engine::updateResources()
 {
-	// Commit finished resources on the main thread
 	Profiler profiler("update_resources");
 	d_renderSystem->process();
 	d_soundSystem->process();
@@ -225,14 +186,12 @@ void Engine::updateResources()
 
 void Engine::updateRenderer()
 {
-	// Draw the scene
 	Profiler profiler("update_renderer");
 	d_renderSystem->draw();
 }
 
 void Engine::swapBuffer()
 {
-	// Finish draw and swap buffer
 	Profiler profiler("swap_buffer");
 	d_renderSystem->swapBuffer();
 }

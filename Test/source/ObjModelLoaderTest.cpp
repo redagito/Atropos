@@ -12,9 +12,7 @@ namespace
 {
 	void loadFromString(const std::string& contents, ObjModelLoader& loader)
 	{
-		// ctest gives every test case its own process, so the counter restarts
-		// at zero everywhere and would collide across concurrent runs. The
-		// process id makes the name unique among simultaneously running tests.
+		// Process id keeps the temp file name unique across concurrent ctest runs.
 		static int counter = 0;
 		const std::filesystem::path path = std::filesystem::temp_directory_path()
 			/ ("atropos_obj_" + std::to_string(_getpid()) + "_" + std::to_string(counter++) + ".obj");
@@ -196,8 +194,7 @@ TEST_CASE("ObjModelLoader skips out-of-range face indices", "[obj]")
 		"f 99/99/99 100/100/100 101/101/101\n";
 
 	ObjModelLoader loader;
-	// Every face index is out of range, so no geometry is produced and the
-	// load is rejected.
+	// Every face index is out of range, so no geometry is produced.
 	CHECK_THROWS(loadFromString(contents, loader));
 	CHECK(loader.getVertices().empty());
 }
@@ -268,7 +265,6 @@ TEST_CASE("ObjModelLoader ignores a quad face", "[obj]")
 		"f 1 2 3 4\n";
 
 	ObjModelLoader loader;
-	// The only face is a quad, so no triangle geometry is produced.
 	CHECK_THROWS(loadFromString(contents, loader));
 	CHECK(loader.getVertices().empty());
 }

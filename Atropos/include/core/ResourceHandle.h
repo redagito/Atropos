@@ -32,7 +32,7 @@ class ResourceSlot : public ResourceSlotBase
 public:
 	enum class State
 	{
-		Pending, /**< Not finished yet. */
+		Pending,
 		Ready, /**< Finished, value is available. */
 		Failed /**< Loading failed, error holds the reason. */
 	};
@@ -44,9 +44,6 @@ public:
 	{
 	}
 
-	/**
-	* \brief Publishes the finished resource.
-	*/
 	void setValue(T* value)
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -54,9 +51,6 @@ public:
 		d_state = State::Ready;
 	}
 
-	/**
-	* \brief Marks the resource as failed.
-	*/
 	void setError(std::string error)
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -80,20 +74,13 @@ public:
 		return getState() == State::Failed;
 	}
 
-	/**
-	* \brief Returns the resource or nullptr if it is not ready.
-	*/
 	T* tryGet() const
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 		return d_state == State::Ready ? d_value : nullptr;
 	}
 
-	/**
-	* \brief Returns the resource, resolving state and value atomically.
-	* Throws std::runtime_error if loading failed and std::logic_error if the
-	* resource is not ready yet.
-	*/
+	/** \brief Throws std::runtime_error if failed, std::logic_error if not ready yet. */
 	T* get() const
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -116,7 +103,7 @@ public:
 
 private:
 	mutable std::mutex d_mutex; /**< Guards all state. */
-	State d_state; /**< Current loading state. */
+	State d_state;
 	T* d_value; /**< Borrowed resource pointer. */
 	std::string d_error; /**< Failure reason. */
 };
@@ -147,19 +134,12 @@ public:
 		return d_slot != nullptr && d_slot->isFailed();
 	}
 
-	/**
-	* \brief Returns the resource or nullptr if it is not ready.
-	*/
 	T* tryGet() const
 	{
 		return d_slot != nullptr ? d_slot->tryGet() : nullptr;
 	}
 
-	/**
-	* \brief Returns the resource.
-	* Throws std::runtime_error if loading failed and std::logic_error if the
-	* resource is not ready yet.
-	*/
+	/** \brief Throws std::runtime_error if failed, std::logic_error if not ready yet. */
 	T* get() const
 	{
 		if (d_slot == nullptr)
@@ -169,9 +149,6 @@ public:
 		return d_slot->get();
 	}
 
-	/**
-	* \brief Returns the shared slot, may be null.
-	*/
 	const std::shared_ptr<ResourceSlot<T>>& getSlot() const
 	{
 		return d_slot;

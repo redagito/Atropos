@@ -70,8 +70,7 @@ TEST_CASE("ConfigFile rejects a number with trailing characters", "[config]")
 	config.set("count", "800x");
 	config.set("scale", "0.5 meters");
 
-	// A numeric prefix would otherwise be accepted silently, so a typo in the
-	// config would be read as a valid but unintended value.
+	// A numeric prefix would otherwise be read as a valid value.
 	REQUIRE(config.get("count", 7) == 7);
 	REQUIRE(config.get("scale", 1.f) == 1.f);
 }
@@ -86,8 +85,7 @@ TEST_CASE("ConfigFile returns the default vec3 for a malformed value", "[config]
 
 TEST_CASE("ConfigFile skips a whitespace-only line", "[config]")
 {
-	// ctest gives every test case its own process, so the process id makes the
-	// name unique among simultaneously running tests.
+	// Process id keeps the temp file name unique across concurrent ctest runs.
 	const std::string id = std::to_string(_getpid());
 	const std::filesystem::path path = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_whitespace.cfg");
 	writeFile(path, "alpha=1\n   \nbeta=2\n");
@@ -127,8 +125,7 @@ TEST_CASE("ConfigFile skips a carriage return only line", "[config]")
 
 TEST_CASE("ConfigFile load replaces previously loaded values", "[config]")
 {
-	// ctest gives every test case its own process, so the process id makes the
-	// names unique among simultaneously running tests.
+	// Process id keeps the temp file names unique across concurrent ctest runs.
 	const std::string id = std::to_string(_getpid());
 	const std::filesystem::path first = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_first.cfg");
 	const std::filesystem::path second = std::filesystem::temp_directory_path() / ("atropos_config_" + id + "_second.cfg");

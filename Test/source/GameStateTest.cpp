@@ -24,8 +24,7 @@ TEST_CASE("LoadState plays the loading music again after being re-entered", "[ga
 	REQUIRE(soundSystem.d_bgmPlays.size() == 1);
 	CHECK(soundSystem.d_bgmPlays[0] == "loading");
 
-	// A run leaves this state with the music started. Coming back has to start
-	// it over, otherwise the startup screen is silent for the rest of the session.
+	// Coming back has to start the music over, or the startup screen stays silent.
 	state.onExit();
 	state.onEnter();
 	REQUIRE(state.update(0.016f));
@@ -79,8 +78,7 @@ TEST_CASE("WinState plays its music every time it is entered", "[gamestate]")
 	state.onExit();
 	state.onEnter();
 
-	// onEnter starts the music every time, unlike the load state which tracks
-	// whether it already did.
+	// Unlike the load state, onEnter starts the music unconditionally.
 	CHECK(soundSystem.d_bgmPlays.size() == 2);
 	CHECK(soundSystem.d_bgmPlays[0] == "win");
 	CHECK(soundSystem.d_bgmPlays[1] == "win");
@@ -117,8 +115,7 @@ TEST_CASE("Win and lose give their screens their own background color", "[gamest
 	CHECK(renderSystem.d_createdScenes.size() == 2);
 	CHECK(renderSystem.d_createdScenes[0] == "win");
 	CHECK(renderSystem.d_createdScenes[1] == "lose");
-	// A different color per screen is the whole point, so each state has to set
-	// its own rather than inheriting whatever was there before.
+	// One shared color would put one screen on both, so each state sets its own.
 	CHECK(renderSystem.d_backgroundColorCount == 2);
 	CHECK(renderSystem.d_lastBackgroundScene == "lose");
 }

@@ -24,13 +24,11 @@ void PauseState::init()
 
 bool PauseState::update(float dtime)
 {
-	// Continue game on enter
 	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		d_nextState = "play";
 		return false;
 	}
-	// End game on escape
 	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;

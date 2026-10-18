@@ -1,6 +1,5 @@
 #pragma once
-// TODO: The sub systems should be accessible by a global communication port,
-// the play state class just hands them over to the game objects.
+// TODO: Sub systems should come from a global port rather than constructor arguments.
 class IRenderSystem;
 class CollisionSystem;
 class ISoundSystem;
@@ -12,45 +11,21 @@ class GameObject;
 #include <memory>
 #include <list>
 
-/**
-* \brief The play state represents the main gameplay.
-*/
 class PlayState : public IGameState
 {
 public:
-	/**
-	* \brief Sets sub systems.
-	*/
 	PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys);
 
-	/**
-	* \brief Destroys the world and releases the collision groups.
-	*/
 	~PlayState();
 
-	/**
-	* \brief Updates state.
-	*/
 	bool update(float dtime);
 
-	/**
-	* \brief initializes state.
-	*/
 	void init();
 
-	/**
-	* \brief On state enter callback.
-	*/
 	void onEnter();
 	
-	/**
-	* \brief On state exit callback.
-	*/
 	void onExit();
 
-	/**
-	* \brief Returns next state name.
-	*/
 	const std::string& getNextState() const;
 
 private:

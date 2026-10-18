@@ -13,14 +13,12 @@ if(MSVC)
     target_link_options(app PRIVATE /ENTRY:mainCRTStartup)
 endif()
 
-# The game loads startup.cfg and assets relative to the working directory, so
-# default the debugger working directory to the app folder.
+# Assets load relative to the working directory, so point the debugger at the app folder.
 set_target_properties(app PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# Also place startup.cfg and the data assets next to the built executable so it
-# can be run directly from the build directory.
+# Copy startup.cfg and data next to the executable so the build dir runs standalone.
 add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/startup.cfg"

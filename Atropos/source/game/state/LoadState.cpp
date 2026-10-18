@@ -35,8 +35,7 @@ void LoadState::init()
 	d_renderSystem->setActiveScene("load");
 	d_renderSystem->setSceneBackgroundColor("load", glm::vec3(0.05f, 0.07f, 0.15f));
 
-	// Request all assets for this and the following states. The loads run
-	// asynchronously on the worker pool and are committed by the engine.
+	// Request the assets this state and the following states need.
 	d_soundSystem->loadBGM("loading", "song2.mp3", 0.5f);
 	d_soundSystem->loadBGM("combat", "song3.mp3", 0.3f);
 	d_soundSystem->loadSFX("laser", "laser2.mp3", 0.2f);
@@ -49,18 +48,14 @@ void LoadState::init()
 
 bool LoadState::update(float dtime)
 {
-	// Showing a model blocks until it is loaded, so the display is only added
-	// once the loading it would wait for is actually done. Otherwise the loading
-	// screen would freeze the loop and never be seen.
+	// show() blocks until the model loads, so wait for idle or the frame freezes.
 	if (!d_renderSystem->hasError() && d_renderSystem->isIdle())
 	{
 		d_ship.show(d_renderSystem, "player");
 	}
 	d_ship.update(dtime);
 
-	// Start the loading music as soon as the sounds are available. Nothing is
-	// pending once a sound has failed, so the failure is reported instead of
-	// starting music that will never play.
+	// Nothing is pending once a sound has failed, so do not start music that cannot play.
 	if (!d_bgmStarted && d_soundSystem->isIdle())
 	{
 		d_bgmStarted = true;
@@ -81,7 +76,6 @@ bool LoadState::update(float dtime)
 		SPDLOG_INFO("All resources loaded.");
 	}
 
-	// Start game on enter, but only once everything is loaded
 	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		if (d_renderSystem->hasError() || d_soundSystem->hasError())
@@ -100,7 +94,6 @@ bool LoadState::update(float dtime)
 			return false;
 		}
 	}
-	// End game on escape
 	if (Input::pressed(GLFW_KEY_ESCAPE))
 	{
 		d_nextState = QUIT_STATE_NAME;
@@ -115,9 +108,7 @@ void LoadState::onEnter()
 {
 	d_renderSystem->setActiveScene("load");
 
-	// A run leaves this state with the music started and the resources reported
-	// as ready. Coming back has to start over, otherwise the music is never
-	// played again and the stale next state can trigger an unwanted transition.
+	// Re-entering must reset these, or the music never restarts and a stale next state leaks.
 	d_bgmStarted = false;
 	d_ready = false;
 	d_nextState.clear();

@@ -7,7 +7,6 @@
 
 unsigned int CollisionSystem::getNewGroupId()
 {
-	// Reuse a released group id if available
 	if (!d_freeGroups.empty())
 	{
 		unsigned int id = d_freeGroups.back();
@@ -15,10 +14,8 @@ unsigned int CollisionSystem::getNewGroupId()
 		d_groupFree[id] = false;
 		return id;
 	}
-	// Add new collision group
 	d_entities.push_back(std::list<Collidable*>());
 	d_groupFree.push_back(false);
-	// Return the group id
 	return static_cast<unsigned int>(d_entities.size() - 1);
 }
 
@@ -28,7 +25,6 @@ void CollisionSystem::releaseGroup(unsigned int groupId)
 	{
 		return;
 	}
-	// Delete remaining entities and hand the id back for reuse
 	for (Collidable* entity : d_entities[groupId])
 	{
 		forgetContacts(entity);
@@ -39,7 +35,6 @@ void CollisionSystem::releaseGroup(unsigned int groupId)
 	d_freeGroups.push_back(groupId);
 }
 
-// Cleanup
 CollisionSystem::~CollisionSystem()
 {
 	for (unsigned int i = 0; i < d_entities.size(); ++i)
@@ -57,27 +52,22 @@ Collidable* CollisionSystem::add(const AABBox& box, unsigned int groupId)
 	{
 		throw std::runtime_error("CollisionSystem.add: Invalid group id " + std::to_string(groupId));
 	}
-	// Create new entity and add to the collision group
 	Collidable* entity = new Collidable(groupId, box);
 	d_entities[groupId].push_back(entity);
 	return entity;
 }
 
-// Removes collidable entity
 void CollisionSystem::remove(Collidable* entity)
 {
 	if (entity == nullptr)
 	{
 		return;
 	}
-	// Defer the deletion to update() so the entity is never freed while it may
-	// still be referenced, and removing twice is harmless.
+	// Deferred to update(): the entity may still be referenced when remove() returns.
 	entity->markDeleted();
 }
 
-// Drop the open contacts of an entity that is about to be freed. The address can
-// be handed to a new collidable, which must not inherit the contacts of the old
-// one and silently skip its damage.
+// Drop open contacts: the address may be reused, and the new owner must not inherit them.
 void CollisionSystem::forgetContacts(Collidable* entity)
 {
 	for (auto contact = d_openContacts.begin(); contact != d_openContacts.end();)
@@ -93,7 +83,6 @@ void CollisionSystem::forgetContacts(Collidable* entity)
 	}
 }
 
-// Test all entities for collision
 void CollisionSystem::update()
 {
 	d_currentContacts.clear();
@@ -103,7 +92,6 @@ void CollisionSystem::update()
 		auto iter = d_entities[i].begin(); 
 		while (iter != d_entities[i].end())
 		{
-			// Delete if requested
 			if ((*iter)->deleteRequested())
 			{
 				Collidable* temp = (*iter);
@@ -122,15 +110,12 @@ void CollisionSystem::update()
 		}
 	}
 
-	// Whatever is not touching any more closes its contact, so a later overlap
-	// counts as a new one.
+	// Contacts that stopped touching are closed, so a later overlap counts as new.
 	d_openContacts.swap(d_currentContacts);
 }
 
-// Tests collidable entity against all entities not in the group
 void CollisionSystem::testCollision(Collidable* entity, unsigned int group)
 {
-	// Everything gets tested twice, make this faster
 	for (unsigned int i = 0; i < d_entities.size(); ++i)
 	{
 		if (i != group)
@@ -138,7 +123,6 @@ void CollisionSystem::testCollision(Collidable* entity, unsigned int group)
 			auto iter = d_entities[i].begin(); 
 			while (iter != d_entities[i].end())
 			{
-				// Delete if requested
 				if ((*iter)->deleteRequested())
 				{
 					Collidable* temp = (*iter);
@@ -152,11 +136,9 @@ void CollisionSystem::testCollision(Collidable* entity, unsigned int group)
 					{
 if (collides(entity->getAABBox(), (*iter)->getAABBox()))
 					{
-						// Since every collision is tested both ways, damage only happens from first entity to second entity
+						// Tested both ways, so damage flows only from the first entity to the second.
 						const Contact contact(entity, *iter);
-						// A contact deals its damage once, when it opens. Repeating
-						// it every frame while the two overlap would make the damage
-						// depend on the frame rate instead of on the collision.
+						// Damage once when the contact opens, so it does not scale with frame rate.
 						if (d_openContacts.count(contact) == 0)
 						{
 							(*iter)->receiveDamage(entity->getDamage());

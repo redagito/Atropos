@@ -14,24 +14,18 @@ public:
 	*/
 	struct WaveData
 	{
-		std::vector<short> samples; /**< Interleaved 16-bit samples. */
-		int channels; /**< Number of channels. */
+		std::vector<short> samples;
+		int channels;
 		int sampleRate; /**< Sample rate in Hz. */
 	};
 
 	/**
 	* \brief Decodes an audio file from disk.
-	* \param file Path to the audio file.
-	* \param out Receives the decoded PCM data.
-	* \return True on success.
 	*/
 	static bool decodeFile(const std::string& file, WaveData& out);
 
 	/**
-	* \brief Decodes audio data held in memory.
-	* \param data Raw file contents.
-	* \param out Receives the decoded PCM data.
-	* \return True on success.
+	* \brief Decodes an in-memory copy of a whole audio file.
 	*/
 	static bool decode(const std::vector<char>& data, WaveData& out);
 

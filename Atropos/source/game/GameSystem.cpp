@@ -10,8 +10,7 @@
 
 GameSystem::~GameSystem()
 {
-	// The active state has to be given its exit while it is still alive, the
-	// same way a normal transition exits it.
+	// onExit must run before the state is destroyed, as in a normal transition.
 	if (d_activeState != nullptr)
 	{
 		d_activeState->onExit();
@@ -27,22 +26,17 @@ GameSystem::GameSystem()
 	SPDLOG_DEBUG("Game system created.");
 }
 
-// Updates game objects
 bool GameSystem::update(float dtime)
 {
-	// Exit if state not set
 	if (d_activeState == nullptr)
 	{
 		return false;
 	}
 
-	// Update current state
 	if (!d_activeState->update(dtime))
 	{
-		// State ended
 		d_activeState->onExit();
 
-		// State requested the engine to stop.
 		const std::string& nextState = d_activeState->getNextState();
 		if (nextState == QUIT_STATE_NAME)
 		{
@@ -50,18 +44,15 @@ bool GameSystem::update(float dtime)
 			return false;
 		}
 
-		// The transition target must be registered.
 		const auto it = d_gameStates.find(nextState);
 		if (it == d_gameStates.end())
 		{
 			throw std::runtime_error("Game state transition to an unregistered state: " + nextState);
 		}
 
-		// Set next state
 		d_activeState = it->second.get();
 		d_activeState->onEnter();
 	}
-	// Update success
 	return true;
 }
 
@@ -69,11 +60,9 @@ void GameSystem::init(const ConfigFile& config)
 {
 	SPDLOG_DEBUG("Initializing game system.");
 
-	// Get initial state property
 	const std::string initialState = config.get("game_initialstate", "load");
 	SPDLOG_DEBUG("Game system initial state set to {}.", initialState);
 
-	// Set initial state active
 	const auto it = d_gameStates.find(initialState);
 	if (it == d_gameStates.end())
 	{
@@ -81,14 +70,12 @@ void GameSystem::init(const ConfigFile& config)
 	}
 	d_activeState = it->second.get();
 
-	// On enter state trigger
 	d_activeState->onEnter();
 }
 
 void GameSystem::addState(const std::string& name, IGameState* state)
 {
-	// Ownership is taken before init runs, so a state whose init throws is
-	// released instead of leaking.
+	// Take ownership before init so a throwing init does not leak.
 	std::unique_ptr<IGameState> owned(state);
 	owned->init();
 
@@ -96,7 +83,6 @@ void GameSystem::addState(const std::string& name, IGameState* state)
 	const bool wasActive = (existing != d_gameStates.end() && d_activeState == existing->second.get());
 	if (existing != d_gameStates.end())
 	{
-		// State with name already exists
 		SPDLOG_WARN("Overwriting game state {}.", name.c_str());
 		if (wasActive)
 		{

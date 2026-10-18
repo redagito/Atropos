@@ -1,16 +1,13 @@
 #include "game/state/PlayState.h"
 
-// Sub systems
 #include "renderer/RenderSystem.h"
 #include "renderer/Renderable.h"
 #include "collision/CollisionSystem.h"
 #include "collision/Collidable.h"
 #include "sound/SoundSystem.h"
 
-// Game object
 #include "game/GameObject.h"
 
-// Controller
 #include "game/control/CameraController.h"
 #include "game/control/ExplodeOnDeathController.h"
 #include "game/control/LinearMovementController.h"
@@ -24,7 +21,6 @@
 
 #include "util/Input.h"
 
-// GLFW
 #include <glfw/glfw3.h>
 #include <glm/ext.hpp>
 
@@ -43,8 +39,7 @@ PlayState::PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundS
 
 PlayState::~PlayState()
 {
-	// Destroy game objects first so no collidable is still referenced, then
-	// hand the collision groups back for reuse.
+	// Clear objects before releasing the groups, or collidables outlive their groups.
 	d_world.clear();
 	d_collisionSystem->releaseGroup(d_playerGroup);
 	d_collisionSystem->releaseGroup(d_enemyGroup);
@@ -54,69 +49,54 @@ void PlayState::init()
 {
 	// TODO: All resource loading and game object creation should be directed by a level file.
 
-	// Create play scene and set as active scene
 	d_renderSystem->createScene("play");
 	d_renderSystem->setActiveScene("play");
 
-	// Loading resources
 	// TODO: Sound loading should be data driven, not hard coded.
 	d_soundSystem->loadSFX("laser", "laser2.mp3", 0.2f);
 	d_soundSystem->loadSFX("explosion", "explosion2.wav", 0.6f);
 	d_soundSystem->loadBGM("combat", "song3.mp3", 0.3f);
 
-	// Preload model resources
 	d_renderSystem->loadModel("shot");
 	d_renderSystem->loadModel("enemy");
 
-	// Collision group ids for enemy objects and the player model
 	d_playerGroup = d_collisionSystem->getNewGroupId();
 	d_enemyGroup = d_collisionSystem->getNewGroupId();
 
-	// Add player
 	Renderable* playerDrawable = d_renderSystem->add("player");
-	// Player object controls camera
 	// TODO: Player object should be deserialized from data source (xml stream?).
 	d_player = new GameObject;
 	d_player->setDrawable(playerDrawable);
-	// Player collidable added to player collision group
 	d_player->setCollidable(d_collisionSystem->add(d_player->getDrawable()->getAABBox(), d_playerGroup));
-	// Sets collidable damage dealt
 	d_player->getCollidable()->setDamage(30.f);
 	
-	// Set controller
 	d_player->addController(std::shared_ptr<IController>(new CameraController(&d_renderSystem->getCamera()))); // Camera controller
 	d_player->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, 40.f)))); // Linear forward movement
 	d_player->addController(std::shared_ptr<IController>(new PlayerMovementController(20.f))); // User controlled side movement
 	d_player->addController(std::shared_ptr<IController>(new HealthController(100.f))); // Player health
 	d_player->addController(std::shared_ptr<IController>(new WeaponController(d_renderSystem, d_soundSystem, d_collisionSystem, &d_world, "laser", 0.2f, "shot", d_playerGroup, 0.2f, 40.f)));
 
-	// Set player transformation matrices
 	d_player->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 5.f, 0.f)));
 	d_player->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
 	d_player->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
 
-	// Add player
 	d_world.addObject(d_player);
 
-	// Generate initial water, 300 x 600, 18 tiles
+	// Ground tiles: 3 x 6 grid, 600 x 300 units.
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int j = 0; j < 6; ++j)
 		{
-			// Adds ground tiles
-			// TODO: Replace moving ground tiles with terrain system.
-			// TODO: Or at least clean up the initialization, right now its huge.
+			// TODO: Replace the hard coded ground tile grid with a terrain system.
 			Renderable* tileDrawable = d_renderSystem->add("watertile");
 			GameObject* tile = new GameObject;
 			tile->setDrawable(tileDrawable);
 			tile->addController(std::shared_ptr<IController>(new ShiftController(&d_renderSystem->getCamera(), 300.f)));
 
-			// Set transformation
 			tile->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(100.f * j - 300.f, 0.f, 100.f * i)));
 			tile->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(0.f), glm::vec3(1.f, 1.f, 1.f)));
 			tile->setScale(glm::scale(glm::mat4(1.f), glm::vec3(100.f, 1.f, 100.f)));
 
-			// Add to world
 			d_world.addObject(tile);
 		}
 	}
@@ -124,49 +104,41 @@ void PlayState::init()
 
 bool PlayState::update(float dtime)
 {
-	// Pause
 	if (Input::pressed(GLFW_KEY_P))
 	{
 		d_nextState = "pause";
 		return false;
 	}
 	
-	// Force state transition to lose state
 	if (Input::pressed(GLFW_KEY_F6))
 	{
 		d_nextState = "lose";
 		return false;
 	}
 	
-	// Force state transition to win state
 	if (Input::pressed(GLFW_KEY_F7))
 	{
 		d_nextState = "win";
 		return false;
 	}
 
-	// Enemy spawns about every 0.6 seconds
 	d_enemySpawn -= dtime;
 	if (d_enemySpawn <= 0.f)
 	{
 		d_enemySpawn = 0.6f;
-		// Create new enemy
 		Renderable* enemyDrawable = d_renderSystem->add("enemy");
 		GameObject* enemy = new GameObject;
 		enemy->setDrawable(enemyDrawable);
 		enemy->setCollidable(d_collisionSystem->add(enemy->getDrawable()->getAABBox(), d_enemyGroup));
 		enemy->getCollidable()->setDamage(30.f);
 
-		// Controller
 		enemy->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
-		// Health is below the damage the player and a projectile deal, so any single
-	// contact kills the enemy.
+		// Health is below any single hit, so one contact kills the enemy.
 	enemy->addController(std::shared_ptr<IController>(new HealthController(25.f)));
 		enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion")));
 		enemy->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
 		enemy->addController(std::shared_ptr<IController>(new DespawnController(12.f)));
 
-		// Transformation
 		enemy->setTranslation(glm::translate(d_player->getTranslation(), glm::vec3(0.f, 0.f, 100.f)));
 		enemy->setRotation(glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f)));
 		enemy->setScale(glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)));
@@ -185,18 +157,15 @@ bool PlayState::update(float dtime)
 		return false;
 	}
 
-	// Game world update
 	d_world.update(dtime);
 	return true;
 }
 
 void PlayState::onEnter()
 {
-	// Set play scene as active
 	// TODO: Scenes should be managed by handle, id or proxy class instead of string.
 	d_renderSystem->setActiveScene("play");
 
-	// Start sound playback
 	d_soundSystem->playBGM("combat");
 }
 

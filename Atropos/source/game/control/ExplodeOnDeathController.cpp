@@ -35,7 +35,6 @@ void ExplodeOnDeathController::update(float)
 {
 	if (d_object != nullptr && d_active && d_object->isDead() && !d_exploded)
 	{
-		// Trigger explosion
 		d_soundSystem->playSFX(d_soundName);
 		d_exploded = true;
 	}

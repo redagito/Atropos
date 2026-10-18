@@ -77,9 +77,7 @@ bool AudioDecoder::decodeWav(const std::vector<char>& data, WaveData& out)
 		const char* id = data.data() + pos;
 		std::uint32_t chunkSize = readU32(data, pos + 4);
 		std::size_t body = pos + 8;
-		// Clamp the chunk to the bytes actually present. This keeps the position
-		// arithmetic below from wrapping and stops a malformed (oversized) chunk
-		// size from advancing past the buffer.
+		// Clamp to the bytes actually present: an oversized chunk size must not advance past the buffer.
 		std::size_t remaining = data.size() - body;
 		std::size_t chunk = chunkSize < remaining ? chunkSize : remaining;
 
