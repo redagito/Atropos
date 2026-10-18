@@ -282,30 +282,27 @@ TEST_CASE("Interface queued after the scene draw reaches the next frame", "[ui][
 
 	Renderer renderer(64, 64, &shadowShader, std::string(ATROPOS_DATA_DIR) + "/");
 
-	UICanvas canvas(64);
-	glBindFramebuffer(GL_FRAMEBUFFER, canvas.framebuffer);
+	// endFrame presents to the default framebuffer, which is the 64x64 test window,
+	// so there is no offscreen canvas to render into here.
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, 64, 64);
-	glClearColor(0.f, 0.f, 0.f, 1.f);
 
 	// The engine draws the scene first and runs the game state afterwards, so
 	// anything the state queues lands after the flush and must survive to the
 	// next frame rather than being cleared at the start of one.
 	renderer.startFrame();
-	glClear(GL_COLOR_BUFFER_BIT);
 	renderer.endFrame(0.016f);
 
 	renderer.ui().drawRect(glm::vec2(16.f, 16.f), glm::vec2(32.f, 16.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
 
 	renderer.startFrame();
-	glClear(GL_COLOR_BUFFER_BIT);
 	renderer.endFrame(0.016f);
 
 	CHECK(context.sink().errors == 0);
 
-	const std::vector<unsigned char> pixels = canvas.read();
+	std::vector<unsigned char> pixels(64 * 64 * 4);
+	glReadPixels(0, 0, 64, 64, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
 	CHECK(isRed(pixels, 32, flipped(24, 64), 64));
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 TEST_CASE("A label is drawn over a translucent panel", "[ui][hud]")
 {

@@ -6,7 +6,9 @@ class Shader;
 class Mesh;
 
 #include "renderer/resource/VertexArrayObject.h"
+#include "renderer/render/Bloom.h"
 #include "renderer/render/Explosion.h"
+#include "renderer/render/RenderTarget.h"
 #include "renderer/render/ShadowBuffer.h"
 #include "renderer/render/Sky.h"
 #include "renderer/ui/UI.h"
@@ -15,6 +17,7 @@ class Mesh;
 #include <glm/glm.hpp>
 
 #include <string>
+#include <memory>
 #include <vector>
 
 class RenderRequest
@@ -130,6 +133,9 @@ private:
 	/** \brief Draws the background gradient. */
 	void skyPass();
 
+	/** \brief Adds the bloom halo and presents the offscreen scene to the screen. */
+	void postProcess();
+
 	void geometryPass();
 
 	void effectPass(float dtime);
@@ -145,6 +151,10 @@ private:
 	ShadowBuffer d_shadowBuffer;
 	Sky d_sky;
 	Explosion d_explosions;
+	Bloom d_bloom;
+
+	/** \brief Half float scene buffer, so bright effects have headroom to bloom. */
+	std::unique_ptr<RenderTarget> d_sceneTarget;
 
 	Stage d_stage;
 

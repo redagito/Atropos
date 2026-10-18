@@ -130,6 +130,20 @@ void Shader::setShaderValueVec3(GLint loc, const glm::vec3& value) const
 	}
 }
 
+void Shader::setShaderValueVec2(const std::string& name, const glm::vec2& value) const
+{
+	GLint loc = getUniformLocation(name);
+	setShaderValueVec2(loc, value);
+}
+
+void Shader::setShaderValueVec2(GLint loc, const glm::vec2& value) const
+{
+	if (loc != -1)
+	{
+		glProgramUniform2fv(d_programId, loc, 1, glm::value_ptr(value));
+	}
+}
+
 void Shader::setShaderValueFloat(const std::string& name, float value) const
 {
 	GLint loc = getUniformLocation(name);

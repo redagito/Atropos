@@ -11,6 +11,12 @@
 #include <glm/ext.hpp>
 #include <stdexcept>
 
+namespace
+{
+	/** \brief How much of the bloom halo is added back over the scene. */
+	const float BLOOM_STRENGTH = 1.2f;
+}
+
 RenderRequest::RenderRequest(const VertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool shadow)
 	:	
 	d_vao(vao),
@@ -90,6 +96,9 @@ Renderer::Renderer(int width, int height, Shader* shadow, const std::string& res
 
 	d_sky.init(resourcePath);
 	d_explosions.init(resourcePath);
+	d_bloom.init(resourcePath);
+
+	d_sceneTarget = std::make_unique<RenderTarget>(width, height, true);
 
 	glClearColor(d_clearColor.r, d_clearColor.g, d_clearColor.b, 0.f);
 	
@@ -134,9 +143,18 @@ void Renderer::endFrame(float dtime)
 	geometryPass();
 	// After the opaque pass, so the scene still occludes effects that sit behind it.
 	effectPass(dtime);
+	// Presents to the screen, leaving the default framebuffer bound for the HUD.
+	postProcess();
 
 	// Drawn last so it lands on top of the scene with its own depth state.
 	d_ui.flush();
+}
+
+void Renderer::postProcess()
+{
+	Profiler profiler("post_process");
+
+	d_bloom.apply(d_sceneTarget->getColourTexture(), d_width, d_height, BLOOM_STRENGTH);
 }
 
 void Renderer::addExplosion(const glm::vec3& position)
@@ -199,6 +217,8 @@ void Renderer::onResize(int width, int height)
 {
 	d_width = width;
 	d_height = height;
+	// The scene buffer cannot be resized in place, and post processing reads its size.
+	d_sceneTarget = std::make_unique<RenderTarget>(width, height, true);
 	glViewport(0, 0, d_width, d_height);
 	d_ui.onResize(d_width, d_height);
 }
@@ -212,8 +232,7 @@ void Renderer::clearTarget()
 {
 	Profiler profiler("clear_target");
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, d_width, d_height);
+	d_sceneTarget->setActive();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

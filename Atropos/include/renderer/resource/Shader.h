@@ -33,6 +33,10 @@ public:
 	
 	void setShaderValueMat4(GLint id, const glm::mat4& mat) const;
 	
+	void setShaderValueVec2(const std::string& name, const glm::vec2& value) const;
+
+	void setShaderValueVec2(GLint id, const glm::vec2& value) const;
+
 	void setShaderValueVec3(const std::string& name, const glm::vec3& value) const;
 	
 	void setShaderValueVec3(GLint id, const glm::vec3& value) const;

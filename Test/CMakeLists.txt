@@ -8,6 +8,7 @@ add_executable(atropos_tests
     source/GameObjectTest.cpp
     source/ControllerTest.cpp
     source/ExplosionTest.cpp
+    source/BloomTest.cpp
     source/CollisionSystemTest.cpp
     source/HealthControllerTest.cpp
     source/GameSystemTest.cpp
