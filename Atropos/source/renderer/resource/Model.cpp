@@ -11,7 +11,10 @@ namespace
 	/** \brief Each attribute keeps its own buffer, so each needs its own binding slot. */
 	void bindAttribute(GLuint vao, GLint location, GLuint binding, GLuint buffer, GLint components)
 	{
-		glVertexArrayVertexBuffer(vao, binding, buffer, 0, 0);
+		// The stride must be explicit; zero is not treated as tightly packed here.
+		const GLsizei stride = static_cast<GLsizei>(components) * sizeof(GLfloat);
+
+		glVertexArrayVertexBuffer(vao, binding, buffer, 0, stride);
 		glVertexArrayAttribFormat(vao, static_cast<GLuint>(location), components, GL_FLOAT, GL_FALSE, 0);
 		glVertexArrayAttribBinding(vao, static_cast<GLuint>(location), binding);
 		glEnableVertexArrayAttrib(vao, static_cast<GLuint>(location));

@@ -293,6 +293,78 @@ TEST_CASE("Models set up their vertex array through direct state access", "[shad
 	CHECK(size == static_cast<GLint>(data.vertices.size() * sizeof(float)));
 }
 
+TEST_CASE("A model draws coloured pixels through its vertex array", "[shader][render]")
+{
+	GLContext context;
+
+	ShaderSources sources;
+	sources.vertex = loadStage("color.vs");
+	sources.fragment = loadStage("color.fs");
+
+	Shader shader;
+	shader.init(sources);
+
+	MeshData data;
+	data.vertices = {-0.8f, -0.8f, 0.f, 0.8f, -0.8f, 0.f, 0.f, 0.8f, 0.f};
+	data.normals = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+	data.uv = {0.f, 0.f, 1.f, 0.f, 0.5f, 1.f};
+
+	Mesh mesh;
+	mesh.init(data);
+
+	ColorMaterial material(&shader, glm::vec3(0.f, 1.f, 0.f));
+	Model model(&mesh, &material);
+
+	GLuint color = 0;
+	glCreateTextures(GL_TEXTURE_2D, 1, &color);
+	glTextureStorage2D(color, 1, GL_RGBA8, 64, 64);
+	glTextureParameteri(color, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(color, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	GLuint target = 0;
+	glCreateFramebuffers(1, &target);
+	glNamedFramebufferTexture(target, GL_COLOR_ATTACHMENT0, color, 0);
+	REQUIRE(glCheckNamedFramebufferStatus(target, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, target);
+	glViewport(0, 0, 64, 64);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	material.setActive();
+	glm::mat4 identity(1.f);
+	shader.setShaderValueMat4("rotation", identity);
+	shader.setShaderValueMat4("translation", identity);
+	shader.setShaderValueMat4("scale", identity);
+	shader.setShaderValueMat4("view", identity);
+	shader.setShaderValueMat4("proj", identity);
+
+glBindVertexArray(model.getVertexArrayObject()->getId());
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+
+	CHECK(context.sink().errors == 0);
+
+	std::vector<unsigned char> pixels(64 * 64 * 4);
+	glReadPixels(0, 0, 64, 64, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+	std::size_t coloured = 0;
+	for (std::size_t i = 0; i < pixels.size(); i += 4)
+	{
+		if (pixels[i + 1] > 128)
+		{
+			coloured++;
+		}
+	}
+
+	INFO("green pixels: " << coloured);
+	CHECK(coloured > 100);
+
+glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteFramebuffers(1, &target);
+	glDeleteTextures(1, &color);
+}
+
 TEST_CASE("The shadow framebuffer is complete through named state access", "[shader][shadow]")
 {
 	GLContext context;
