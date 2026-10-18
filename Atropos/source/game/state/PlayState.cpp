@@ -179,9 +179,8 @@ void PlayState::drawInterface()
 	const float progress = d_renderSystem->getCamera().getPosition().z / GOAL_DISTANCE;
 	const int percent = static_cast<int>(std::clamp(progress, 0.f, 1.f) * 100.f);
 	const std::string percentText = std::to_string(percent) + "%";
-	const float percentWidth = ui.measureText(percentText, 1.f);
-	HUD::drawLabel(ui, glm::vec2((static_cast<float>(ui.getWidth()) - percentWidth) * 0.5f, 44.f),
-		percentText, 1.f, glm::vec4(0.6f, 0.9f, 1.f, 1.f));
+	// Stacked under the score in the top left, one line height plus panel padding.
+	HUD::drawLabel(ui, glm::vec2(16.f, 62.f), percentText, 1.f, glm::vec4(0.6f, 0.9f, 1.f, 1.f));
 
 	const float health = d_playerHealth->getHealth();
 	const float maxHealth = d_playerHealth->getMaxHealth();
