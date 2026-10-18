@@ -12,12 +12,34 @@
 
 #include <spdlog/spdlog.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include <glfw/glfw3.h>
 
 #include <stdexcept>
 #include <string>
+
+void GLAD_API_PTR RenderSystem::debugCallback(GLenum source, GLenum type, GLuint id,
+	GLenum severity, GLsizei, const GLchar* message, const void*)
+{
+	const std::string text(message != nullptr ? message : "");
+
+	// Anything the driver rates high or medium is a real problem, so it is
+	// logged as an error rather than a warning.
+	switch (severity)
+	{
+	case GL_DEBUG_SEVERITY_HIGH:
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		SPDLOG_ERROR("OpenGL error source {} type {} id {}: {}", source, type, id, text);
+		break;
+	case GL_DEBUG_SEVERITY_LOW:
+		SPDLOG_WARN("OpenGL warning type {} id {}: {}", type, id, text);
+		break;
+	default:
+		SPDLOG_DEBUG("OpenGL message type {} id {}: {}", type, id, text);
+		break;
+	}
+}
 
 void RenderSystem::resizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -73,7 +95,7 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	glfwSwapInterval(1);
 
 	// Load OpenGL function pointers
-	if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0)
+	if (gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress)) == 0)
 	{
 		glfwDestroyWindow(d_window);
 		d_window = nullptr;
@@ -82,6 +104,15 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	}
 
 	SPDLOG_INFO("OpenGL context version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
+	// There is no glGetError polling anywhere in the renderer, so debug output is
+	// the only way an OpenGL failure becomes visible. Synchronous mode reports on
+	// the calling thread, which keeps the messages in the order they happened.
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(&RenderSystem::debugCallback, nullptr);
+	// Notifications are driver chatter that would drown out real errors.
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
 	// Resize callback
 	glfwSetFramebufferSizeCallback(d_window, RenderSystem::resizeCallback);

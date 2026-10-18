@@ -13,6 +13,8 @@ struct GLFWwindow; /**< GLFW window forwrad declare. */
 
 #include "core/TSingletonMixin.h"
 
+#include <glad/gl.h>
+
 #include <string>
 #include <map>
 #include <memory>
@@ -136,6 +138,13 @@ private:
 	* \brief Resize callback for glfw.
 	*/
 	static void resizeCallback(GLFWwindow* window, int width, int height);
+
+	/**
+	* \brief Receives OpenGL errors and warnings through KHR_debug.
+	* GLAD_API_PTR is the calling convention glad uses for GLDEBUGPROC.
+	*/
+	static void GLAD_API_PTR debugCallback(GLenum source, GLenum type, GLuint id,
+		GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 	/**
 	* \brief Resize window callback
