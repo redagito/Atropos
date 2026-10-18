@@ -51,6 +51,6 @@ public:
 	
 private:
 	GLuint d_programId;
-	mutable std::unordered_map<std::string, GLint> d_uniforms;
+	std::unordered_map<std::string, GLint> d_uniforms;
 	static GLuint s_activeId;
 };

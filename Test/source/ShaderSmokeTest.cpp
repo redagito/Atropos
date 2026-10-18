@@ -254,6 +254,12 @@ TEST_CASE("Models set up their vertex array through direct state access", "[shad
 
 	CHECK(context.sink().errors == 0);
 
+	// Uniforms come from the link time enumeration, so the names the renderer sets must resolve.
+	CHECK(shader.getUniformLocation("model") != -1);
+	CHECK(shader.getUniformLocation("view") != -1);
+	CHECK(shader.getUniformLocation("bias") != -1);
+	CHECK(shader.getUniformLocation("notAUniform") == -1);
+
 	const GLuint vao = model.getVertexArrayObject()->getId();
 	glBindVertexArray(vao);
 

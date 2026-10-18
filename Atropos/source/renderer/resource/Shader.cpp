@@ -67,6 +67,25 @@ void Shader::init(const ShaderSources& sources)
 
 		throw std::runtime_error(std::string("Shader link error: ") + error.data());
     }
+
+	SPDLOG_DEBUG("Caching active uniform locations.");
+	GLint uniformCount = 0;
+	GLint maxNameLength = 0;
+	glGetProgramiv(d_programId, GL_ACTIVE_UNIFORMS, &uniformCount);
+	glGetProgramiv(d_programId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLength);
+
+	std::vector<char> name(static_cast<std::size_t>(maxNameLength));
+	for (GLint i = 0; i < uniformCount; ++i)
+	{
+		GLsizei length = 0;
+		GLsizei count = 0;
+		GLenum type = 0;
+		glGetActiveUniform(d_programId, i, maxNameLength, &length, &count, &type, name.data());
+
+		// Arrays report as "name[0]"; the location then addresses consecutive elements.
+		const std::string key(name.data(), static_cast<std::size_t>(length));
+		d_uniforms[key] = glGetUniformLocation(d_programId, key.c_str());
+	}
 }
 
 void Shader::setActive() const
@@ -89,7 +108,7 @@ void Shader::setShaderValueMat4(GLint loc, const glm::mat4& mat) const
 {
 	if (loc != -1)
 	{
-		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
+		glProgramUniformMatrix4fv(d_programId, loc, 1, GL_FALSE, glm::value_ptr(mat));
 	}
 }
 
@@ -103,7 +122,7 @@ void Shader::setShaderValueVec3(GLint loc, const glm::vec3& value) const
 {
 	if (loc != -1)
 	{
-		glUniform3fv(loc, 1, glm::value_ptr(value));
+		glProgramUniform3fv(d_programId, loc, 1, glm::value_ptr(value));
 	}
 }
 
@@ -117,7 +136,7 @@ void Shader::setShaderValueFloat(GLint loc, float value) const
 {
 	if (loc != -1)
 	{
-		glUniform1f(loc, value);
+		glProgramUniform1f(d_programId, loc, value);
 	}
 }
 
@@ -126,7 +145,7 @@ void Shader::setShaderTexture(const std::string& name, GLint textureUnit) const
 	GLint loc = getUniformLocation(name);
 	if (loc != -1)
 	{
-		glUniform1i(loc, textureUnit);
+		glProgramUniform1i(d_programId, loc, textureUnit);
 	}
 }
 
@@ -134,7 +153,7 @@ void Shader::setShaderTexture(GLint loc, GLint textureUnit) const
 {
 	if (loc != -1)
 	{
-		glUniform1i(loc, textureUnit);
+		glProgramUniform1i(d_programId, loc, textureUnit);
 	}
 }
 
@@ -145,12 +164,10 @@ GLint Shader::getAttributeLocation(const std::string& attrib) const
 
 GLint Shader::getUniformLocation(const std::string& uniform) const
 {
-	auto iter = d_uniforms.find(uniform);
+	const auto iter = d_uniforms.find(uniform);
 	if (iter == d_uniforms.end())
 	{
-		GLint id = glGetUniformLocation(d_programId, uniform.c_str());
-		d_uniforms[uniform] = id;
-		return id;
+		return -1;
 	}
 	return iter->second;
 }
