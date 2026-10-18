@@ -174,7 +174,7 @@ void PlayState::drawInterface()
 {
 	UI& ui = d_renderSystem->ui();
 
-	ui.drawText(glm::vec2(16.f, 14.f), "SCORE " + std::to_string(d_runStats.score), 1.f, glm::vec4(1.f, 1.f, 1.f, 1.f));
+	HUD::drawLabel(ui, glm::vec2(16.f, 14.f), "SCORE " + std::to_string(d_runStats.score), 1.f, glm::vec4(1.f, 1.f, 1.f, 1.f));
 
 	const float progress = d_renderSystem->getCamera().getPosition().z / GOAL_DISTANCE;
 	const int percent = static_cast<int>(std::clamp(progress, 0.f, 1.f) * 100.f);

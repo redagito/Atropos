@@ -361,3 +361,4 @@ TEST_CASE("A label is drawn over a translucent panel", "[ui][hud]")
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+
