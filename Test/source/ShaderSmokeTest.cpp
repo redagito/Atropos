@@ -1,10 +1,7 @@
-#define GLFW_INCLUDE_NONE
 #include <glad/gl.h>
 
-#include <glfw/glfw3.h>
-
+#include "GLTestContext.h"
 #include "io/FileLoader.h"
-#include "renderer/GLDebug.h"
 #include "renderer/resource/ColorMaterial.h"
 #include "renderer/resource/Mesh.h"
 #include "renderer/resource/MeshData.h"
@@ -22,54 +19,7 @@
 
 namespace
 {
-	class GLContext
-	{
-	public:
-		GLContext()
-		{
-			REQUIRE(glfwInit() == GLFW_TRUE);
-
-			glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-			d_window = glfwCreateWindow(64, 64, "shader smoke test", nullptr, nullptr);
-			REQUIRE(d_window != nullptr);
-			glfwMakeContextCurrent(d_window);
-			REQUIRE(glfwGetCurrentContext() != nullptr);
-
-			// glad 2 returns the packed core profile version, not 0 for success.
-			d_version = gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress));
-			REQUIRE(d_version != 0);
-
-			// A GL error here is a real bug, so fail the test rather than only logging it.
-			d_sink.abortOnError = false;
-			GLDebug::install(d_sink);
-		}
-
-		const GLDebug::Sink& sink() const
-		{
-			return d_sink;
-		}
-
-		int version() const
-		{
-			return d_version;
-		}
-
-		~GLContext()
-		{
-			glfwDestroyWindow(d_window);
-			glfwTerminate();
-		}
-
-	private:
-		GLFWwindow* d_window = nullptr;
-		int d_version = 0;
-		GLDebug::Sink d_sink;
-	};
-
+	using GLContext = GLTestContext;
 	std::string loadStage(const std::string& name)
 	{
 		FileLoader loader(std::string(ATROPOS_SHADER_SRC_DIR) + "/" + name);
