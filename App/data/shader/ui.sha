@@ -1,0 +1,2 @@
+vertexshader=ui.vs
+fragmentshader=ui.fs

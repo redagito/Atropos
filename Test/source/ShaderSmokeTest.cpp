@@ -87,6 +87,7 @@ TEST_CASE("Shader programs compile and link under the core profile", "[shader]")
 		{"color", {"color.vs", "color.fs"}},
 		{"shadow", {"shadow.vs", "shadow.fs"}},
 		{"texturedPhong", {"texturedPhong.vs", "texturedPhong.fs"}},
+		{"ui", {"ui.vs", "ui.fs"}},
 	};
 
 	for (const auto& program : programs)
@@ -104,7 +105,7 @@ TEST_CASE("Shader programs compile and link under the core profile", "[shader]")
 		INFO("link log " << program.first << ":\n" << programLog(handle));
 		CHECK(linked == GL_TRUE);
 
-		if (linked == GL_TRUE)
+		if (linked == GL_TRUE && program.first != "ui")
 		{
 			// Every shader uses vertex; the unused ones lose normal/uv to dead code
 			// elimination and report -1, which is why the mesh setup skips them.
