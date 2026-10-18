@@ -87,7 +87,9 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	// Vsync needs a current context.
 	glfwSwapInterval(1);
 
-	if (gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress)) == 0)
+	// glad 2 returns the packed core profile version on success, 0 means it could not be read.
+	const int gladVersion = gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress));
+	if (gladVersion == 0)
 	{
 		glfwDestroyWindow(d_window);
 		d_window = nullptr;
