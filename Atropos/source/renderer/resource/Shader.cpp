@@ -24,7 +24,11 @@ Shader::Shader()
 Shader::~Shader()
 {
 	SPDLOG_DEBUG("Deleting shader.");
-	glDeleteProgram(d_programId);
+	// Guarded so a shader that never linked can be destroyed without a context.
+	if (d_programId != 0)
+	{
+		glDeleteProgram(d_programId);
+	}
 	if (s_activeId == d_programId)
 	{
 		s_activeId = 0;
