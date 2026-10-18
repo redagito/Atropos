@@ -15,6 +15,8 @@ struct GLFWwindow;
 
 #include <glad/gl.h>
 
+#include "renderer/GLDebug.h"
+
 #include <string>
 #include <map>
 #include <memory>
@@ -103,14 +105,9 @@ public:
 private:
 	static void resizeCallback(GLFWwindow* window, int width, int height);
 
-	/**
-	* \brief Receives OpenGL errors and warnings through KHR_debug.
-	* GLAD_API_PTR is the calling convention glad uses for GLDEBUGPROC.
-	*/
-	static void GLAD_API_PTR debugCallback(GLenum source, GLenum type, GLuint id,
-		GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
-
 	void onResize(int width, int height);
+
+	GLDebug::Sink d_debugSink;
 
 	Camera d_camera;
 	// Must stay a node-based map: rehashing would invalidate d_activeScene.

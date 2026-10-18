@@ -1,5 +1,7 @@
 #include "renderer/RenderSystem.h"
 
+#include "renderer/GLDebug.h"
+
 #include "renderer/Renderable.h"
 #include "io/ConfigFile.h"
 
@@ -18,26 +20,6 @@
 
 #include <stdexcept>
 #include <string>
-
-void GLAD_API_PTR RenderSystem::debugCallback(GLenum source, GLenum type, GLuint id,
-	GLenum severity, GLsizei, const GLchar* message, const void*)
-{
-	const std::string text(message != nullptr ? message : "");
-
-	switch (severity)
-	{
-	case GL_DEBUG_SEVERITY_HIGH:
-	case GL_DEBUG_SEVERITY_MEDIUM:
-		SPDLOG_ERROR("OpenGL error source {} type {} id {}: {}", source, type, id, text);
-		break;
-	case GL_DEBUG_SEVERITY_LOW:
-		SPDLOG_WARN("OpenGL warning type {} id {}: {}", type, id, text);
-		break;
-	default:
-		SPDLOG_DEBUG("OpenGL message type {} id {}: {}", type, id, text);
-		break;
-	}
-}
 
 void RenderSystem::resizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -100,11 +82,9 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	SPDLOG_INFO("OpenGL context version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 	// Nothing polls glGetError, so debug output is the only failure signal; synchronous keeps message order.
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(&RenderSystem::debugCallback, nullptr);
-	// Notifications are driver chatter that would drown out real errors.
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+	// A GL error is always a bug, so the app stops rather than rendering wrong frames.
+	d_debugSink.abortOnError = true;
+	GLDebug::install(d_debugSink);
 
 	glfwSetFramebufferSizeCallback(d_window, RenderSystem::resizeCallback);
 

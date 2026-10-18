@@ -4,6 +4,7 @@
 #include <glfw/glfw3.h>
 
 #include "io/FileLoader.h"
+#include "renderer/GLDebug.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -33,6 +34,15 @@ namespace
 			// glad 2 returns the packed core profile version, not 0 for success.
 			d_version = gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress));
 			REQUIRE(d_version != 0);
+
+			// A GL error here is a real bug, so fail the test rather than only logging it.
+			d_sink.abortOnError = false;
+			GLDebug::install(d_sink);
+		}
+
+		const GLDebug::Sink& sink() const
+		{
+			return d_sink;
 		}
 
 		int version() const
@@ -49,6 +59,7 @@ namespace
 	private:
 		GLFWwindow* d_window = nullptr;
 		int d_version = 0;
+		GLDebug::Sink d_sink;
 	};
 
 	std::string loadStage(const std::string& name)
@@ -154,4 +165,7 @@ TEST_CASE("Shader programs compile and link under the core profile", "[shader]")
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
 	}
+
+	INFO("GL errors while compiling and linking: " << context.sink().errors);
+	CHECK(context.sink().errors == 0);
 }
