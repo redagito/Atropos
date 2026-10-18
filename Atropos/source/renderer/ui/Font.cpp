@@ -19,7 +19,11 @@ Font::Font()
 
 Font::~Font()
 {
-	glDeleteTextures(1, &d_atlas);
+	// Guarded so an uninitialised font can be destroyed without a context.
+	if (d_atlas != 0)
+	{
+		glDeleteTextures(1, &d_atlas);
+	}
 }
 
 void Font::load(const std::string& metricsFile, const std::string& atlasFile)

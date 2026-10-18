@@ -10,6 +10,7 @@ struct GLFWwindow;
 #include "renderer/scene/Scene.h"
 #include "renderer/scene/Camera.h"
 #include "renderer/IRenderSystem.h"
+#include "renderer/ui/UI.h"
 
 #include "core/TSingletonMixin.h"
 
@@ -85,6 +86,8 @@ public:
 	* \brief Returns modifiable camera.
 	*/
 	Camera& getCamera() override;
+
+	UI& ui() override;
 
 	void draw() override;
 

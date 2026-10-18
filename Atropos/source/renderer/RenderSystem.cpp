@@ -239,6 +239,11 @@ Camera& RenderSystem::getCamera()
 	return d_camera;
 }
 
+UI& RenderSystem::ui()
+{
+	return d_renderer->ui();
+}
+
 void RenderSystem::onResize(int width, int height)
 {
 	// GLFW can fire this before the renderer exists; guard against it.

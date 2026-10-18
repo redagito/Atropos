@@ -19,8 +19,15 @@ UI::UI()
 
 UI::~UI()
 {
-	glDeleteVertexArrays(1, &d_vao);
-	glDeleteBuffers(1, &d_buffer);
+	// Guarded so an uninitialised instance can be destroyed without a context.
+	if (d_vao != 0)
+	{
+		glDeleteVertexArrays(1, &d_vao);
+	}
+	if (d_buffer != 0)
+	{
+		glDeleteBuffers(1, &d_buffer);
+	}
 }
 
 void UI::init(const std::string& resourcePath)

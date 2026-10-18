@@ -2,6 +2,7 @@
 
 #include "renderer/IRenderSystem.h"
 #include "renderer/scene/Camera.h"
+#include "renderer/ui/UI.h"
 
 #include <glm/glm.hpp>
 
@@ -66,6 +67,11 @@ public:
 		return d_camera;
 	}
 
+	UI& ui() override
+	{
+		return d_ui;
+	}
+
 	void draw() override
 	{
 	}
@@ -110,4 +116,5 @@ public:
 
 private:
 	Camera d_camera; /**< Real camera, so states can still reset and read the view. */
+	UI d_ui; /**< Uninitialised; drawing into it is a no-op without a context. */
 };

@@ -2,6 +2,7 @@
 
 class Renderable;
 class Camera;
+class UI;
 
 struct GLFWwindow;
 
@@ -59,6 +60,11 @@ public:
 	* \brief Returns modifiable camera.
 	*/
 	virtual Camera& getCamera() = 0;
+
+	/**
+	* \brief Screen space drawing queue for the current frame.
+	*/
+	virtual UI& ui() = 0;
 
 	/**
 	* \brief Draws the active scene.
