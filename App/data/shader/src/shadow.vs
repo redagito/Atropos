@@ -1,9 +1,9 @@
 #version 450 core
 
 // Set by model
-in vec3 vertex;
-in vec3 normal;
-in vec2 uv;
+layout(location = 0) in vec3 vertex;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 uv;
 
 // Set by renderer
 uniform mat4 model;

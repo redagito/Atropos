@@ -135,6 +135,21 @@ TEST_CASE("Shader programs compile and link under the core profile", "[shader]")
 		INFO("link log " << program.first << ":\n" << programLog(handle));
 		CHECK(linked == GL_TRUE);
 
+		if (linked == GL_TRUE)
+		{
+			// Every shader uses vertex; the unused ones lose normal/uv to dead code
+			// elimination and report -1, which is why the mesh setup skips them.
+			CHECK(glGetAttribLocation(handle, "vertex") == 0);
+
+			const GLint normal = glGetAttribLocation(handle, "normal");
+			INFO("normal location: " << normal);
+			CHECK((normal == -1 || normal == 1));
+
+			const GLint uv = glGetAttribLocation(handle, "uv");
+			INFO("uv location: " << uv);
+			CHECK((uv == -1 || uv == 2));
+		}
+
 		glDeleteProgram(handle);
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
