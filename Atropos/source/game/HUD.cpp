@@ -17,13 +17,28 @@ namespace
 	constexpr float BAR_WIDTH_FRACTION = 0.4f;
 	constexpr float BAR_HEIGHT = 14.f;
 	constexpr float BAR_BOTTOM_MARGIN = 20.f;
+
+	// Padding around a label and the panel colour behind it.
+	constexpr float LABEL_PADDING = 5.f;
+	const glm::vec4 PANEL_COLOR(0.f, 0.f, 0.f, 0.45f);
+}
+
+void HUD::drawLabel(UI& ui, const glm::vec2& position, const std::string& text, float scale, const glm::vec4& color)
+{
+	const float width = ui.measureText(text, scale);
+	const float height = ui.getTextHeight(scale);
+
+	ui.drawRect(position - glm::vec2(LABEL_PADDING, LABEL_PADDING),
+		glm::vec2(width + LABEL_PADDING * 2.f, height + LABEL_PADDING * 2.f),
+		PANEL_COLOR);
+	ui.drawText(position, text, scale, color);
 }
 
 void HUD::drawFps(UI& ui)
 {
 	const std::string text = "FPS " + std::to_string(ui.getFps());
 	const float width = ui.measureText(text, TEXT_SCALE);
-	ui.drawText(glm::vec2(static_cast<float>(ui.getWidth()) - width - 16.f, 14.f), text, TEXT_SCALE, TEXT_COLOR);
+	drawLabel(ui, glm::vec2(static_cast<float>(ui.getWidth()) - width - 16.f, 14.f), text, TEXT_SCALE, TEXT_COLOR);
 }
 
 void HUD::drawCentredText(UI& ui, float y, const std::string& text, float scale, const glm::vec4& color)

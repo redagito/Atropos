@@ -48,6 +48,9 @@ public:
 
 	float measureText(const std::string& text, float scale) const;
 
+	/** \brief Height of one line of text at a scale, including the descender. */
+	float getTextHeight(float scale) const;
+
 	/** \brief Feeds the frame duration; call once per frame for the FPS readout. */
 	void setFrameTime(float dtime);
 

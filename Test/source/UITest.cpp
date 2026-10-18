@@ -307,3 +307,56 @@ TEST_CASE("Interface queued after the scene draw reaches the next frame", "[ui][
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+TEST_CASE("A label is drawn over a translucent panel", "[ui][hud]")
+{
+	GLTestContext context;
+
+	UI ui;
+	ui.init(std::string(ATROPOS_DATA_DIR) + "/");
+	ui.onResize(200, 100);
+
+	UICanvas canvas(200);
+	glBindFramebuffer(GL_FRAMEBUFFER, canvas.framebuffer);
+	glViewport(0, 0, 200, 100);
+	// A bright scene, which is what the panel has to stay legible over.
+	glClearColor(0.9f, 0.9f, 0.2f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	ui.beginFrame();
+	HUD::drawLabel(ui, glm::vec2(20.f, 20.f), "87%", 1.f, glm::vec4(1.f, 1.f, 1.f, 1.f));
+	ui.flush();
+
+	CHECK(context.sink().errors == 0);
+
+	const std::vector<unsigned char> pixels = canvas.read();
+
+	int red = 0;
+	int green = 0;
+	int blue = 0;
+
+	// Just inside the panel padding, above the glyphs, the background is darkened
+	// but not replaced, because the panel is translucent.
+	pixelAt(pixels, 20, flipped(22, 100), 200, red, green, blue);
+	CHECK(red < 200);
+	CHECK(red > 100);
+	CHECK(green < 200);
+
+	// Well clear of the label the background is untouched.
+	pixelAt(pixels, 180, flipped(22, 100), 200, red, green, blue);
+	CHECK(red > 200);
+	CHECK(green > 200);
+
+	// The glyphs themselves are on top of the panel, so bright white survives.
+	std::size_t white = 0;
+	for (std::size_t i = 0; i < pixels.size(); i += 4)
+	{
+		if (pixels[i] > 240 && pixels[i + 1] > 240 && pixels[i + 2] > 240)
+		{
+			white++;
+		}
+	}
+	INFO("glyph pixels on the panel: " << white);
+	CHECK(white > 20);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}

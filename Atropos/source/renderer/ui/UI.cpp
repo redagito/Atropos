@@ -199,6 +199,11 @@ float UI::measureText(const std::string& text, float scale) const
 	return width;
 }
 
+float UI::getTextHeight(float scale) const
+{
+	return static_cast<float>(d_font.getLineHeight()) * scale;
+}
+
 int UI::getWidth() const
 {
 	return d_width;

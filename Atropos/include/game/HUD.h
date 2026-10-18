@@ -14,6 +14,12 @@ namespace HUD
 	/** \brief Draws the frame rate readout in the top right corner. */
 	void drawFps(UI& ui);
 
+	/**
+	* \brief Draws text over a translucent grey panel sized to fit it, so a
+	* readout stays legible over a bright or busy scene.
+	*/
+	void drawLabel(UI& ui, const glm::vec2& position, const std::string& text, float scale, const glm::vec4& color);
+
 	/** \brief Draws text horizontally centred in the interface. */
 	void drawCentredText(UI& ui, float y, const std::string& text, float scale, const glm::vec4& color);
 
