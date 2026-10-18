@@ -182,8 +182,6 @@ void Renderer::geometryPass()
 
 	for (auto& request : d_renderRequests)
 	{
-		// Texture unit 0 used by material
-		glActiveTexture(GL_TEXTURE0);
 		const AMaterial* material = request.getMaterial();
 		
 		// TODO: let the renderer pick the shader from the material.
