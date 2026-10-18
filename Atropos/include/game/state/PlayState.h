@@ -17,7 +17,7 @@ class PlayState : public IGameState
 {
 public:
 	/** \brief Camera travel that ends the run; also drives the progress readout. */
-	static constexpr float GOAL_DISTANCE = 8000.f;
+	static constexpr float GOAL_DISTANCE = 1000.f;
 
 	PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, RunStats& runStats);
 
