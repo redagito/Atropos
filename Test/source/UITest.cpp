@@ -1,10 +1,12 @@
 #include "GLTestContext.h"
 #include "renderer/ui/Font.h"
+#include "renderer/ui/UI.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include <string>
+#include <vector>
 
 TEST_CASE("The interface font loads its metrics and atlas", "[ui][font]")
 {
@@ -51,3 +53,127 @@ TEST_CASE("The interface font reports a missing metrics file", "[ui][font]")
 	CHECK_THROWS(font.load(std::string(ATROPOS_FONT_DIR) + "/does_not_exist.fnt",
 		std::string(ATROPOS_FONT_DIR) + "/DejaVuSansMono.tga"));
 }
+namespace
+{
+	/** \brief Offscreen colour target the UI draws into. */
+	struct UICanvas
+	{
+		GLuint texture = 0;
+		GLuint framebuffer = 0;
+		int size = 0;
+
+		UICanvas(int pixels)
+			:
+			size(pixels)
+		{
+			glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+			glTextureStorage2D(texture, 1, GL_RGBA8, size, size);
+			glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glCreateFramebuffers(1, &framebuffer);
+			glNamedFramebufferTexture(framebuffer, GL_COLOR_ATTACHMENT0, texture, 0);
+			REQUIRE(glCheckNamedFramebufferStatus(framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+		}
+
+		~UICanvas()
+		{
+			glDeleteFramebuffers(1, &framebuffer);
+			glDeleteTextures(1, &texture);
+		}
+
+		std::vector<unsigned char> read() const
+		{
+			std::vector<unsigned char> pixels(static_cast<std::size_t>(size) * size * 4);
+			glReadPixels(0, 0, size, size, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+			return pixels;
+		}
+	};
+
+	/** \brief glReadPixels returns rows bottom up, so convert from a top origin row. */
+	int flipped(int topRow)
+	{
+		return 63 - topRow;
+	}
+
+	bool isRed(const std::vector<unsigned char>& pixels, int x, int y, int size)
+	{
+		// glReadPixels returns rows bottom up.
+		const std::size_t index = (static_cast<std::size_t>(y) * size + x) * 4;
+		return pixels[index] > 128 && pixels[index + 1] < 80 && pixels[index + 2] < 80;
+	}
+}
+
+TEST_CASE("A user interface rectangle fills the pixels it covers", "[ui][render]")
+{
+	GLTestContext context;
+
+	UI ui;
+	ui.init(std::string(ATROPOS_DATA_DIR) + "/");
+	ui.onResize(64, 64);
+
+	UICanvas canvas(64);
+	glBindFramebuffer(GL_FRAMEBUFFER, canvas.framebuffer);
+	glViewport(0, 0, 64, 64);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	ui.beginFrame();
+	ui.drawRect(glm::vec2(16.f, 40.f), glm::vec2(32.f, 8.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
+	ui.flush();
+
+	CHECK(context.sink().errors == 0);
+
+	const std::vector<unsigned char> pixels = canvas.read();
+
+// The rectangle covers x 16..48 and y 40..48 in top origin coordinates.
+	CHECK(isRed(pixels, 32, flipped(44), 64));
+	CHECK(isRed(pixels, 20, flipped(47), 64));
+	// Outside it, on all four sides.
+	CHECK_FALSE(isRed(pixels, 8, flipped(44), 64));
+	CHECK_FALSE(isRed(pixels, 56, flipped(44), 64));
+	CHECK_FALSE(isRed(pixels, 32, flipped(30), 64));
+	CHECK_FALSE(isRed(pixels, 32, flipped(55), 64));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+TEST_CASE("User interface text puts lighter pixels on the background", "[ui][render]")
+{
+	GLTestContext context;
+
+	UI ui;
+	ui.init(std::string(ATROPOS_DATA_DIR) + "/");
+	ui.onResize(320, 64);
+
+	UICanvas canvas(320);
+	glBindFramebuffer(GL_FRAMEBUFFER, canvas.framebuffer);
+	glViewport(0, 0, 320, 64);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	ui.beginFrame();
+	ui.drawText(glm::vec2(8.f, 12.f), "SCORE 87", 1.f, glm::vec4(1.f, 1.f, 1.f, 1.f));
+	ui.flush();
+
+	CHECK(context.sink().errors == 0);
+
+	const std::vector<unsigned char> pixels = canvas.read();
+
+	std::size_t lit = 0;
+	for (std::size_t i = 0; i < pixels.size(); i += 4)
+	{
+		if (pixels[i] > 128)
+		{
+			lit++;
+		}
+	}
+
+	INFO("glyph pixels: " << lit);
+	CHECK(lit > 200);
+
+	// The advance of eight glyphs must move the pen by the summed advances.
+	CHECK(ui.measureText("SCORE 87", 1.f) == Catch::Approx(8.f * ui.measureText("S", 1.f)));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+

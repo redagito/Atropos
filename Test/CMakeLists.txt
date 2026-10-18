@@ -28,6 +28,7 @@ target_compile_definitions(atropos_tests PRIVATE
     ATROPOS_SHADER_SRC_DIR="${CMAKE_SOURCE_DIR}/App/data/shader/src"
     ATROPOS_TEXTURE_DIR="${CMAKE_SOURCE_DIR}/App/data/texture"
     ATROPOS_FONT_DIR="${CMAKE_SOURCE_DIR}/App/data/font"
+    ATROPOS_DATA_DIR="${CMAKE_SOURCE_DIR}/App/data"
 )
 
 target_link_libraries(atropos_tests PRIVATE
