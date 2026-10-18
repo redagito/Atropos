@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 // Set by model
 in vec3 vertex;
@@ -27,7 +27,6 @@ out vec2 _uv;
 out vec3 _normal;
 out float _ambient;
 out float _specular;
-out float _diffuse;
 
 // For shadow mapping
 out vec4 _shadowCoord;
@@ -35,7 +34,6 @@ out vec3 _vertexWorld; // Vertex position in world space
 out vec3 _cameraDir; // Vector from vertex to camera
 out vec3 _lightDir; // Vector from vertex to light
 out vec3 _normalCamera; // Vertex normal in camera space
-out float _height; // Object height
 
 void main()
 {

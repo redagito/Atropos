@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 // Set by material
 uniform sampler2D texture0;
@@ -7,8 +7,6 @@ in vec2 _uv;
 smooth in vec3 _normal;
 in float _ambient;
 in float _specular;
-in float _diffuse;
-in float _height;
 
 // For shadow mapping
 in vec4 _shadowCoord;

@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 // Set by model
 in vec3 vertex;
@@ -12,8 +12,6 @@ uniform mat4 scale;
 
 uniform mat4 view;
 uniform mat4 proj;
-
-out vec3 _color;
 
 void main()
 {

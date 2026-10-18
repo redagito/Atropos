@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 // Set by model
 in vec3 vertex;
