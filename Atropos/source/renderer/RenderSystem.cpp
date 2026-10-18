@@ -185,7 +185,7 @@ void RenderSystem::setSceneBackgroundColor(const std::string& name, const glm::v
 	d_scenes.at(name).setBackgroundColor(color);
 }
 
-void RenderSystem::draw()
+void RenderSystem::draw(float dtime)
 {
 	Profiler profiler("rendersys_draw");
 	d_renderer->startFrame();
@@ -193,7 +193,17 @@ void RenderSystem::draw()
 	{
 		d_activeScene->draw(d_renderer, d_camera, d_culling);
 	}
-	d_renderer->endFrame();
+	d_renderer->endFrame(dtime);
+}
+
+void RenderSystem::addExplosion(const glm::vec3& position)
+{
+	// GLFW can fire before the renderer exists; guard against it.
+	if (d_renderer == nullptr)
+	{
+		return;
+	}
+	d_renderer->addExplosion(position);
 }
 
 void RenderSystem::swapBuffer()

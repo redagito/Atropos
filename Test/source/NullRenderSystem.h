@@ -77,7 +77,12 @@ public:
 		return d_ui;
 	}
 
-	void draw() override
+	void addExplosion(const glm::vec3& position) override
+	{
+		d_explosions.push_back(position);
+	}
+
+	void draw(float) override
 	{
 	}
 
@@ -113,6 +118,7 @@ public:
 	std::vector<std::string> d_createdScenes; /**< Names of scenes created, in order. */
 	std::vector<std::string> d_requestedModels; /**< Names of models requested, in order. */
 	std::vector<std::string> d_addedModels; /**< Names of models added to a scene, in order. */
+	std::vector<glm::vec3> d_explosions; /**< World positions explosions were started at, in order. */
 	std::string d_activeScene; /**< Name of the scene last made active. */
 	std::string d_lastBackgroundScene; /**< Scene whose background color was set last. */
 	int d_backgroundColorCount = 0; /**< How often a background color was set. */

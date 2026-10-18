@@ -73,9 +73,15 @@ public:
 	virtual UI& ui() = 0;
 
 	/**
+	* \brief Starts a fireball burst at a world position. The effect lives in the
+	* render system, so it outlives the object that triggered it.
+	*/
+	virtual void addExplosion(const glm::vec3& position) = 0;
+
+	/**
 	* \brief Draws the active scene.
 	*/
-	virtual void draw() = 0;
+	virtual void draw(float dtime) = 0;
 
 	/**
 	* \brief Waits for drawing to finish and swaps buffers.

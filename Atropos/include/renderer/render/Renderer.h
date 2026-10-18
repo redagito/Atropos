@@ -6,6 +6,7 @@ class Shader;
 class Mesh;
 
 #include "renderer/resource/VertexArrayObject.h"
+#include "renderer/render/Explosion.h"
 #include "renderer/render/ShadowBuffer.h"
 #include "renderer/render/Sky.h"
 #include "renderer/ui/UI.h"
@@ -76,9 +77,10 @@ public:
 	void startFrame();
 
 	/**
-	* \brief Signals the end of the frame's draw calls; runs shadow and geometry passes.
+	* \brief Signals the end of the frame's draw calls; runs the shadow, geometry and
+	* effect passes. dtime is in seconds and drives the effect simulation.
 	*/
-	void endFrame();
+	void endFrame(float dtime);
 
 	void setViewMatrix(const glm::mat4& view);
 	
@@ -110,6 +112,12 @@ public:
 	*/
 	void setLightPosition(const glm::vec3& position);
 
+	/**
+	* \brief Starts a fireball burst. The effect owns its particles, so it is not
+	* tied to a game object and needs no render request.
+	*/
+	void addExplosion(const glm::vec3& position);
+
 /**
 	* \brief Screen space drawing queue for the current frame.
 	*/
@@ -124,6 +132,8 @@ private:
 
 	void geometryPass();
 
+	void effectPass(float dtime);
+
 	void shadowPass();
 
 	/**
@@ -134,6 +144,7 @@ private:
 	Shader* d_shadowShader;
 	ShadowBuffer d_shadowBuffer;
 	Sky d_sky;
+	Explosion d_explosions;
 
 	Stage d_stage;
 

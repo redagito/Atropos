@@ -1,17 +1,19 @@
 #pragma once
 
 class ISoundSystem;
+class IRenderSystem;
 
 #include "game/IController.h"
 
 #include <string>
 
-// Despite the name, this plays a sound and creates no explosion effect.
-// TODO: Should react to an onDeath event.
+/**
+* \brief Plays a sound and starts a fireball burst the one time its object dies.
+*/
 class ExplodeOnDeathController : public IController
 {
 public:
-	ExplodeOnDeathController(ISoundSystem* soundSystem, const std::string& soundName);
+	ExplodeOnDeathController(ISoundSystem* soundSystem, const std::string& soundName, IRenderSystem* renderSystem);
 
 	~ExplodeOnDeathController();
 
@@ -26,6 +28,7 @@ public:
 private:
 	GameObject* d_object; /**< Controlled game object. */
 	ISoundSystem* d_soundSystem; /**< Sound system. */
+	IRenderSystem* d_renderSystem; /**< Render system, which owns the explosion effect. */
 	std::string d_soundName; /**< Sound name to be played. */
 	bool d_active;
 	bool d_exploded; /**< Whether the explosion was already triggered. */

@@ -142,7 +142,7 @@ void Engine::run()
 
 		updateResources();
 		d_renderSystem->ui().setFrameTime(dtime);
-		updateRenderer();
+		updateRenderer(dtime);
 		updateGame(dtime);
 		updateCollision();
 		swapBuffer();
@@ -185,10 +185,10 @@ void Engine::updateResources()
 	d_soundSystem->process();
 }
 
-void Engine::updateRenderer()
+void Engine::updateRenderer(float dtime)
 {
 	Profiler profiler("update_renderer");
-	d_renderSystem->draw();
+	d_renderSystem->draw(dtime);
 }
 
 void Engine::swapBuffer()

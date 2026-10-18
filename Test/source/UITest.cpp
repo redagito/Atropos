@@ -292,13 +292,13 @@ TEST_CASE("Interface queued after the scene draw reaches the next frame", "[ui][
 	// next frame rather than being cleared at the start of one.
 	renderer.startFrame();
 	glClear(GL_COLOR_BUFFER_BIT);
-	renderer.endFrame();
+	renderer.endFrame(0.016f);
 
 	renderer.ui().drawRect(glm::vec2(16.f, 16.f), glm::vec2(32.f, 16.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
 
 	renderer.startFrame();
 	glClear(GL_COLOR_BUFFER_BIT);
-	renderer.endFrame();
+	renderer.endFrame(0.016f);
 
 	CHECK(context.sink().errors == 0);
 

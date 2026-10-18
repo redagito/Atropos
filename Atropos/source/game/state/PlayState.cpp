@@ -145,8 +145,8 @@ bool PlayState::update(float dtime)
 
 		enemy->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, -10.f))));
 		// Health is below any single hit, so one contact kills the enemy.
-	enemy->addController(std::shared_ptr<IController>(new HealthController(25.f)));
-		enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion")));
+		enemy->addController(std::shared_ptr<IController>(new HealthController(25.f)));
+		enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion", d_renderSystem)));
 		enemy->addController(std::make_shared<ScoreOnDeathController>(&d_runStats.score));
 		enemy->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
 		enemy->addController(std::shared_ptr<IController>(new DespawnController(12.f)));
@@ -169,7 +169,7 @@ bool PlayState::update(float dtime)
 		return false;
 	}
 
-d_world.update(dtime);
+	d_world.update(dtime);
 	drawInterface();
 	return true;
 }

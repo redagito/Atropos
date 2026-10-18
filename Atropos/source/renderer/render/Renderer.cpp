@@ -89,6 +89,7 @@ Renderer::Renderer(int width, int height, Shader* shadow, const std::string& res
 	d_ui.onResize(width, height);
 
 	d_sky.init(resourcePath);
+	d_explosions.init(resourcePath);
 
 	glClearColor(d_clearColor.r, d_clearColor.g, d_clearColor.b, 0.f);
 	
@@ -121,7 +122,7 @@ d_frameStats.drawCalls = 0;
 	d_stage = Renderer::Start;
 }
 
-void Renderer::endFrame()
+void Renderer::endFrame(float dtime)
 {
 	Profiler profiler("end_frame");
 	d_stage = Renderer::End;
@@ -131,9 +132,16 @@ void Renderer::endFrame()
 	clearTarget();
 	skyPass();
 	geometryPass();
+	// After the opaque pass, so the scene still occludes effects that sit behind it.
+	effectPass(dtime);
 
 	// Drawn last so it lands on top of the scene with its own depth state.
 	d_ui.flush();
+}
+
+void Renderer::addExplosion(const glm::vec3& position)
+{
+	d_explosions.addExplosion(position);
 }
 
 void Renderer::draw(const VertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool hasShadow)
@@ -274,6 +282,14 @@ void Renderer::geometryPass()
 		d_frameStats.vertexCount += request.getSize();
 	}
 	return;
+}
+
+void Renderer::effectPass(float dtime)
+{
+	Profiler profiler("effect_pass");
+
+	d_explosions.update(dtime);
+	d_explosions.draw(d_view, d_proj);
 }
 
 // TODO use framebuffer class for this?

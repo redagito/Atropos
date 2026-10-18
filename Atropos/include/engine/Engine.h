@@ -40,7 +40,7 @@ protected:
 	void updateGame(float dtime);
 	void updateCollision();
 	void updateResources();
-	void updateRenderer();
+	void updateRenderer(float dtime);
 
 	/** \brief Swaps display buffers. TODO: Put this into renderer? */
 	void swapBuffer();

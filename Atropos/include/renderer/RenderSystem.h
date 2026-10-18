@@ -91,7 +91,9 @@ public:
 
 	UI& ui() override;
 
-	void draw() override;
+	void addExplosion(const glm::vec3& position) override;
+
+	void draw(float dtime) override;
 
 	/**
 	* \brief Waits for drawing to finish and swaps buffers.
