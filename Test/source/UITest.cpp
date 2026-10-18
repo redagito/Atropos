@@ -1,6 +1,7 @@
 #include "GLTestContext.h"
 #include "renderer/ui/Font.h"
 #include "renderer/ui/UI.h"
+#include "game/HUD.h"
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -90,9 +91,9 @@ namespace
 	};
 
 	/** \brief glReadPixels returns rows bottom up, so convert from a top origin row. */
-	int flipped(int topRow)
+	int flipped(int topRow, int size)
 	{
-		return 63 - topRow;
+		return size - 1 - topRow;
 	}
 
 	bool isRed(const std::vector<unsigned char>& pixels, int x, int y, int size)
@@ -126,13 +127,13 @@ TEST_CASE("A user interface rectangle fills the pixels it covers", "[ui][render]
 	const std::vector<unsigned char> pixels = canvas.read();
 
 // The rectangle covers x 16..48 and y 40..48 in top origin coordinates.
-	CHECK(isRed(pixels, 32, flipped(44), 64));
-	CHECK(isRed(pixels, 20, flipped(47), 64));
+	CHECK(isRed(pixels, 32, flipped(44, 64), 64));
+	CHECK(isRed(pixels, 20, flipped(47, 64), 64));
 	// Outside it, on all four sides.
-	CHECK_FALSE(isRed(pixels, 8, flipped(44), 64));
-	CHECK_FALSE(isRed(pixels, 56, flipped(44), 64));
-	CHECK_FALSE(isRed(pixels, 32, flipped(30), 64));
-	CHECK_FALSE(isRed(pixels, 32, flipped(55), 64));
+	CHECK_FALSE(isRed(pixels, 8, flipped(44, 64), 64));
+	CHECK_FALSE(isRed(pixels, 56, flipped(44, 64), 64));
+	CHECK_FALSE(isRed(pixels, 32, flipped(30, 64), 64));
+	CHECK_FALSE(isRed(pixels, 32, flipped(55, 64), 64));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -177,3 +178,85 @@ TEST_CASE("User interface text puts lighter pixels on the background", "[ui][ren
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+
+namespace
+{
+	/** \brief Reads one pixel as colour components. */
+	void pixelAt(const std::vector<unsigned char>& pixels, int x, int y, int size,
+		int& red, int& green, int& blue)
+	{
+		const std::size_t index = (static_cast<std::size_t>(y) * size + x) * 4;
+		red = pixels[index];
+		green = pixels[index + 1];
+		blue = pixels[index + 2];
+	}
+}
+
+TEST_CASE("The progress bar draws a fill over a darker track", "[ui][hud]")
+{
+	GLTestContext context;
+
+	UI ui;
+	ui.init(std::string(ATROPOS_DATA_DIR) + "/");
+	ui.onResize(200, 100);
+
+	UICanvas canvas(200);
+	glBindFramebuffer(GL_FRAMEBUFFER, canvas.framebuffer);
+	glViewport(0, 0, 200, 100);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+ui.beginFrame();
+	// Two fifths of 200 is 80 wide, centred, so the bar spans x 60..140 at y 70..84.
+	HUD::drawBar(ui, 70.f, 14.f, 0.5f, glm::vec4(1.f, 0.f, 0.f, 1.f));
+	ui.flush();
+
+	CHECK(context.sink().errors == 0);
+
+	const std::vector<unsigned char> pixels = canvas.read();
+
+	int red = 0;
+	int green = 0;
+	int blue = 0;
+
+	// Left half of the bar, 60..100, is the red fill.
+	pixelAt(pixels, 80, flipped(76, 100), 200, red, green, blue);
+	CHECK(red > 128);
+	CHECK(green < 80);
+	CHECK(blue < 80);
+
+	// Right half, 100..140, is the unfilled track: dark, but not the black background.
+	pixelAt(pixels, 120, flipped(76, 100), 200, red, green, blue);
+	CHECK(red < 80);
+	CHECK(red > 10);
+
+	// Nothing is drawn to the left of the bar.
+	pixelAt(pixels, 10, flipped(76, 100), 200, red, green, blue);
+	CHECK(red == 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+TEST_CASE("The frame rate readout tracks the frame time it is given", "[ui][hud]")
+{
+	GLTestContext context;
+
+	UI ui;
+	ui.init(std::string(ATROPOS_DATA_DIR) + "/");
+
+	// A single frame seeds the value exactly, so no smoothing to fight with.
+	ui.setFrameTime(1.f / 60.f);
+	CHECK(ui.getFps() == 60);
+
+	// Repeated frames at the same rate stay put.
+	for (int i = 0; i < 30; ++i)
+	{
+		ui.setFrameTime(1.f / 60.f);
+	}
+	CHECK(ui.getFps() == 60);
+
+	// A zero or negative delta must not divide by zero.
+	ui.setFrameTime(0.f);
+	ui.setFrameTime(-1.f);
+	CHECK(ui.getFps() == 60);
+}
