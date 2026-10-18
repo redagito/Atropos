@@ -24,8 +24,6 @@ void GLAD_API_PTR RenderSystem::debugCallback(GLenum source, GLenum type, GLuint
 {
 	const std::string text(message != nullptr ? message : "");
 
-	// Anything the driver rates high or medium is a real problem, so it is
-	// logged as an error rather than a warning.
 	switch (severity)
 	{
 	case GL_DEBUG_SEVERITY_HIGH:
@@ -44,8 +42,7 @@ void GLAD_API_PTR RenderSystem::debugCallback(GLenum source, GLenum type, GLuint
 void RenderSystem::resizeCallback(GLFWwindow* window, int width, int height)
 {
 	RenderSystem& system = RenderSystem::getInstance();
-	// The callback can still fire while the window is being torn down, so only
-	// the window this system owns is acted on.
+	// GLFW can still fire this during teardown, so only our own window is acted on.
 	if (system.d_window != nullptr && window == system.d_window)
 	{
 		system.onResize(width, height);
@@ -68,19 +65,15 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	const unsigned int width = config.get("render_windowwidth", 800);
 	const unsigned int height = config.get("render_windowheight", 600);
 
-	// Init GLFW
 	if (!glfwInit())
 	{
 		throw std::runtime_error("Failed to initialize GLFW.");
 	}
-	// GL core context creation. The renderer targets 4.6 core and does not fall
-// back, so a driver that cannot provide it has to be reported rather than
-// silently running an older context than the code was written against.
+
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_REFRESH_RATE, 30);
 
 	d_window = glfwCreateWindow(width, height, config.get("render_windowtitle", "Atropos").c_str(), NULL, NULL);
 	if (d_window == nullptr)
@@ -94,7 +87,6 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 	// Vsync needs a current context.
 	glfwSwapInterval(1);
 
-	// Load OpenGL function pointers
 	if (gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress)) == 0)
 	{
 		glfwDestroyWindow(d_window);
@@ -105,32 +97,24 @@ void RenderSystem::init(const ConfigFile& config, ThreadPool& pool)
 
 	SPDLOG_INFO("OpenGL context version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
-	// There is no glGetError polling anywhere in the renderer, so debug output is
-	// the only way an OpenGL failure becomes visible. Synchronous mode reports on
-	// the calling thread, which keeps the messages in the order they happened.
+	// Nothing polls glGetError, so debug output is the only failure signal; synchronous keeps message order.
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(&RenderSystem::debugCallback, nullptr);
 	// Notifications are driver chatter that would drown out real errors.
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
-	// Resize callback
 	glfwSetFramebufferSizeCallback(d_window, RenderSystem::resizeCallback);
 
-	// Create resource manager width resource path
 	d_manager = std::unique_ptr<ResourceManager>(new ResourceManager(config.get("render_resourcepath", "data/"), pool));
 
-	// Create render device with window size and shadow mapping shader.
-	// Loading the shadow shader throws if the resource is unavailable.
+	// getShader throws if the "shadow" resource is missing.
 	Shader* shadowShader = d_manager->getShader("shadow");
 	d_renderer = std::shared_ptr<Renderer>(new Renderer(width, height, shadowShader));
 
-	// Show window
 	glfwShowWindow(d_window);
 
-	// GLFW does not raise a resize event when the window is created, so the
-	// camera projection would otherwise keep its default aspect ratio until the
-	// user resizes the window for the first time.
+	// GLFW raises no resize event on creation; without this the camera aspect stays default.
 	int framebufferWidth = 0;
 	int framebufferHeight = 0;
 	glfwGetFramebufferSize(d_window, &framebufferWidth, &framebufferHeight);
@@ -146,7 +130,6 @@ RenderSystem::~RenderSystem()
 	d_manager = nullptr;
 	d_activeScene = nullptr;
 
-	// Delete rendering window
 	if (d_window != nullptr)
 	{
 		glfwDestroyWindow(d_window);
@@ -173,7 +156,6 @@ void RenderSystem::requestClose()
 	}
 }
 
-// Enables or disables culling in the scene
 void RenderSystem::setCulling(bool status)
 {
 	d_culling = status;
@@ -186,8 +168,7 @@ bool RenderSystem::getCulling() const
 
 void RenderSystem::createScene(const std::string& name)
 {
-	// Replacing an existing scene destroys every renderable it holds, so the
-	// active pointer has to stop referring to it first.
+	// Assigning d_scenes[name] destroys the old Scene, so drop the pointer first.
 	const auto existing = d_scenes.find(name);
 	if (existing != d_scenes.end() && d_activeScene == &existing->second)
 	{
@@ -198,8 +179,7 @@ void RenderSystem::createScene(const std::string& name)
 
 void RenderSystem::setActiveScene(const std::string& name)
 {
-	// A real check rather than an assert, because Release builds compile the
-	// assert away and would go on to dereference a scene that does not exist.
+	// Check, not assert: Release compiles asserts out, so this would deref a missing scene.
 	if (!hasScene(name))
 	{
 		throw std::runtime_error("Cannot activate a scene that does not exist: " + name);
@@ -214,8 +194,7 @@ bool RenderSystem::hasScene(const std::string& name) const
 
 void RenderSystem::setSceneBackgroundColor(const std::string& name, const glm::vec3& color)
 {
-	// A real check rather than an assert, because Release builds compile the
-	// assert away and would go on to colour a scene that does not exist.
+	// Check, not assert: Release compiles asserts out, so this would touch a missing scene.
 	if (!hasScene(name))
 	{
 		throw std::runtime_error("Cannot set the background of a scene that does not exist: " + name);
@@ -223,7 +202,6 @@ void RenderSystem::setSceneBackgroundColor(const std::string& name, const glm::v
 	d_scenes.at(name).setBackgroundColor(color);
 }
 
-// Draw call
 void RenderSystem::draw()
 {
 	Profiler profiler("rendersys_draw");
@@ -237,7 +215,6 @@ void RenderSystem::draw()
 
 void RenderSystem::swapBuffer()
 {
-	// Buffer swap
 	glfwSwapBuffers(d_window);
 }
 
@@ -261,11 +238,9 @@ bool RenderSystem::hasError() const
 	return d_manager->hasError();
 }
 
-// Add entity
 Renderable* RenderSystem::add(const char* model)
 {
-	// A real check rather than an assert, because Release builds compile the
-	// assert away and would go on to add to a scene that does not exist.
+	// Check, not assert: Release compiles asserts out, so this would add to no scene.
 	if (d_activeScene == nullptr)
 	{
 		throw std::runtime_error("Cannot add a renderable without an active scene.");
@@ -283,16 +258,14 @@ Camera& RenderSystem::getCamera()
 
 void RenderSystem::onResize(int width, int height)
 {
-	// The callback can fire after the window is created but before the renderer
-	// exists, so guard against it.
+	// GLFW can fire this before the renderer exists; guard against it.
 	if (d_renderer == nullptr)
 	{
 		return;
 	}
 	d_renderer->onResize(width, height);
 
-	// A minimized window reports a zero size, which would produce an infinite
-	// aspect ratio and an invalid projection matrix.
+	// A minimized window reports zero size, giving an invalid aspect ratio.
 	if (width <= 0 || height <= 0)
 	{
 		return;
