@@ -205,9 +205,7 @@ void Renderer::geometryPass()
 		
 		// Texture unit 1 carries the depth texture
 		// TODO: rework the texture binding for multitexturing.
-		glActiveTexture(GL_TEXTURE1);
-		
-		glBindTexture(GL_TEXTURE_2D, d_shadowBuffer.getDepthTexture());
+		glBindTextureUnit(1, d_shadowBuffer.getDepthTexture());
 		
 		// TODO: automate bind-texture-then-bind-shader-unit.
 		material->getShader()->setShaderTexture("shadow", 1);

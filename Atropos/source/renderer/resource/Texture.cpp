@@ -1,12 +1,14 @@
 #include "renderer/resource/Texture.h"
 
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 Texture::Texture()
 	:
 	d_texId(0)
 {
-	glGenTextures(1, &d_texId);
+	glCreateTextures(GL_TEXTURE_2D, 1, &d_texId);
 }
 
 void Texture::init(const Image& image)
@@ -16,18 +18,20 @@ void Texture::init(const Image& image)
 		throw std::runtime_error("Cannot initialize a texture from an empty image.");
 	}
 
-	glBindTexture(GL_TEXTURE_2D, d_texId);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getData());
-	
-	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	glBindTexture(GL_TEXTURE_2D, 0);
+	const GLsizei width = static_cast<GLsizei>(image.getWidth());
+	const GLsizei height = static_cast<GLsizei>(image.getHeight());
+	// Immutable storage has to reserve the whole mip chain, and GL_LINEAR_MIPMAP_LINEAR needs all of it.
+	const GLsizei levels = static_cast<GLsizei>(std::log2(static_cast<double>(std::max(width, height)))) + 1;
+
+	glTextureParameteri(d_texId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTextureParameteri(d_texId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTextureParameteri(d_texId, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTextureParameteri(d_texId, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+
+	glTextureStorage2D(d_texId, levels, GL_RGBA8, width, height);
+	glTextureSubImage2D(d_texId, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, image.getData());
+
+	glGenerateTextureMipmap(d_texId);
 }
 
 Texture::~Texture()
@@ -38,8 +42,5 @@ Texture::~Texture()
 
 void Texture::setActive(unsigned int unit) const
 {
-	glActiveTexture(GL_TEXTURE0 + unit);
-
-	glBindTexture(GL_TEXTURE_2D, d_texId);
-	return;
+	glBindTextureUnit(unit, d_texId);
 }

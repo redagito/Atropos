@@ -25,6 +25,7 @@ add_executable(atropos_tests
 target_compile_definitions(atropos_tests PRIVATE
     ATROPOS_SOUND_DIR="${CMAKE_SOURCE_DIR}/App/data/sound"
     ATROPOS_SHADER_SRC_DIR="${CMAKE_SOURCE_DIR}/App/data/shader/src"
+    ATROPOS_TEXTURE_DIR="${CMAKE_SOURCE_DIR}/App/data/texture"
 )
 
 target_link_libraries(atropos_tests PRIVATE

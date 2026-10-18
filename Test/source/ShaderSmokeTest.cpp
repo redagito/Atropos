@@ -5,6 +5,8 @@
 
 #include "io/FileLoader.h"
 #include "renderer/GLDebug.h"
+#include "renderer/resource/Texture.h"
+#include "resource/Image.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -168,4 +170,42 @@ TEST_CASE("Shader programs compile and link under the core profile", "[shader]")
 
 	INFO("GL errors while compiling and linking: " << context.sink().errors);
 	CHECK(context.sink().errors == 0);
+}
+
+TEST_CASE("Textures allocate their whole mip chain through direct state access", "[shader][texture]")
+{
+	GLContext context;
+
+	Image image;
+	image.load(std::string(ATROPOS_TEXTURE_DIR) + "/checkerPattern.tga");
+
+	Texture texture;
+	texture.init(image);
+	texture.setActive(0);
+
+	CHECK(context.sink().errors == 0);
+
+	GLint bound = 0;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound);
+	REQUIRE(bound != 0);
+
+	GLint levelWidth = 0;
+	GLint levelHeight = 0;
+	glGetTextureLevelParameteriv(static_cast<GLuint>(bound), 0, GL_TEXTURE_WIDTH, &levelWidth);
+	glGetTextureLevelParameteriv(static_cast<GLuint>(bound), 0, GL_TEXTURE_HEIGHT, &levelHeight);
+	CHECK(levelWidth == static_cast<GLint>(image.getWidth()));
+	CHECK(levelHeight == static_cast<GLint>(image.getHeight()));
+
+	// A 128x128 chain is log2(128)+1 = 8 levels, so level 7 is the 1x1 smallest one.
+	GLint smallest = 0;
+	glGetTextureLevelParameteriv(static_cast<GLuint>(bound), 7, GL_TEXTURE_WIDTH, &smallest);
+	CHECK(smallest == 1);
+
+	GLint pastEnd = 0;
+	glGetTextureLevelParameteriv(static_cast<GLuint>(bound), 8, GL_TEXTURE_WIDTH, &pastEnd);
+	CHECK(pastEnd == 0);
+
+	GLint immutable = 0;
+	glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_IMMUTABLE_FORMAT, &immutable);
+	CHECK(immutable == GL_TRUE);
 }
