@@ -6,36 +6,42 @@
 
 #include <spdlog/spdlog.h>
 
+namespace
+{
+	/** \brief Each attribute keeps its own buffer, so each needs its own binding slot. */
+	void bindAttribute(GLuint vao, GLint location, GLuint binding, GLuint buffer, GLint components)
+	{
+		glVertexArrayVertexBuffer(vao, binding, buffer, 0, 0);
+		glVertexArrayAttribFormat(vao, static_cast<GLuint>(location), components, GL_FLOAT, GL_FALSE, 0);
+		glVertexArrayAttribBinding(vao, static_cast<GLuint>(location), binding);
+		glEnableVertexArrayAttrib(vao, static_cast<GLuint>(location));
+	}
+}
+
 Model::Model(Mesh* mesh, AMaterial* material)
 	:
 	d_mesh(mesh),
 	d_material(material)
 {
-	d_vao.setActive();
-	
+	const GLuint vao = d_vao.getId();
+
 	GLint vLoc = d_material->getShader()->getAttributeLocation("vertex");
 	GLint nLoc = d_material->getShader()->getAttributeLocation("normal");
 	GLint uLoc = d_material->getShader()->getAttributeLocation("uv");
-	
+
+	// A location of -1 means this shader never reads the attribute, so it was optimized out.
 	if (vLoc != -1)
 	{
-		glEnableVertexAttribArray(vLoc);
-		d_mesh->getVertexBuffer()->setActive();
-		glVertexAttribPointer(vLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		bindAttribute(vao, vLoc, 0, d_mesh->getVertexBuffer()->getId(), 3);
 	}
 	if (nLoc != -1)
 	{
-		glEnableVertexAttribArray(nLoc);
-		d_mesh->getNormalBuffer()->setActive();
-		glVertexAttribPointer(nLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		bindAttribute(vao, nLoc, 1, d_mesh->getNormalBuffer()->getId(), 3);
 	}
-	if (uLoc != -1) 
+	if (uLoc != -1)
 	{
-		glEnableVertexAttribArray(uLoc);
-		d_mesh->getUVBuffer()->setActive();
-		glVertexAttribPointer(uLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		bindAttribute(vao, uLoc, 2, d_mesh->getUVBuffer()->getId(), 2);
 	}
-	d_vao.setInactive();
 }
 
 Model::~Model()

@@ -6,7 +6,7 @@ VertexArrayObject::VertexArrayObject()
 	:
 	d_id(0)
 {
-	glGenVertexArrays(1, &d_id);
+	glCreateVertexArrays(1, &d_id);
 }
 
 VertexArrayObject::~VertexArrayObject()
@@ -15,14 +15,18 @@ VertexArrayObject::~VertexArrayObject()
 	glDeleteVertexArrays(1, &d_id);
 }
 
+GLuint VertexArrayObject::getId() const
+{
+	return d_id;
+}
+
+// A VAO still has to be bound to draw; only its setup is done without binding.
 void VertexArrayObject::setActive() const
 {
 	glBindVertexArray(d_id);
-	return;
 }
 
 void VertexArrayObject::setInactive() const
 {
 	glBindVertexArray(0);
-	return;
 }

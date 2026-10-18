@@ -15,6 +15,8 @@ public:
 
 	~VertexArrayObject();
 	
+	GLuint getId() const;
+
 	void setActive() const;
 
 	void setInactive() const;

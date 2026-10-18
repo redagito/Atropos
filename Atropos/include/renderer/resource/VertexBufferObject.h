@@ -16,11 +16,8 @@ public:
 	VertexBufferObject& operator=(const VertexBufferObject&) = delete;
 
 	~VertexBufferObject();
-	
-	/**
-	 * \brief Binds the VBO to GL_ARRAY_BUFFER.
-	 */
-	void setActive() const;
+
+	GLuint getId() const;
 
 	std::size_t getSize() const;
 

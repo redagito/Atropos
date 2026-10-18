@@ -8,10 +8,8 @@ VertexBufferObject::VertexBufferObject(const float* data, std::size_t size)
 	d_size(size)
 {
 	SPDLOG_DEBUG("Create VertexBufferObject.");
-	glGenBuffers(1, &d_id);
-	
-	setActive();
-	glBufferData(GL_ARRAY_BUFFER, size*sizeof(float), data, GL_STATIC_DRAW);
+	glCreateBuffers(1, &d_id);
+	glNamedBufferStorage(d_id, size*sizeof(float), data, 0);
 	return;
 }
 
@@ -21,11 +19,9 @@ VertexBufferObject::~VertexBufferObject()
 	glDeleteBuffers(1, &d_id);
 }
 
-void VertexBufferObject::setActive() const
+GLuint VertexBufferObject::getId() const
 {
-	SPDLOG_DEBUG("Set active VertexBufferObject.");
-	glBindBuffer(GL_ARRAY_BUFFER, d_id);
-	return;
+	return d_id;
 }
 
 std::size_t VertexBufferObject::getSize() const

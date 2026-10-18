@@ -5,6 +5,11 @@
 
 #include "io/FileLoader.h"
 #include "renderer/GLDebug.h"
+#include "renderer/resource/ColorMaterial.h"
+#include "renderer/resource/Mesh.h"
+#include "renderer/resource/MeshData.h"
+#include "renderer/resource/Model.h"
+#include "renderer/resource/Shader.h"
 #include "renderer/resource/Texture.h"
 #include "resource/Image.h"
 
@@ -208,4 +213,75 @@ TEST_CASE("Textures allocate their whole mip chain through direct state access",
 	GLint immutable = 0;
 	glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_IMMUTABLE_FORMAT, &immutable);
 	CHECK(immutable == GL_TRUE);
+}
+
+namespace
+{
+	/** \brief Reads back what an attribute points at; the classic queries read the bound VAO. */
+	void attributeSource(GLuint location, GLint& buffer, GLint& components)
+	{
+		GLint enabled = 0;
+		glGetVertexAttribiv(location, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
+		REQUIRE(enabled == GL_TRUE);
+
+		glGetVertexAttribiv(location, GL_VERTEX_ATTRIB_ARRAY_SIZE, &components);
+		glGetVertexAttribiv(location, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &buffer);
+	}
+}
+
+TEST_CASE("Models set up their vertex array through direct state access", "[shader][model]")
+{
+	GLContext context;
+
+	ShaderSources sources;
+	sources.vertex = loadStage("texturedPhong.vs");
+	sources.fragment = loadStage("texturedPhong.fs");
+
+	Shader shader;
+	shader.init(sources);
+
+	MeshData data;
+	data.vertices = {0.f, 0.f, 0.f, 1.f, 0.f, 0.f};
+	data.normals = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+	data.uv = {0.f, 0.f, 1.f, 0.f};
+
+	Mesh mesh;
+	mesh.init(data);
+
+	ColorMaterial material(&shader, glm::vec3(1.f));
+	Model model(&mesh, &material);
+
+	CHECK(context.sink().errors == 0);
+
+	const GLuint vao = model.getVertexArrayObject()->getId();
+	glBindVertexArray(vao);
+
+	GLint vertexBuffer = 0;
+	GLint vertexComponents = 0;
+	attributeSource(0, vertexBuffer, vertexComponents);
+	CHECK(vertexComponents == 3);
+	CHECK(vertexBuffer == static_cast<GLint>(mesh.getVertexBuffer()->getId()));
+
+	GLint normalBuffer = 0;
+	GLint normalComponents = 0;
+	attributeSource(1, normalBuffer, normalComponents);
+	CHECK(normalComponents == 3);
+	CHECK(normalBuffer == static_cast<GLint>(mesh.getNormalBuffer()->getId()));
+
+	GLint uvBuffer = 0;
+	GLint uvComponents = 0;
+	attributeSource(2, uvBuffer, uvComponents);
+	CHECK(uvComponents == 2);
+	CHECK(uvBuffer == static_cast<GLint>(mesh.getUVBuffer()->getId()));
+
+	// Separate buffers mean separate slots, otherwise the last bind would win for all three.
+	CHECK(vertexBuffer != normalBuffer);
+	CHECK(normalBuffer != uvBuffer);
+	CHECK(vertexBuffer != uvBuffer);
+
+	glBindVertexArray(0);
+
+	GLint size = 0;
+	glGetNamedBufferParameteriv(vertexBuffer, GL_BUFFER_SIZE, &size);
+	CHECK(size == static_cast<GLint>(data.vertices.size() * sizeof(float)));
 }
