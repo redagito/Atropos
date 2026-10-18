@@ -9,6 +9,7 @@
 #include "renderer/resource/Shader.h"
 #include "renderer/resource/Texture.h"
 #include "renderer/render/ShadowBuffer.h"
+#include "renderer/render/Sky.h"
 #include "resource/Image.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -20,6 +21,7 @@
 namespace
 {
 	using GLContext = GLTestContext;
+	using std::string;
 	std::string loadStage(const std::string& name)
 	{
 		FileLoader loader(std::string(ATROPOS_SHADER_SRC_DIR) + "/" + name);
@@ -350,4 +352,67 @@ TEST_CASE("The shadow framebuffer is complete through named state access", "[sha
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	CHECK(context.sink().errors == 0);
+}
+TEST_CASE("The sky gradient runs from zenith at the top to the horizon below", "[render][sky]")
+{
+	GLTestContext context;
+
+	ShaderSources sources;
+	{
+		FileLoader vertexLoader(std::string(ATROPOS_SHADER_SRC_DIR) + "/sky.vs");
+		vertexLoader.load();
+		FileLoader fragmentLoader(std::string(ATROPOS_SHADER_SRC_DIR) + "/sky.fs");
+		fragmentLoader.load();
+		sources.vertex = vertexLoader.getContent();
+		sources.fragment = fragmentLoader.getContent();
+	}
+
+	Sky sky;
+	sky.init(std::string(ATROPOS_DATA_DIR) + "/");
+	sky.setColors(glm::vec3(0.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 0.f));
+
+	GLuint texture = 0;
+	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+	glTextureStorage2D(texture, 1, GL_RGBA8, 64, 64);
+	GLuint fbo = 0;
+	glCreateFramebuffers(1, &fbo);
+	glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, texture, 0);
+	REQUIRE(glCheckNamedFramebufferStatus(fbo, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glViewport(0, 0, 64, 64);
+	glClearColor(0.f, 1.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	sky.draw();
+
+	CHECK(context.sink().errors == 0);
+
+	std::vector<unsigned char> pixels(64 * 64 * 4);
+	glReadPixels(0, 0, 64, 64, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+	// Sample the top row and the bottom row, remembering rows arrive bottom up.
+	const std::size_t topRow = 63 * 64 * 4;
+	const std::size_t bottomRow = 0;
+
+	INFO("top    px=(" << int(pixels[topRow]) << "," << int(pixels[topRow + 1]) << "," << int(pixels[topRow + 2]) << ")");
+	INFO("bottom px=(" << int(pixels[bottomRow]) << "," << int(pixels[bottomRow + 1]) << "," << int(pixels[bottomRow + 2]) << ")");
+
+	// Top must be the zenith blue, bottom the horizon red.
+	CHECK(pixels[topRow + 2] > 200);
+	CHECK(pixels[topRow] < 60);
+	CHECK(pixels[bottomRow] > 200);
+	CHECK(pixels[bottomRow + 2] < 60);
+
+	// The middle has to be a genuine blend, not a hard step.
+	const std::size_t middleRow = 32 * 64 * 4;
+	const int middleRed = pixels[middleRow];
+	const int middleBlue = pixels[middleRow + 2];
+	INFO("middle px=(" << middleRed << "," << middleBlue << ")");
+	CHECK(middleRed > 60);
+	CHECK(middleBlue > 60);
+	CHECK(middleRed < 200);
+	CHECK(middleBlue < 200);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

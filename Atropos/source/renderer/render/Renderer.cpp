@@ -87,6 +87,10 @@ Renderer::Renderer(int width, int height, Shader* shadow, const std::string& res
 	d_ui.init(resourcePath);
 	d_ui.onResize(width, height);
 
+	d_sky.init(resourcePath);
+	// Fog must land on the same colour the horizon ends in, or the two seams show.
+	d_sky.setColors(glm::vec3(0.25f, 0.50f, 0.80f), d_fogColor);
+
 	glClearColor(d_clearColor.r, d_clearColor.g, d_clearColor.b, 0.f);
 	
 	glEnable(GL_DEPTH_TEST);
@@ -122,9 +126,11 @@ void Renderer::endFrame()
 {
 	Profiler profiler("end_frame");
 	d_stage = Renderer::End;
-	
-shadowPass();
 
+	shadowPass();
+
+	clearTarget();
+	skyPass();
 	geometryPass();
 
 	// Drawn last so it lands on top of the scene with its own depth state.
@@ -183,6 +189,23 @@ UI& Renderer::ui()
 	return d_ui;
 }
 
+void Renderer::clearTarget()
+{
+	Profiler profiler("clear_target");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, d_width, d_height);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::skyPass()
+{
+	Profiler profiler("sky_pass");
+
+	d_sky.draw();
+}
+
 void Renderer::geometryPass()
 {
 	Profiler profiler("geometry_pass");
@@ -191,12 +214,6 @@ void Renderer::geometryPass()
 								0.f, 0.5f, 0.f, 0.f,
 								0.f, 0.f, 0.5f, 0.f,
 								0.5f, 0.5f, 0.5f, 1.f);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
-	glViewport(0, 0, d_width, d_height);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 depthBias = biasMatrix * d_depthProj * d_depthView;
 

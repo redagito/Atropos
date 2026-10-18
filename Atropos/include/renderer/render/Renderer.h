@@ -7,6 +7,7 @@ class Mesh;
 
 #include "renderer/resource/VertexArrayObject.h"
 #include "renderer/render/ShadowBuffer.h"
+#include "renderer/render/Sky.h"
 #include "renderer/ui/UI.h"
 
 #include <glad/gl.h>
@@ -107,6 +108,12 @@ public:
 	UI& ui();
 
 private:
+	/** \brief Binds the default framebuffer and clears it. */
+	void clearTarget();
+
+	/** \brief Draws the background gradient. */
+	void skyPass();
+
 	void geometryPass();
 
 	void shadowPass();
@@ -118,6 +125,7 @@ private:
 
 	Shader* d_shadowShader;
 	ShadowBuffer d_shadowBuffer;
+	Sky d_sky;
 
 	Stage d_stage;
 
