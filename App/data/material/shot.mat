@@ -1,4 +1,7 @@
 # Color material for shot
+# The scene is rendered into a half float target, so a colour above one is not
+# clipped before the bloom bright pass sees it. The red and green are lifted far
+# enough that the bolt core clips to white while the halo keeps the blue.
 class=color
 shader=color
-color=0.0 0.2 0.9
+color=0.6 1.2 5.0
