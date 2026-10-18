@@ -10,6 +10,7 @@ Sky::Sky()
 	:
 	d_buffer(0),
 	d_vao(0),
+	d_enabled(false),
 	d_zenith(0.25f, 0.50f, 0.80f),
 	d_horizon(0.70f, 0.82f, 0.90f)
 {
@@ -83,8 +84,23 @@ void Sky::rebuild()
 	glNamedBufferData(d_buffer, static_cast<GLsizeiptr>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
 }
 
+void Sky::setEnabled(bool enabled)
+{
+	d_enabled = enabled;
+}
+
+bool Sky::isEnabled() const
+{
+	return d_enabled;
+}
+
 void Sky::draw()
 {
+	if (!d_enabled)
+	{
+		return;
+	}
+
 	d_shader.setActive();
 
 	glDisable(GL_DEPTH_TEST);

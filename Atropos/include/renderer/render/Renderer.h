@@ -93,6 +93,14 @@ public:
 	void setFog(const glm::vec3& color, float start, float end);
 
 	/**
+	* \brief Turns the background gradient on or off and sets its colours. Off by
+	* default, so a scene that sets a flat background colour keeps it. Enabling
+	* the gradient also points the fog at the horizon colour, otherwise the two
+	* would meet in a visible seam.
+	*/
+	void setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon);
+
+	/**
 	* \brief Adds the object to the render requests.
 	*/
 	void draw(const VertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool hasShadow);

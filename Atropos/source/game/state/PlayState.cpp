@@ -58,6 +58,8 @@ void PlayState::init()
 	d_renderSystem->createScene("play");
 	// The other scenes set a background; gameplay was missing one and fell back to white.
 	d_renderSystem->setSceneBackgroundColor("play", glm::vec3(0.55f, 0.72f, 0.88f));
+	// Only gameplay wants a sky; the other scenes keep their flat backgrounds.
+	d_renderSystem->setSky(true, glm::vec3(0.25f, 0.50f, 0.80f), glm::vec3(0.70f, 0.82f, 0.90f));
 	d_renderSystem->setActiveScene("play");
 
 	// TODO: Sound loading should be data driven, not hard coded.

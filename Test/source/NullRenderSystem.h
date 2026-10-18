@@ -37,6 +37,11 @@ public:
 		d_lastBackgroundScene = name;
 	}
 
+	void setSky(bool enabled, const glm::vec3&, const glm::vec3&) override
+	{
+		d_skyEnabled = enabled;
+	}
+
 	void loadModel(const std::string& modelName) override
 	{
 		d_requestedModels.push_back(modelName);
@@ -111,6 +116,7 @@ public:
 	std::string d_activeScene; /**< Name of the scene last made active. */
 	std::string d_lastBackgroundScene; /**< Scene whose background color was set last. */
 	int d_backgroundColorCount = 0; /**< How often a background color was set. */
+	bool d_skyEnabled = false; /**< Whether the background gradient was requested. */
 	bool d_culling = false; /**< Culling state. */
 	bool d_shouldClose = false; /**< Whether a close was requested. */
 

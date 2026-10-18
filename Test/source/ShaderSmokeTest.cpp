@@ -367,9 +367,14 @@ TEST_CASE("The sky gradient runs from zenith at the top to the horizon below", "
 		sources.fragment = fragmentLoader.getContent();
 	}
 
-	Sky sky;
+Sky sky;
 	sky.init(std::string(ATROPOS_DATA_DIR) + "/");
 	sky.setColors(glm::vec3(0.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 0.f));
+
+	// Off by default, so scenes with a flat background colour keep it.
+	CHECK(sky.isEnabled() == false);
+	sky.setEnabled(true);
+	CHECK(sky.isEnabled() == true);
 
 	GLuint texture = 0;
 	glCreateTextures(GL_TEXTURE_2D, 1, &texture);

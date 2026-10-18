@@ -29,6 +29,14 @@ public:
 
 	void setColors(const glm::vec3& zenith, const glm::vec3& horizon);
 
+	/**
+	* \brief Off by default, so scenes that set a flat background colour keep it.
+	*/
+	void setEnabled(bool enabled);
+
+	/** \brief True when the gradient is drawn instead of the clear colour. */
+	bool isEnabled() const;
+
 	/** \brief Draws the gradient; the caller clears and sets the viewport first. */
 	void draw();
 
@@ -44,6 +52,7 @@ private:
 	Shader d_shader;
 	GLuint d_buffer;
 	GLuint d_vao;
+	bool d_enabled;
 	glm::vec3 d_zenith;
 	glm::vec3 d_horizon;
 };

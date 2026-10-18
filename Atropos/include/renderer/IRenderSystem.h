@@ -35,6 +35,12 @@ public:
 	virtual void setSceneBackgroundColor(const std::string& name, const glm::vec3& color) = 0;
 
 	/**
+	* \brief Turns the background gradient on or off and sets its colours.
+	* Off by default, so a scene keeps the flat background colour it set.
+	*/
+	virtual void setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon) = 0;
+
+	/**
 	* \brief Requests a model resource.
 	*/
 	virtual void loadModel(const std::string& modelName) = 0;

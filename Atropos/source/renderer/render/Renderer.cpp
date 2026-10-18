@@ -73,8 +73,9 @@ Renderer::Renderer(int width, int height, Shader* shadow, const std::string& res
 	d_height(height),
 	d_clearColor(1.f),
 	d_fogColor(0.70f, 0.82f, 0.90f),
-	d_fogStart(200.f),
-	d_fogEnd(900.f),
+	// The camera far plane is 100, so fog has to live inside that range to be seen.
+	d_fogStart(30.f),
+	d_fogEnd(95.f),
 	d_view(glm::mat4(1.f)),
 	d_proj(glm::mat4(1.f)),
 	d_lightPosition(0.f, 100.f, 50.f)
@@ -88,8 +89,6 @@ Renderer::Renderer(int width, int height, Shader* shadow, const std::string& res
 	d_ui.onResize(width, height);
 
 	d_sky.init(resourcePath);
-	// Fog must land on the same colour the horizon ends in, or the two seams show.
-	d_sky.setColors(glm::vec3(0.25f, 0.50f, 0.80f), d_fogColor);
 
 	glClearColor(d_clearColor.r, d_clearColor.g, d_clearColor.b, 0.f);
 	
@@ -174,6 +173,18 @@ void Renderer::setFog(const glm::vec3& color, float start, float end)
 	d_fogColor = color;
 	d_fogStart = start;
 	d_fogEnd = end;
+}
+
+void Renderer::setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon)
+{
+	d_sky.setEnabled(enabled);
+	d_sky.setColors(zenith, horizon);
+
+	if (enabled)
+	{
+		// Distant geometry has to meet the sky on the same colour.
+		d_fogColor = horizon;
+	}
 }
 
 void Renderer::onResize(int width, int height)

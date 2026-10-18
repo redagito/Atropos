@@ -58,6 +58,8 @@ public:
 	*/
 	void setSceneBackgroundColor(const std::string& name, const glm::vec3& color) override;
 
+	void setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon) override;
+
 	/**
 	* \brief Requests a model resource.
 	* Throws std::runtime_error on failure.
