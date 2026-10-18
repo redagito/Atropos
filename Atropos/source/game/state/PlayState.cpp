@@ -12,24 +12,30 @@
 #include "game/control/ExplodeOnDeathController.h"
 #include "game/control/LinearMovementController.h"
 #include "game/control/HealthController.h"
+#include "game/control/ScoreOnDeathController.h"
 #include "game/control/PlayerMovementController.h"
 #include "game/control/ShiftController.h"
 #include "game/control/WeaponController.h"
 #include "game/control/DespawnController.h"
+#include "renderer/ui/UI.h"
+#include "game/HUD.h"
 #include "game/control/RemoveOnDeathController.h"
 
 
 #include "util/Input.h"
 
 #include <glfw/glfw3.h>
+#include <algorithm>
 #include <glm/ext.hpp>
 
-PlayState::PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys)
+PlayState::PlayState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, RunStats& runStats)
 	:
 	d_renderSystem(renderSys),
 	d_collisionSystem(collSys),
 	d_soundSystem(soundSys),
 	d_player(nullptr),
+	d_playerHealth(nullptr),
+	d_runStats(runStats),
 	d_playerGroup(0),
 	d_enemyGroup(0),
 	d_enemySpawn(2.f)
@@ -73,7 +79,8 @@ void PlayState::init()
 	d_player->addController(std::shared_ptr<IController>(new CameraController(&d_renderSystem->getCamera()))); // Camera controller
 	d_player->addController(std::shared_ptr<IController>(new LinearMovementController(glm::vec3(0.f, 0.f, 40.f)))); // Linear forward movement
 	d_player->addController(std::shared_ptr<IController>(new PlayerMovementController(20.f))); // User controlled side movement
-	d_player->addController(std::shared_ptr<IController>(new HealthController(100.f))); // Player health
+	d_playerHealth = std::make_shared<HealthController>(100.f); // Player health
+	d_player->addController(d_playerHealth);
 	d_player->addController(std::shared_ptr<IController>(new WeaponController(d_renderSystem, d_soundSystem, d_collisionSystem, &d_world, "laser", 0.2f, "shot", d_playerGroup, 0.2f, 40.f)));
 
 	d_player->setTranslation(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 5.f, 0.f)));
@@ -136,6 +143,7 @@ bool PlayState::update(float dtime)
 		// Health is below any single hit, so one contact kills the enemy.
 	enemy->addController(std::shared_ptr<IController>(new HealthController(25.f)));
 		enemy->addController(std::shared_ptr<IController>(new ExplodeOnDeathController(d_soundSystem, "explosion")));
+		enemy->addController(std::make_shared<ScoreOnDeathController>(&d_runStats.score));
 		enemy->addController(std::shared_ptr<IController>(new RemoveOnDeathController));
 		enemy->addController(std::shared_ptr<IController>(new DespawnController(12.f)));
 
@@ -151,14 +159,36 @@ bool PlayState::update(float dtime)
 		d_nextState = "lose";
 		return false;
 	}
-	else if (d_renderSystem->getCamera().getPosition().z >= 8000.f)
+	else if (d_renderSystem->getCamera().getPosition().z >= GOAL_DISTANCE)
 	{
 		d_nextState = "win";
 		return false;
 	}
 
-	d_world.update(dtime);
+d_world.update(dtime);
+	drawInterface();
 	return true;
+}
+
+void PlayState::drawInterface()
+{
+	UI& ui = d_renderSystem->ui();
+
+	ui.drawText(glm::vec2(16.f, 14.f), "SCORE " + std::to_string(d_runStats.score), 1.f, glm::vec4(1.f, 1.f, 1.f, 1.f));
+
+	const float progress = d_renderSystem->getCamera().getPosition().z / GOAL_DISTANCE;
+	const int percent = static_cast<int>(std::clamp(progress, 0.f, 1.f) * 100.f);
+	const std::string percentText = std::to_string(percent) + "%";
+	const float percentWidth = ui.measureText(percentText, 1.f);
+	ui.drawText(glm::vec2((static_cast<float>(ui.getWidth()) - percentWidth) * 0.5f, 44.f),
+		percentText, 1.f, glm::vec4(0.6f, 0.9f, 1.f, 1.f));
+
+	const float health = d_playerHealth->getHealth();
+	const float maxHealth = d_playerHealth->getMaxHealth();
+	const float barY = static_cast<float>(ui.getHeight()) - 34.f;
+	HUD::drawBar(ui, barY, 14.f, maxHealth > 0.f ? health / maxHealth : 0.f, glm::vec4(0.85f, 0.15f, 0.15f, 1.f));
+
+	HUD::drawFps(ui);
 }
 
 void PlayState::onEnter()

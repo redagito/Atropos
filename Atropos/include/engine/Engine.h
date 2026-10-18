@@ -12,6 +12,8 @@ class ConfigFile;
 #include "engine/IEngine.h"
 #include "core/TCreatorMixin.h"
 
+#include "game/RunStats.h"
+
 #include <memory>
 
 class Engine
@@ -52,4 +54,7 @@ private:
 	std::shared_ptr<IRenderSystem> d_renderSystem;
 	std::shared_ptr<CollisionSystem> d_collisionSystem;
 	std::shared_ptr<GameSystem> d_gameSystem;
+
+	/** \brief Shared with the states so the end screens can show the run's score. */
+	RunStats d_runStats;
 };

@@ -48,6 +48,11 @@ public:
 
 	float measureText(const std::string& text, float scale) const;
 
+	/** \brief Feeds the frame duration; call once per frame for the FPS readout. */
+	void setFrameTime(float dtime);
+
+	int getFps() const;
+
 	int getWidth() const;
 
 	int getHeight() const;
@@ -70,6 +75,7 @@ private:
 	GLint d_atlasSampler;
 	int d_width;
 	int d_height;
+	float d_fps;
 	std::vector<Vertex> d_solid;
 	std::vector<Vertex> d_text;
 };

@@ -1,6 +1,8 @@
 #include "game/state/LoadState.h"
 
 #include "renderer/RenderSystem.h"
+#include "renderer/ui/UI.h"
+#include "game/HUD.h"
 #include "renderer/scene/Camera.h"
 #include "collision/CollisionSystem.h"
 #include "sound/SoundSystem.h"
@@ -17,12 +19,13 @@
 
 #include <stdexcept>
 
-LoadState::LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys)
+LoadState::LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys, RunStats& runStats)
 	:
 	d_renderSystem(renderSys),
 	d_collisionSystem(collSys),
 	d_soundSystem(soundSys),
 	d_gameSystem(gameSys),
+	d_runStats(runStats),
 	d_bgmStarted(false),
 	d_ready(false)
 {
@@ -76,6 +79,13 @@ bool LoadState::update(float dtime)
 		SPDLOG_INFO("All resources loaded.");
 	}
 
+	UI& ui = d_renderSystem->ui();
+	if (idle)
+	{
+		HUD::drawCentredText(ui, static_cast<float>(ui.getHeight()) * 0.7f, "PRESS ENTER TO START", 2.f, glm::vec4(1.f, 1.f, 1.f, 1.f));
+	}
+	HUD::drawFps(ui);
+
 	if (Input::pressed(GLFW_KEY_ENTER))
 	{
 		if (d_renderSystem->hasError() || d_soundSystem->hasError())
@@ -89,7 +99,7 @@ bool LoadState::update(float dtime)
 		else
 		{
 			d_gameSystem->removeState("play");
-			d_gameSystem->addState("play", new PlayState(d_renderSystem, d_collisionSystem, d_soundSystem));
+			d_gameSystem->addState("play", new PlayState(d_renderSystem, d_collisionSystem, d_soundSystem, d_runStats));
 			d_nextState = "play";
 			return false;
 		}

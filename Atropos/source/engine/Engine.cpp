@@ -141,6 +141,7 @@ void Engine::run()
 		}
 
 		updateResources();
+		d_renderSystem->ui().setFrameTime(dtime);
 		updateRenderer();
 		updateGame(dtime);
 		updateCollision();
@@ -154,9 +155,9 @@ void Engine::run()
 void Engine::createGameStates()
 {
 	// Load state, is initial state
-	d_gameSystem->addState("load", new LoadState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_gameSystem.get()));
-	d_gameSystem->addState("win", new WinState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
-	d_gameSystem->addState("lose", new LoseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
+	d_gameSystem->addState("load", new LoadState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_gameSystem.get(), d_runStats));
+	d_gameSystem->addState("win", new WinState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_runStats));
+	d_gameSystem->addState("lose", new LoseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get(), d_runStats));
 	d_gameSystem->addState("pause", new PauseState(d_renderSystem.get(), d_collisionSystem.get(), d_soundSystem.get()));
 }
 

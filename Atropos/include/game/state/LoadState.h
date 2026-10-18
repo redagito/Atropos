@@ -7,6 +7,7 @@ class GameSystem;
 #include "game/IGameState.h"
 #include "game/GameWorld.h"
 #include "game/MenuShip.h"
+#include "game/RunStats.h"
 
 #include <memory>
 #include <vector>
@@ -14,7 +15,7 @@ class GameSystem;
 class LoadState : public IGameState
 {
 public:
-	LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys);
+	LoadState(IRenderSystem* renderSys, CollisionSystem* collSys, ISoundSystem* soundSys, GameSystem* gameSys, RunStats& runStats);
 
 	bool update(float dtime);
 
@@ -31,6 +32,7 @@ private:
 	CollisionSystem* d_collisionSystem; /**< Collision system. */
 	ISoundSystem* d_soundSystem; /**< Sound system. */
 	GameSystem* d_gameSystem; /**< Game system. */
+	RunStats& d_runStats; /**< Score of the run being started. */
 	MenuShip d_ship; /**< Model shown once the resources are loaded. */
 	GameWorld d_world; /**< Game objects. */
 	std::string d_nextState; /**< Next state. */

@@ -7,6 +7,7 @@
 #include "game/state/LoseState.h"
 #include "game/state/PauseState.h"
 #include "game/state/WinState.h"
+#include "game/RunStats.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -17,7 +18,8 @@ TEST_CASE("LoadState plays the loading music again after being re-entered", "[ga
 	CollisionSystem collisionSystem;
 	GameSystem gameSystem;
 
-	LoadState state(&renderSystem, &collisionSystem, &soundSystem, &gameSystem);
+	RunStats runStats;
+	LoadState state(&renderSystem, &collisionSystem, &soundSystem, &gameSystem, runStats);
 	state.init();
 	state.onEnter();
 	REQUIRE(state.update(0.016f));
@@ -39,7 +41,8 @@ TEST_CASE("LoadState asks for every sound it needs on the first visit", "[gamest
 	CollisionSystem collisionSystem;
 	GameSystem gameSystem;
 
-	LoadState state(&renderSystem, &collisionSystem, &soundSystem, &gameSystem);
+	RunStats runStats;
+	LoadState state(&renderSystem, &collisionSystem, &soundSystem, &gameSystem, runStats);
 	state.init();
 
 	// The later states reuse these, so they are requested up front.
@@ -57,7 +60,8 @@ TEST_CASE("LoadState gives the startup screen its own background color", "[games
 	CollisionSystem collisionSystem;
 	GameSystem gameSystem;
 
-	LoadState state(&renderSystem, &collisionSystem, &soundSystem, &gameSystem);
+	RunStats runStats;
+	LoadState state(&renderSystem, &collisionSystem, &soundSystem, &gameSystem, runStats);
 	state.init();
 
 	REQUIRE(renderSystem.d_createdScenes.size() == 1);
@@ -71,7 +75,8 @@ TEST_CASE("WinState plays its music every time it is entered", "[gamestate]")
 	NullSoundSystem soundSystem;
 	CollisionSystem collisionSystem;
 
-	WinState state(&renderSystem, &collisionSystem, &soundSystem);
+	RunStats runStats;
+	WinState state(&renderSystem, &collisionSystem, &soundSystem, runStats);
 	state.init();
 
 	state.onEnter();
@@ -90,7 +95,8 @@ TEST_CASE("LoseState plays its music every time it is entered", "[gamestate]")
 	NullSoundSystem soundSystem;
 	CollisionSystem collisionSystem;
 
-	LoseState state(&renderSystem, &collisionSystem, &soundSystem);
+	RunStats runStats;
+	LoseState state(&renderSystem, &collisionSystem, &soundSystem, runStats);
 	state.init();
 
 	state.onEnter();
@@ -107,9 +113,10 @@ TEST_CASE("Win and lose give their screens their own background color", "[gamest
 	NullSoundSystem soundSystem;
 	CollisionSystem collisionSystem;
 
-	WinState win(&renderSystem, &collisionSystem, &soundSystem);
+RunStats runStats;
+	WinState win(&renderSystem, &collisionSystem, &soundSystem, runStats);
 	win.init();
-	LoseState lose(&renderSystem, &collisionSystem, &soundSystem);
+	LoseState lose(&renderSystem, &collisionSystem, &soundSystem, runStats);
 	lose.init();
 
 	CHECK(renderSystem.d_createdScenes.size() == 2);

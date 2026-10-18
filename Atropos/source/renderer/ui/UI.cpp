@@ -13,7 +13,8 @@ UI::UI()
 	d_useAtlas(-1),
 	d_atlasSampler(-1),
 	d_width(1),
-	d_height(1)
+	d_height(1),
+	d_fps(0.f)
 {
 }
 
@@ -195,6 +196,23 @@ float UI::measureText(const std::string& text, float scale) const
 int UI::getWidth() const
 {
 	return d_width;
+}
+
+void UI::setFrameTime(float dtime)
+{
+	if (dtime <= 0.f)
+	{
+		return;
+	}
+
+	const float instant = 1.f / dtime;
+	// Smoothed so the readout does not flicker with every frame.
+	d_fps = d_fps <= 0.f ? instant : d_fps + (instant - d_fps) * 0.1f;
+}
+
+int UI::getFps() const
+{
+	return static_cast<int>(d_fps + 0.5f);
 }
 
 int UI::getHeight() const
