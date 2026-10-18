@@ -231,9 +231,9 @@ bool RenderSystem::hasError() const
 	return d_manager->hasError();
 }
 
-void RenderSystem::setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon)
+void RenderSystem::setSceneSky(const std::string& name, bool enabled, const glm::vec3& zenith, const glm::vec3& horizon)
 {
-	d_renderer->setSky(enabled, zenith, horizon);
+	d_scenes.at(name).setSky(enabled, zenith, horizon);
 }
 
 Renderable* RenderSystem::add(const char* model)

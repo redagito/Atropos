@@ -10,7 +10,10 @@
 
 Scene::Scene()
 	:
-	d_backgroundColor(1.f) // Default white
+	d_backgroundColor(1.f), // Default white
+	d_skyEnabled(false),
+	d_zenith(0.25f, 0.50f, 0.80f),
+	d_horizon(0.70f, 0.82f, 0.90f)
 {
 	return;
 }
@@ -52,6 +55,18 @@ const glm::vec3& Scene::getBackgroundColor() const
 	return d_backgroundColor;
 }
 
+void Scene::setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon)
+{
+	d_skyEnabled = enabled;
+	d_zenith = zenith;
+	d_horizon = horizon;
+}
+
+bool Scene::isSkyEnabled() const
+{
+	return d_skyEnabled;
+}
+
 void Scene::draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera, bool culling)
 {
 	Profiler profiler("scene_draw");
@@ -61,6 +76,10 @@ void Scene::draw(const std::shared_ptr<Renderer>& renderer, const Camera& camera
 	renderer->setProjectionMatrix(camera.getProjectionMatrix());
 
 	renderer->setClearColor(d_backgroundColor);
+
+	// The sky and the fog colour it implies are scene state, so each scene has to
+	// push its own or one scene's settings would survive into the next.
+	renderer->setSky(d_skyEnabled, d_zenith, d_horizon);
 
 	// TODO HACK for shadow mapping, replace this with directional light support in Scene and Renderer.
 	renderer->setLightPosition(glm::vec3(0.f, 100.f, camera.getPosition().z + 50.f));

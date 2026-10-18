@@ -127,6 +127,27 @@ RunStats runStats;
 	CHECK(renderSystem.d_lastBackgroundScene == "lose");
 }
 
+TEST_CASE("Only the screen that asks for one gets a sky", "[gamestate]")
+{
+	NullRenderSystem renderSystem;
+	NullSoundSystem soundSystem;
+	CollisionSystem collisionSystem;
+	GameSystem gameSystem;
+
+	RunStats runStats;
+	LoadState load(&renderSystem, &collisionSystem, &soundSystem, &gameSystem, runStats);
+	load.init();
+	WinState win(&renderSystem, &collisionSystem, &soundSystem, runStats);
+	win.init();
+	LoseState lose(&renderSystem, &collisionSystem, &soundSystem, runStats);
+	lose.init();
+
+	// None of them request one, so the renderer keeps its default and none of them
+	// can inherit a sky another screen switched on.
+	CHECK(renderSystem.d_skyEnabled == false);
+	CHECK(renderSystem.d_skyScene.empty());
+}
+
 TEST_CASE("PauseState freezes the world but keeps the menu keys", "[gamestate]")
 {
 	NullRenderSystem renderSystem;

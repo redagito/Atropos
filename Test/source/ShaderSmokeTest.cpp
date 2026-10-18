@@ -10,6 +10,9 @@
 #include "renderer/resource/Texture.h"
 #include "renderer/render/ShadowBuffer.h"
 #include "renderer/render/Sky.h"
+#include "renderer/render/Renderer.h"
+#include "renderer/scene/Scene.h"
+#include "renderer/scene/Camera.h"
 #include "resource/Image.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -389,7 +392,14 @@ Sky sky;
 	glClearColor(0.f, 1.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// The renderer leaves culling on, and a backwards quad would vanish there.
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
 	sky.draw();
+
+	glDisable(GL_CULL_FACE);
 
 	CHECK(context.sink().errors == 0);
 
@@ -421,3 +431,59 @@ Sky sky;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+TEST_CASE("A scene decides the sky, so a later scene cannot inherit one", "[render][sky][scene]")
+{
+	GLTestContext context;
+
+	FileLoader vertexLoader(std::string(ATROPOS_SHADER_SRC_DIR) + "/shadow.vs");
+	vertexLoader.load();
+	FileLoader fragmentLoader(std::string(ATROPOS_SHADER_SRC_DIR) + "/shadow.fs");
+	fragmentLoader.load();
+
+	ShaderSources shadowSources;
+	shadowSources.vertex = vertexLoader.getContent();
+	shadowSources.fragment = fragmentLoader.getContent();
+
+	Shader shadowShader;
+	shadowShader.init(shadowSources);
+
+	auto renderer = std::make_shared<Renderer>(64, 64, &shadowShader, std::string(ATROPOS_DATA_DIR) + "/");
+	Camera camera;
+
+// Draws the scene and reads back the middle row of the screen. The clear colour
+	// is left alone: setClearColor sets it, and overwriting it would black the
+	// scene out before the frame ever runs.
+	auto middleRow = [&](Scene& scene)
+	{
+		scene.draw(renderer, camera, false);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, 64, 64);
+
+		renderer->startFrame();
+		renderer->endFrame(0.016f);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		std::vector<unsigned char> pixels(64 * 64 * 4);
+		glReadPixels(0, 0, 64, 64, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+		return pixels[32 * 64 * 4];
+	};
+
+	Scene play;
+	// Black, so the only thing that can put red on the screen is the sky itself.
+	// A scene defaults to a white background, which would light it either way.
+	play.setBackgroundColor(glm::vec3(0.f));
+	play.setSky(true, glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f));
+
+	Scene win;
+	win.setBackgroundColor(glm::vec3(0.f));
+
+	// A sky the scene asked for has to reach the screen.
+	CHECK(middleRow(play) > 60);
+
+	// A scene that never asked for one has to switch it off again, or the screen
+	// after gameplay would keep gameplay's gradient.
+	CHECK(middleRow(win) == 0);
+}
+

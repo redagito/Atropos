@@ -20,3 +20,18 @@ TEST_CASE("Scene background color can be changed", "[scene]")
 
 	CHECK(scene.getBackgroundColor() == color);
 }
+
+TEST_CASE("A scene keeps the sky to itself", "[scene]")
+{
+	Scene play;
+	Scene win;
+
+	// Off by default, so a scene that never asks for a sky cannot inherit one that
+	// another scene switched on and left behind.
+	CHECK(play.isSkyEnabled() == false);
+
+	play.setSky(true, glm::vec3(0.f, 0.f, 1.f), glm::vec3(1.f, 1.f, 0.f));
+
+	CHECK(play.isSkyEnabled() == true);
+	CHECK(win.isSkyEnabled() == false);
+}

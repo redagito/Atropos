@@ -29,9 +29,20 @@ public:
 
 	const glm::vec3& getBackgroundColor() const;
 
+	/**
+	* \brief Requests the zenith to horizon gradient behind the scene. Off by default,
+	* so a scene never inherits one another scene switched on.
+	*/
+	void setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& horizon);
+
+	bool isSkyEnabled() const;
+
 private:
 	bool isCulled(const Renderable* entity, const Camera& camera) const;
 
 	std::list<std::shared_ptr<Renderable>> d_objects;
 	glm::vec3 d_backgroundColor;
+	bool d_skyEnabled;
+	glm::vec3 d_zenith;
+	glm::vec3 d_horizon;
 };

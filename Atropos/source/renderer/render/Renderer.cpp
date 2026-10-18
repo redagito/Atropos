@@ -15,6 +15,9 @@ namespace
 {
 	/** \brief How much of the bloom halo is added back over the scene. */
 	const float BLOOM_STRENGTH = 1.2f;
+
+	/** \brief Fog colour for a scene without a sky, matching its own background. */
+	const glm::vec3 FOG_COLOR_WITHOUT_SKY(0.70f, 0.82f, 0.90f);
 }
 
 RenderRequest::RenderRequest(const VertexArrayObject* vao, int size, const AMaterial* material, const glm::mat4& model, const glm::mat4& rotation, const glm::mat4& translation, const glm::mat4& scale, bool shadow)
@@ -206,11 +209,9 @@ void Renderer::setSky(bool enabled, const glm::vec3& zenith, const glm::vec3& ho
 	d_sky.setEnabled(enabled);
 	d_sky.setColors(zenith, horizon);
 
-	if (enabled)
-	{
-		// Distant geometry has to meet the sky on the same colour.
-		d_fogColor = horizon;
-	}
+	// Distant geometry has to meet the sky on the same colour. Without a sky it falls
+	// back to the plain background rather than keeping the previous scene's horizon.
+	d_fogColor = enabled ? horizon : FOG_COLOR_WITHOUT_SKY;
 }
 
 void Renderer::onResize(int width, int height)

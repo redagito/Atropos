@@ -58,6 +58,13 @@ void Sky::init(const std::string& resourcePath)
 
 void Sky::setColors(const glm::vec3& zenith, const glm::vec3& horizon)
 {
+	// Scenes push their colours every frame, so rebuilding unchanged would re-upload
+	// the buffer for nothing.
+	if (d_zenith == zenith && d_horizon == horizon)
+	{
+		return;
+	}
+
 	d_zenith = zenith;
 	d_horizon = horizon;
 	rebuild();
@@ -70,17 +77,17 @@ void Sky::rebuild()
 		return;
 	}
 
-	// Two triangles covering clip space, zenith at the top row.
+	// Two triangles covering clip space, zenith at the top row. Counter clockwise,
+	// because the renderer leaves face culling on with counter clockwise front faces.
 	const std::array<Vertex, 6> vertices = {{
-		{glm::vec2(-1.f, 1.f), glm::vec4(d_zenith, 1.f)},
-		{glm::vec2(1.f, 1.f), glm::vec4(d_zenith, 1.f)},
 		{glm::vec2(-1.f, -1.f), glm::vec4(d_horizon, 1.f)},
-
-		{glm::vec2(-1.f, -1.f), glm::vec4(d_horizon, 1.f)},
-		{glm::vec2(1.f, 1.f), glm::vec4(d_zenith, 1.f)},
 		{glm::vec2(1.f, -1.f), glm::vec4(d_horizon, 1.f)},
-	}};
+		{glm::vec2(-1.f, 1.f), glm::vec4(d_zenith, 1.f)},
 
+		{glm::vec2(1.f, -1.f), glm::vec4(d_horizon, 1.f)},
+		{glm::vec2(1.f, 1.f), glm::vec4(d_zenith, 1.f)},
+		{glm::vec2(-1.f, 1.f), glm::vec4(d_zenith, 1.f)},
+	}};
 	glNamedBufferData(d_buffer, static_cast<GLsizeiptr>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
 }
 

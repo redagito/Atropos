@@ -37,8 +37,9 @@ public:
 		d_lastBackgroundScene = name;
 	}
 
-	void setSky(bool enabled, const glm::vec3&, const glm::vec3&) override
+	void setSceneSky(const std::string& name, bool enabled, const glm::vec3&, const glm::vec3&) override
 	{
+		d_skyScene = name;
 		d_skyEnabled = enabled;
 	}
 
@@ -123,6 +124,7 @@ public:
 	std::string d_lastBackgroundScene; /**< Scene whose background color was set last. */
 	int d_backgroundColorCount = 0; /**< How often a background color was set. */
 	bool d_skyEnabled = false; /**< Whether the background gradient was requested. */
+	std::string d_skyScene; /**< Scene whose sky setting was set last. */
 	bool d_culling = false; /**< Culling state. */
 	bool d_shouldClose = false; /**< Whether a close was requested. */
 
