@@ -18,8 +18,13 @@ public:
 
 	void setActive(bool state);
 
+	float getHealth() const;
+
+	float getMaxHealth() const;
+
 private:
 	GameObject* d_object; /**< Controlled game object. */
 	float d_health; /**< Health value. */
+	float d_maxHealth; /**< Health the object started with. */
 	bool d_active; /**< Active flag. */
 };

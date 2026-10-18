@@ -21,6 +21,7 @@ add_executable(atropos_tests
     source/GameStateTest.cpp
     source/ShaderSmokeTest.cpp
     source/UITest.cpp
+    source/ScoreAndHealthTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE

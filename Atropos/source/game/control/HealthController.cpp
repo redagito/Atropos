@@ -8,6 +8,7 @@
 HealthController::HealthController(float health)
 	:
 	d_health(health),
+	d_maxHealth(health),
 	d_object(nullptr),
 	d_active(true)
 {
@@ -44,4 +45,14 @@ void HealthController::update(float)
 void HealthController::setActive(bool state)
 {
 	d_active = state;
+}
+
+float HealthController::getHealth() const
+{
+	return d_health;
+}
+
+float HealthController::getMaxHealth() const
+{
+	return d_maxHealth;
 }
