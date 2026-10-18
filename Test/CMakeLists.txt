@@ -19,10 +19,12 @@ add_executable(atropos_tests
     source/MenuShipTest.cpp
     source/CameraTest.cpp
     source/GameStateTest.cpp
+    source/ShaderSmokeTest.cpp
 )
 
 target_compile_definitions(atropos_tests PRIVATE
     ATROPOS_SOUND_DIR="${CMAKE_SOURCE_DIR}/App/data/sound"
+    ATROPOS_SHADER_SRC_DIR="${CMAKE_SOURCE_DIR}/App/data/shader/src"
 )
 
 target_link_libraries(atropos_tests PRIVATE
